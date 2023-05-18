@@ -1,0 +1,47 @@
+.iconS {
+  font-size: 33px;
+  color: #424d58;
+}
+
+.menu .lowerBox {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.linkBox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.iconDown {
+  font-size: 20px;
+  color: #424d58;
+}
+
+.linkBox h2 {
+  width: 70%;
+  margin: 0;
+  margin-left: 10px;
+  font-weight: normal;
+  color: #424d58;
+}
+
+.detailsBox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.detailsBox .iconRight {
+  margin-left: 10px;
+}
+
+.detailsBox h3 {
+  font-weight: normal;
+  margin: 0;
+  margin-left: 18px;
+  font-size: 20px;
+}

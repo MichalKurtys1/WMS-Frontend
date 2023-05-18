@@ -1,0 +1,41 @@
+.inputBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputBox label {
+  position: absolute;
+  top: -10px;
+  left: 30px;
+  background-color: #fff;
+  color: #646e78;
+  padding: 0 10px;
+}
+
+.inputBox input {
+  border: 2px solid #646e78;
+  padding: 10px 10px;
+  margin-bottom: 40px;
+  border-radius: 10px;
+  font-size: 25px;
+}
+
+.inputBox input:focus + label {
+  color: #000e4d;
+}
+
+.inputBox input:focus {
+  outline: none;
+  border: 2px solid #000e4d;
+}
+
+.error {
+  position: absolute;
+  font-size: 12px;
+  bottom: 22px;
+  left: 10px;
+  color: #f03a30;
+  font-weight: bold;
+}

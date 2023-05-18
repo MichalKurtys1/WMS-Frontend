@@ -1,0 +1,19 @@
+.container {
+  padding: 0 20px;
+  display: flex;
+}
+
+.container h1 {
+  font-size: 60px;
+  margin: 10px;
+}
+
+.container p {
+  font-size: 30px;
+}
+
+.container span {
+  font-weight: bold;
+  font-size: 50px;
+  margin-right: 10px;
+}

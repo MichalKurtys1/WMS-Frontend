@@ -1,0 +1,39 @@
+.form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.form h1 {
+  margin: 0;
+  color: #000e4d;
+}
+
+.form p {
+  margin: 0 0 35px 0;
+  color: #000e4d;
+}
+
+.form .inputBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form button {
+  border: none;
+  background-color: #8097ff;
+  width: 70%;
+  height: 50px;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  font-size: 22px;
+  transition: 0.5s;
+}
+
+.form button:hover {
+  background-color: #3054f2;
+}
