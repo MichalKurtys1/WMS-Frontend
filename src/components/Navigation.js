@@ -1,17 +1,19 @@
-import { Outlet, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import style from "./Navigation.module.css";
 import {
-  BsCalendar3,
-  BsPerson,
-  BsEnvelope,
-  BsPeople,
-  BsColumnsGap,
-  BsFileText,
-  BsBoxSeam,
-  BsFileEarmarkText,
-  BsBarChartLine,
-  BsBoxes,
+  BsPeopleFill,
+  BsGridFill,
+  BsFillFileTextFill,
+  BsFillBoxSeamFill,
+  BsFillFileEarmarkTextFill,
+  BsBarChartLineFill,
 } from "react-icons/bs";
+import {
+  FaBoxes,
+  FaRegCalendarAlt,
+  FaRegEnvelope,
+  FaUser,
+} from "react-icons/fa";
 import NavigationItem from "./NavigationItem";
 import { Link } from "react-router-dom";
 
@@ -20,7 +22,6 @@ const Navigation = () => {
 
   return (
     <div className={style.container}>
-      ,
       <div className={style.menuContainer}>
         <div className={style.menu}>
           <div className={style.upperBox}>
@@ -29,12 +30,13 @@ const Navigation = () => {
                 className={style.linkBox}
                 style={{
                   color: `${
-                    location.pathname === "/profile" ? "#3054F2" : "#000e4d"
+                    location.pathname === "/main/profile"
+                      ? "#3054F2"
+                      : "#2D3640"
                   }`,
                 }}
               >
-                <BsPerson className={style.icon} />
-                <h2 className={style.h2Color}>Jan Kowalski</h2>
+                <FaUser className={style.icon} />
               </div>
             </Link>
             <Link to={"/main/messages"} style={{ textDecoration: "none" }}>
@@ -42,12 +44,13 @@ const Navigation = () => {
                 className={style.linkBox}
                 style={{
                   color: `${
-                    location.pathname === "/messages" ? "#3054F2" : "#000e4d"
+                    location.pathname === "/main/messages"
+                      ? "#3054F2"
+                      : "#2D3640"
                   }`,
                 }}
               >
-                <BsEnvelope className={style.icon} />
-                <h2 className={style.h2Color}>Wiadomości</h2>
+                <FaRegEnvelope className={style.icon} />
               </div>
             </Link>
             <Link to={"/main/calendar"} style={{ textDecoration: "none" }}>
@@ -55,12 +58,13 @@ const Navigation = () => {
                 className={style.linkBox}
                 style={{
                   color: `${
-                    location.pathname === "/calendar" ? "#3054F2" : "#000e4d"
+                    location.pathname === "/main/calendar"
+                      ? "#3054F2"
+                      : "#2D3640"
                   }`,
                 }}
               >
-                <BsCalendar3 className={style.icon} />
-                <h2 className={style.h2Color}>Kalendarz</h2>
+                <FaRegCalendarAlt className={style.icon} />
               </div>
             </Link>
           </div>
@@ -74,12 +78,12 @@ const Navigation = () => {
                   }`,
                 }}
               >
-                <BsColumnsGap className={style.iconS} />
+                <BsGridFill className={style.iconS} />
                 <h2>Dashboard</h2>
               </div>
             </Link>
             <NavigationItem
-              iconMain={BsPeople}
+              iconMain={BsPeopleFill}
               mainName="Spis osobowy"
               namesList={[
                 { name: "Pracownicy", link: "employees" },
@@ -88,7 +92,7 @@ const Navigation = () => {
               ]}
             />
             <NavigationItem
-              iconMain={BsFileText}
+              iconMain={BsFillFileTextFill}
               mainName="Zamówienia"
               namesList={[
                 { name: "Do Dostawców", link: "from-suppliers" },
@@ -96,7 +100,7 @@ const Navigation = () => {
               ]}
             />
             <NavigationItem
-              iconMain={BsBoxes}
+              iconMain={FaBoxes}
               mainName="Magazyn"
               namesList={[
                 { name: "Lista produktów", link: "product-list" },
@@ -105,7 +109,7 @@ const Navigation = () => {
               ]}
             />
             <NavigationItem
-              iconMain={BsBoxSeam}
+              iconMain={BsFillBoxSeamFill}
               mainName="Asortyment"
               namesList={[
                 { name: "Przyjęcie", link: "delivery-acceptance" },
@@ -122,7 +126,7 @@ const Navigation = () => {
                   }`,
                 }}
               >
-                <BsFileEarmarkText className={style.iconS} />
+                <BsFillFileEarmarkTextFill className={style.iconS} />
                 <h2>Dokumenty</h2>
               </div>
             </Link>
@@ -137,14 +141,13 @@ const Navigation = () => {
                   }`,
                 }}
               >
-                <BsBarChartLine className={style.iconS} />
+                <BsBarChartLineFill className={style.iconS} />
                 <h2>Raporty</h2>
               </div>
             </Link>
           </div>
         </div>
       </div>
-      <Outlet />
     </div>
   );
 };

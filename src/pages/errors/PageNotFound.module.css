@@ -1,19 +1,50 @@
 .container {
+  /* position: relative; */
+  width: 100vw;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.errorBox {
   padding: 0 20px;
   display: flex;
+  flex-direction: column;
+  /* width: 50%;
+  height: 50%; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.errorBox .box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.container h1 {
-  font-size: 60px;
-  margin: 10px;
+.box h1 {
+  font-size: 80px;
+  margin: 0;
 }
 
-.container p {
-  font-size: 30px;
-}
-
-.container span {
-  font-weight: bold;
+.box p {
   font-size: 50px;
-  margin-right: 10px;
+  margin: 0;
+  margin-left: 10px;
+}
+
+.errorBox button {
+  width: 300px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  background-color: #8097ff;
+  color: white;
+  font-size: 26px;
+  margin: 30px auto;
+  transition: 0.5s;
+}
+
+.errorBox button:hover {
+  background-color: #3054f2;
 }

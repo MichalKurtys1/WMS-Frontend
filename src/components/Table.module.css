@@ -1,0 +1,38 @@
+.table {
+  width: 96%;
+  margin: 0 auto;
+  font-family: "Roboto", sans-serif;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: #424d58;
+}
+
+thead th {
+  color: white;
+  padding: 15px;
+  font-weight: normal;
+  font-size: 22px;
+  border-right: 2px solid #fff;
+}
+
+thead th:first-child {
+  border-left: 2px solid #424d58;
+}
+
+thead th:last-child {
+  border-right: 2px solid #424d58;
+}
+
+tbody td {
+  text-align: center;
+  padding: 15px 0;
+  font-size: 20px;
+  border-right: 2px solid #b6babf;
+  border-left: 2px solid #b6babf;
+}
+
+tbody tr:first-child {
+  border-top: 10px solid white;
+}

@@ -1,6 +1,6 @@
-import style from "./DashboardPage.module.css";
+import style from "./SuppliersPage.module.css";
 
-const DashboardPage = () => {
+const SuppliersPage = () => {
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -9,10 +9,10 @@ const DashboardPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <h1>Dashboard</h1>
+        <h1>Dostwacy</h1>
       </div>
     </div>
   );
 };
 
-export default DashboardPage;
+export default SuppliersPage;
