@@ -11,7 +11,7 @@
 }
 
 .form p {
-  margin: 0 0 35px 0;
+  margin: 0 0 15px 0;
   color: #000e4d;
 }
 
@@ -36,4 +36,29 @@
 
 .form button:hover {
   background-color: #3054f2;
+}
+
+.spinnerBox {
+  position: relative;
+  background-color: #000;
+  opacity: 0.3;
+  width: 100%;
+  height: 100%;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 11;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.error {
+  display: block;
+  font-size: 12px;
+  margin: 0 0 15px;
+  text-align: center;
+  color: #f03a30;
+  font-weight: bold;
 }

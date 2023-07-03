@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginPage from "./pages/login/LoginPage";
+import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ClientsPage from "./pages/clients/ClientsPage";
 import PageNotFound from "./pages/errors/PageNotFound";
@@ -8,6 +8,12 @@ import CalendarPage from "./pages/calendar/CalendarPage";
 import EmployeePage from "./pages/employee/EmployeePage";
 import SuppliersPage from "./pages/supplier/SuppliersPage";
 import RootLayout from "./components/RootLayout";
+import EmployeeAddPage from "./pages/employee/add/EmployeeAddPage";
+import { checkToken } from "./utils/auth";
+import ProfilePage from "./pages/profile/ProfilePage";
+import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
+import EmployeeEditPage from "./pages/employee/edit/EmployeeEditPage";
+import EmployeeDetailsPage from "./pages/employee/details/EmployeeDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -18,11 +24,20 @@ const router = createBrowserRouter([
       {
         path: "/main",
         element: <RootLayout />,
+        loader: checkToken,
         children: [
           { index: true, element: <DashboardPage /> },
           {
+            path: "change-password",
+            element: <ChangePasswordPage />,
+          },
+          {
             path: "clients",
             element: <ClientsPage />,
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
           },
           {
             path: "messages",
@@ -34,7 +49,21 @@ const router = createBrowserRouter([
           },
           {
             path: "employees",
-            element: <EmployeePage />,
+            children: [
+              { index: true, element: <EmployeePage /> },
+              {
+                path: "add",
+                element: <EmployeeAddPage />,
+              },
+              {
+                path: "edit",
+                element: <EmployeeEditPage />,
+              },
+              {
+                path: "details",
+                element: <EmployeeDetailsPage />,
+              },
+            ],
           },
           {
             path: "suppliers",

@@ -1,61 +1,31 @@
+import { pickProperties } from "../utils/objFormatting";
 import style from "./Table.module.css";
-
-const namesList = ["Imię", "Nazwisko", "Stanowisko", "Status"];
-
-const valuseList = [
-  {
-    name: "Jan",
-    surname: "Kowalski",
-    position: "Magazynier",
-    status: "Online",
-  },
-  {
-    name: "Jan",
-    surname: "Kowalski",
-    position: "Magazynier",
-    status: "Online",
-  },
-  {
-    name: "Jan",
-    surname: "Kowalski",
-    position: "Magazynier",
-    status: "Online",
-  },
-  {
-    name: "Jan",
-    surname: "Kowalski",
-    position: "Magazynier",
-    status: "Online",
-  },
-  {
-    name: "Jan",
-    surname: "Kowalski",
-    position: "Magazynier",
-    status: "Online",
-  },
-];
+import TableRow from "./TableRow";
 
 const Table = (props) => {
   return (
     <table className={style.table}>
       <thead>
         <tr>
-          {namesList.map((name) => (
-            <th>{name}</th>
+          {props.titles.map((name) => (
+            <th key={name}>{name}</th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {valuseList.map((record) => {
-          let keys = Object.keys(record);
+        {props.data.map((record) => {
+          const id = record.id;
+          const formattedData = pickProperties(record, props.format);
+          let keys = Object.keys(formattedData);
           return (
-            <tr>
-              {keys.map((value) => {
-                console.log(record[value]);
-
-                return <td>{record[value]}</td>;
-              })}
-            </tr>
+            <TableRow
+              key={id}
+              id={id}
+              keys={keys}
+              record={formattedData}
+              selectedRow={props.selectedRow}
+              selectHandler={props.selectHandler}
+            />
           );
         })}
       </tbody>

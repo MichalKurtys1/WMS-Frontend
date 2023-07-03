@@ -38,7 +38,7 @@ const NavigationItem = (props) => {
                 className={style.detailsBox}
                 style={{
                   color: `${
-                    location.pathname === "/main/" + item.link
+                    location.pathname.includes("/main/" + item.link)
                       ? "#3054F2"
                       : "#424D58"
                   }`,

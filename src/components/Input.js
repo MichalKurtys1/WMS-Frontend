@@ -1,9 +1,9 @@
 import { Field } from "react-final-form";
 import style from "./Input.module.css";
 
-const Input = ({ name, type, fieldName, validator }) => {
+const Input = ({ name, type, fieldName, validator, initVal }) => {
   return (
-    <Field name={fieldName} validate={validator}>
+    <Field name={fieldName} validate={validator} initialValue={initVal || null}>
       {({ input, meta }) => (
         <div className={style.inputBox}>
           <input
@@ -12,9 +12,10 @@ const Input = ({ name, type, fieldName, validator }) => {
             }}
             id={fieldName}
             type={type}
+            min={0}
             {...input}
           />
-          <label for={fieldName}>{name}</label>
+          <label htmlFor={fieldName}>{name}</label>
           {meta.touched && meta.error && (
             <span className={style.error}>{meta.error}</span>
           )}

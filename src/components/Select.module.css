@@ -1,0 +1,59 @@
+.selectBox {
+  position: relative;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #646e78;
+  border-radius: 10px;
+  font-size: 25px;
+  padding: 10px;
+  outline: none;
+}
+
+.selectBox::after {
+  pointer-events: none;
+  content: "";
+  justify-self: end;
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 13px;
+  height: 10px;
+  background-color: grey;
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  transition: 0.5s;
+}
+
+.selectBox:hover::after {
+  background-color: black;
+}
+
+.inputBox input:focus {
+  outline: none;
+  border: 2px solid #000e4d;
+}
+
+label {
+  position: absolute;
+  top: -10px;
+  left: 32px;
+  background-color: #fff;
+  color: #646e78;
+  padding: 0 10px;
+}
+
+.error {
+  position: absolute;
+  font-size: 12px;
+  bottom: -18px;
+  left: 10px;
+  color: #f03a30;
+  font-weight: bold;
+}
