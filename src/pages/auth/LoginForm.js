@@ -93,12 +93,14 @@ const LoginForm = () => {
                   type="text"
                   fieldName="Email"
                   validator={emailValidator}
+                  width="90%"
                 />
                 <Input
                   name="Hasło"
                   type="password"
                   fieldName="Password"
                   validator={passwordValidator}
+                  width="90%"
                 />
                 <button disabled={invalid} type="submit">
                   Zaloguj

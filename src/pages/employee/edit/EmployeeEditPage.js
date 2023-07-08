@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import Input from "../../../components/Input";
 import style from "./EmployeeEditPage.module.css";
-import { FaPen } from "react-icons/fa";
+import { FaAngleLeft, FaPen } from "react-icons/fa";
 import { gql, useMutation } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
 import Spinner from "../../../components/Spiner";
@@ -153,9 +153,12 @@ const EmployeeEditPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.titleDescription}>
-          <h1>Pracownicy</h1>
-          <p>Edytowanie</p>
+        <div
+          className={style.returnBox}
+          onClick={() => navigate("/main/employees")}
+        >
+          <FaAngleLeft className={style.icon} />
+          <p>Powrót</p>
         </div>
       </div>
       {data && !loading && (
@@ -167,6 +170,10 @@ const EmployeeEditPage = () => {
             onSubmit={onSubmit}
             render={({ handleSubmit, invalid }) => (
               <form className={style.form} onSubmit={handleSubmit}>
+                <h1>Edytowanie pracownika</h1>
+                <p>
+                  Edytuj wybrane dane. Pamiętaj, że wszystkie pola są wymagane.
+                </p>
                 <div className={style.inputBox}>
                   {loading && (
                     <div className={style.spinnerBox}>
@@ -183,13 +190,7 @@ const EmployeeEditPage = () => {
                         fieldName="name"
                         validator={nameValidator}
                         initVal={data.firstname}
-                      />
-                      <Input
-                        name="Numer telefonu"
-                        type="number"
-                        fieldName="phone"
-                        validator={telValidator}
-                        initVal={data.phone}
+                        width="47%"
                       />
                       <Input
                         name="Nazwisko"
@@ -197,19 +198,31 @@ const EmployeeEditPage = () => {
                         fieldName="surname"
                         validator={surnameValidator}
                         initVal={data.lastname}
+                        width="47%"
                       />
+
                       <Input
                         name="Adres e-mail"
                         type="email"
                         fieldName="email"
                         validator={emailValidator}
                         initVal={data.email}
+                        width="100%"
+                      />
+                      <Input
+                        name="Numer telefonu"
+                        type="number"
+                        fieldName="phone"
+                        validator={telValidator}
+                        initVal={data.phone}
+                        width="47%"
                       />
                       <Input
                         name="Adres zamieszkania"
                         type="text"
                         fieldName="adress"
                         initVal={data.adres}
+                        width="47%"
                       />
                       <div className={style.selectBox}>
                         <Select

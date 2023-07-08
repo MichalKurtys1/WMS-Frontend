@@ -1,16 +1,11 @@
 import { useLocation, useNavigate } from "react-router";
 import Table from "../../components/Table";
 import style from "./EmployeePage.module.css";
-import {
-  FaUserCog,
-  FaUserEdit,
-  FaUserPlus,
-  FaUserMinus,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import PopUp from "../../components/PopUp";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { FaAngleLeft } from "react-icons/fa";
 
 const GETEMPLOYYE = gql`
   query Query {
@@ -40,10 +35,9 @@ const EmployeePage = () => {
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { loading, error, data, refetch } = useQuery(GETEMPLOYYE);
-  const [deleteEmployye] = useMutation(DELETEEMPLOYYE);
+  const { data, refetch, getError } = useQuery(GETEMPLOYYE);
+  const [deleteEmployye, { deleteError }] = useMutation(DELETEEMPLOYYE);
 
   useEffect(() => {
     if (location.state) {
@@ -51,26 +45,12 @@ const EmployeePage = () => {
     }
   }, [location.state, refetch]);
 
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
-
-  const rowSelectHandler = (rowId) => {
-    if (selectedRow === rowId) {
-      setSelectedRow(null);
-    } else {
-      setSelectedRow(rowId);
-    }
+  const selectedRowHandler = (id) => {
+    setSelectedRow(id);
   };
 
-  const deleteHandler = () => {
-    if (selectedRow === null) {
-      setErrorMsg(true);
-      setTimeout(() => {
-        setErrorMsg(false);
-      }, 3000);
-    } else {
-      setPopupIsOpen(true);
-    }
+  const deleteHandler = (id) => {
+    setPopupIsOpen(true);
   };
 
   const confirmedDeleteHandler = () => {
@@ -82,7 +62,6 @@ const EmployeePage = () => {
       },
     })
       .then((data) => {
-        setErrorMsg(false);
         setSuccessMsg(true);
         setTimeout(() => {
           setSuccessMsg(false);
@@ -98,45 +77,24 @@ const EmployeePage = () => {
     setPopupIsOpen(false);
   };
 
-  const editHandler = () => {
-    if (selectedRow === null) {
-      setErrorMsg(true);
-      setTimeout(() => {
-        setErrorMsg(false);
-      }, 3000);
-    } else {
-      navigate(`/main/employees/edit`, {
-        state: {
-          userId: selectedRow,
-        },
-      });
-    }
+  const editHandler = (id) => {
+    navigate(`/main/employees/edit`, {
+      state: {
+        userId: id,
+      },
+    });
   };
 
-  const detailsHandler = () => {
-    if (selectedRow === null) {
-      setErrorMsg(true);
-      setTimeout(() => {
-        setErrorMsg(false);
-      }, 3000);
-    } else {
-      navigate(`/main/employees/details`, {
-        state: {
-          userId: selectedRow,
-        },
-      });
-    }
+  const detailsHandler = (id) => {
+    navigate(`/main/employees/details`, {
+      state: {
+        userId: id,
+      },
+    });
   };
 
   const messageHandler = () => {
-    if (selectedRow === null) {
-      setErrorMsg(true);
-      setTimeout(() => {
-        setErrorMsg(false);
-      }, 3000);
-    } else {
-      navigate("/main/messages");
-    }
+    navigate("/main/messages");
   };
 
   return (
@@ -147,11 +105,14 @@ const EmployeePage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <h1>Pracownicy</h1>
+        <div className={style.returnBox} onClick={() => navigate("/main")}>
+          <FaAngleLeft className={style.icon} />
+          <p>Powrót</p>
+        </div>
       </div>
-      {errorMsg && (
+      {deleteError && (
         <div className={style.error}>
-          <p>Trzeba zaznaczyć wiersz żeby wykonać tę akcje</p>
+          <p>Wystąpił nieoczekiwany błąd</p>
         </div>
       )}
       {successMsg && (
@@ -161,27 +122,25 @@ const EmployeePage = () => {
       )}
       <main>
         <div className={style.optionPanel}>
-          <div onClick={() => navigate(`/main/employees/add`)}>
+          <h1>Pracownicy</h1>
+          <div
+            className={style.addOption}
+            on
+            onClick={() => navigate(`/main/employees/add`)}
+          >
             <FaUserPlus className={style.icon} />
-          </div>
-          <div onClick={deleteHandler}>
-            <FaUserMinus className={style.icon} />
-          </div>
-          <div onClick={editHandler}>
-            <FaUserEdit className={style.icon} />
-          </div>
-          <div onClick={detailsHandler}>
-            <FaUserCog className={style.icon} />
-          </div>
-          <div onClick={messageHandler}>
-            <FaEnvelope className={style.icon} />
+            <p>Dodawanie pracownika</p>
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && (
+          {data && data !== null && (
             <Table
-              selectHandler={rowSelectHandler}
               selectedRow={selectedRow}
+              editHandler={editHandler}
+              detailsHandler={detailsHandler}
+              messageHandler={messageHandler}
+              deleteHandler={deleteHandler}
+              selectedRowHandler={selectedRowHandler}
               data={data.users}
               format={[
                 "firstname",
@@ -200,6 +159,16 @@ const EmployeePage = () => {
                 "Stanowisko",
               ]}
             />
+          )}
+          {getError && (
+            <div className={style.error}>
+              <p>Wystąpił nieoczekiwany błąd</p>
+            </div>
+          )}
+          {data && data === null && (
+            <div className={style.error}>
+              <p>Wystąpił nieoczekiwany błąd</p>
+            </div>
           )}
         </div>
       </main>

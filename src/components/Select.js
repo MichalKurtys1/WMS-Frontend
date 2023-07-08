@@ -26,7 +26,6 @@ const Select = ({ name, fieldName, validator, initVal, options, title }) => {
               }
             })}
           </select>
-          <label htmlFor={fieldName}>{title}</label>
           {meta.touched && meta.error && (
             <span className={style.error}>{meta.error}</span>
           )}

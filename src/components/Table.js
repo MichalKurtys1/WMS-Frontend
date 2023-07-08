@@ -10,6 +10,7 @@ const Table = (props) => {
           {props.titles.map((name) => (
             <th key={name}>{name}</th>
           ))}
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -24,7 +25,11 @@ const Table = (props) => {
               keys={keys}
               record={formattedData}
               selectedRow={props.selectedRow}
-              selectHandler={props.selectHandler}
+              editHandler={props.editHandler}
+              detailsHandler={props.detailsHandler}
+              messageHandler={props.messageHandler}
+              deleteHandler={props.deleteHandler}
+              selectedRowHandler={props.selectedRowHandler}
             />
           );
         })}

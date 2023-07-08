@@ -1,4 +1,5 @@
 import style from "./DashboardPage.module.css";
+import { FaAngleLeft } from "react-icons/fa";
 
 const DashboardPage = () => {
   return (
@@ -9,7 +10,10 @@ const DashboardPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <h1>Dashboard</h1>
+        <div className={style.returnBox}>
+          <FaAngleLeft className={style.icon} />
+          <p>Powrót</p>
+        </div>
       </div>
     </div>
   );

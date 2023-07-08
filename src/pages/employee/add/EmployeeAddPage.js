@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import Input from "../../../components/Input";
 import style from "./EmployeeAddPage.module.css";
-import { FaPlus } from "react-icons/fa";
+import { FaAngleLeft, FaPlus } from "react-icons/fa";
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router";
 import Spinner from "../../../components/Spiner";
@@ -123,9 +123,12 @@ const EmployeeAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.titleDescription}>
-          <h1>Pracownicy</h1>
-          <p>Dodawanie</p>
+        <div
+          className={style.returnBox}
+          onClick={() => navigate("/main/employees")}
+        >
+          <FaAngleLeft className={style.icon} />
+          <p>Powrót</p>
         </div>
       </div>
       <main>
@@ -139,6 +142,11 @@ const EmployeeAddPage = () => {
           onSubmit={onSubmit}
           render={({ handleSubmit, invalid }) => (
             <form className={style.form} onSubmit={handleSubmit}>
+              <h1>Dodawanie pracownika</h1>
+              <p>
+                Uzupełnij dane żeby dodać nowego pracownika do systemu.
+                Tymczasowe hasło zostanie mu wysłane na jego email.
+              </p>
               <div className={style.inputBox}>
                 {loading && (
                   <div className={style.spinnerBox}>
@@ -154,30 +162,35 @@ const EmployeeAddPage = () => {
                       type="text"
                       fieldName="name"
                       validator={nameValidator}
-                    />
-                    <Input
-                      name="Numer telefonu"
-                      type="tel"
-                      fieldName="phone"
-                      validator={telValidator}
+                      width="47%"
                     />
                     <Input
                       name="Nazwisko"
                       type="text"
                       fieldName="surname"
                       validator={surnameValidator}
+                      width="47%"
                     />
                     <Input
                       name="Adres e-mail"
                       type="email"
                       fieldName="email"
                       validator={emailValidator}
+                      width="100%"
+                    />
+                    <Input
+                      name="Numer telefonu"
+                      type="tel"
+                      fieldName="phone"
+                      validator={telValidator}
+                      width="47%"
                     />
                     <Input
                       name="Adres zamieszkania"
                       type="text"
                       fieldName="adres"
                       validator={adressValidator}
+                      width="47%"
                     />
                     <div className={style.selectBox}>
                       <Select
