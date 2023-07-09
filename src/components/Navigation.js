@@ -167,12 +167,14 @@ const Navigation = () => {
                 <h3>Wizualizacja</h3>
               </div>
             </div>
-            <Link to={"/deliveries"} style={{ textDecoration: "none" }}>
+            <Link to={"/main/deliveries"} style={{ textDecoration: "none" }}>
               <div
                 className={style.linkBox}
                 style={{
                   color: `${
-                    location.pathname === "/deliveries" ? "#3054F2" : "#646e78"
+                    location.pathname === "/main/deliveries"
+                      ? "#3054F2"
+                      : "#646e78"
                   }`,
                 }}
               >

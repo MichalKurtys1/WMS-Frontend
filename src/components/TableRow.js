@@ -25,7 +25,9 @@ const TableRow = (props) => {
     <tr className={style.tr} key={props.id}>
       {props.keys.map((value) => {
         if (value === "id") return null;
-        return <td key={`${props.id}-${value}`}>{props.record[value]}</td>;
+        return (
+          <td key={`${props.id}-${value}`}>{props.record[value] || "-"}</td>
+        );
       })}
       <td key="options" onClick={clickHandler}>
         <BsThreeDotsVertical />

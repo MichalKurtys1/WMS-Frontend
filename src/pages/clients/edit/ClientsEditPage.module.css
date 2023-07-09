@@ -1,0 +1,129 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 17%;
+  width: 83%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.logoImg {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  width: 120px;
+  height: 45px;
+  object-fit: cover;
+}
+
+.titileBox {
+  width: 95%;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #646e78;
+}
+
+.returnBox {
+  display: flex;
+  align-items: center;
+  color: #2d3640;
+}
+
+.returnBox .icon {
+  margin: 20px 0 10px;
+  font-size: 20px;
+}
+.returnBox p {
+  font-weight: bold;
+  font-family: "Roboto";
+  font-size: 20px;
+  margin: 20px 0 10px;
+}
+
+.container main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 20px auto;
+  width: 60%;
+  padding-bottom: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+/* form */
+
+.form {
+  padding: 0 20px 0;
+}
+
+.form h1 {
+  margin: 0;
+  color: #2d3640;
+}
+
+.form p {
+  margin: 0 0 35px 0;
+  color: #2d3640;
+}
+
+.form .inputBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.form button {
+  border: none;
+  background-color: #8097ff;
+  width: 45%;
+  height: 50px;
+  margin: 20px auto;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  font-size: 22px;
+  transition: 0.5s;
+}
+
+.form button:hover {
+  background-color: #3054f2;
+}
+
+.icon {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.spinnerBox {
+  position: relative;
+  background-color: #000;
+  opacity: 0.3;
+  width: 100%;
+  height: 100%;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 11;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.selectBox {
+  width: 46%;
+  height: 50px;
+  margin-bottom: 40px;
+}
+
+.container .errorText {
+  color: #f03a30;
+  text-align: center;
+}

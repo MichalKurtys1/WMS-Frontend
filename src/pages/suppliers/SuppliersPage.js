@@ -1,15 +1,15 @@
 import { useLocation, useNavigate } from "react-router";
 import Table from "../../components/Table";
-import style from "./ClientsPage.module.css";
+import style from "./SuppliersPage.module.css";
 import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import PopUp from "../../components/PopUp";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { FaAngleLeft } from "react-icons/fa";
 
-const GETCLIENTS = gql`
+const GETSUPPLIERS = gql`
   query Query {
-    clients {
+    suppliers {
       id
       name
       phone
@@ -17,25 +17,24 @@ const GETCLIENTS = gql`
       city
       street
       number
-      nip
     }
   }
 `;
 
-const DELETECLIENT = gql`
-  mutation Mutation($deleteClientId: String!) {
-    deleteClient(id: $deleteClientId)
+const DELETESUPPLIER = gql`
+  mutation Mutation($deleteSupplierId: String!) {
+    deleteSupplier(id: $deleteSupplierId)
   }
 `;
 
-const ClientsPage = () => {
+const SuppliersPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETCLIENTS);
-  const [deleteClient, { deleteError }] = useMutation(DELETECLIENT);
+  const { data, refetch, getError } = useQuery(GETSUPPLIERS);
+  const [deleteSupplier, { deleteError }] = useMutation(DELETESUPPLIER);
 
   useEffect(() => {
     if (location.state) {
@@ -54,9 +53,9 @@ const ClientsPage = () => {
   const confirmedDeleteHandler = () => {
     setPopupIsOpen(false);
 
-    deleteClient({
+    deleteSupplier({
       variables: {
-        deleteClientId: selectedRow,
+        deleteSupplierId: selectedRow,
       },
     })
       .then((data) => {
@@ -76,15 +75,15 @@ const ClientsPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/clients/edit`, {
+    navigate(`/main/suppliers/edit`, {
       state: {
-        clientId: id,
+        supplierId: id,
       },
     });
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/clients/details`, {
+    navigate(`/main/suppliers/details`, {
       state: {
         userId: id,
       },
@@ -115,19 +114,19 @@ const ClientsPage = () => {
       )}
       {successMsg && (
         <div className={style.succes}>
-          <p>Client usunięty pomyślnie</p>
+          <p>Dostawca usunięty pomyślnie</p>
         </div>
       )}
       <main>
         <div className={style.optionPanel}>
-          <h1>Klienci</h1>
+          <h1>Dostawcy</h1>
           <div
             className={style.addOption}
             on
-            onClick={() => navigate(`/main/clients/add`)}
+            onClick={() => navigate(`/main/suppliers/add`)}
           >
             <FaUserPlus className={style.icon} />
-            <p>Dodawanie klienta</p>
+            <p>Dodawanie dostawcy</p>
           </div>
         </div>
         <div className={style.tableBox}>
@@ -139,16 +138,8 @@ const ClientsPage = () => {
               messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
-              data={data.clients}
-              format={[
-                "name",
-                "phone",
-                "email",
-                "city",
-                "street",
-                "number",
-                "nip",
-              ]}
+              data={data.suppliers}
+              format={["name", "phone", "email", "city", "street", "number"]}
               titles={[
                 "Nazwa",
                 "Telefon",
@@ -156,7 +147,6 @@ const ClientsPage = () => {
                 "Miejscowość",
                 "Ulica",
                 "Numer",
-                "NIP",
               ]}
             />
           )}
@@ -187,4 +177,4 @@ const ClientsPage = () => {
   );
 };
 
-export default ClientsPage;
+export default SuppliersPage;
