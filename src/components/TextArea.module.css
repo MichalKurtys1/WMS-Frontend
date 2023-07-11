@@ -5,20 +5,22 @@
   justify-content: center;
 }
 
-.inputBox input {
+.inputBox textarea {
+  resize: none;
   border: none;
   box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
   -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
   padding: 12px 10px;
   width: 100%;
-  margin-bottom: 40px;
+  min-height: 100px;
+  margin-bottom: 10px;
   border-radius: 5px;
   font-size: 22px;
   color: #777777;
 }
 
-.inputBox input:focus {
+.inputBox textarea:focus {
   outline: none;
 }
 

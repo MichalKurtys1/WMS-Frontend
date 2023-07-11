@@ -22,6 +22,8 @@ import SuppliersDetailsPage from "./pages/suppliers/details/SuppliersDetailsPage
 import SuppliersPage from "./pages/suppliers/SuppliersPage";
 import DeliveriesPage from "./pages/deliveries/DeliveriesPage";
 import DeliveriesAddPage from "./pages/deliveries/add/DeliveriesAddPage";
+import DeliveriesEditPage from "./pages/deliveries/edit/DeliveriesEditPage";
+import DeliveriesDetailsPage from "./pages/deliveries/details/DeliveriesDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -67,11 +69,11 @@ const router = createBrowserRouter([
               },
               {
                 path: "edit",
-                element: <ClientsEditPage />,
+                element: <DeliveriesEditPage />,
               },
               {
                 path: "details",
-                element: <ClientsDetailsPage />,
+                element: <DeliveriesDetailsPage />,
               },
             ],
           },
