@@ -23,16 +23,29 @@ const GET_SUPPLIERS = gql`
   }
 `;
 
-const productItemsList = ["Wybierz produkt", "Item1", "Item2", "Item3"];
+const GET_PRODUCT = gql`
+  query Query {
+    products {
+      id
+      supplierId
+      name
+      type
+      capacity
+      unit
+      pricePerUnit
+    }
+  }
+`;
+
 const unitItemsList = [
   "Wybierz jednostkę",
   "szt",
-  "zgrzewka(4szt)",
-  "zgrzewka(6szt)",
-  "zgrzewka(8szt)",
-  "zgrzewka(12szt)",
-  "zgrzewka(16szt)",
-  "zgrzewka(24szt)",
+  "op(4szt)",
+  "op(6szt)",
+  "op(8szt)",
+  "op(12szt)",
+  "op(16szt)",
+  "op(24szt)",
 ];
 
 const selectValidator = (value) => {
@@ -46,7 +59,9 @@ const DeliveriesAddPage = () => {
   const location = useLocation();
   const [submitError, setSubmitError] = useState(false);
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCT);
   const [options, setOptions] = useState([]);
+
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -106,11 +121,15 @@ const DeliveriesAddPage = () => {
     const incompleteProducts = productList.filter(
       (item) =>
         item.product === null ||
+        item.product === "Wybierz produkt" ||
+        item.product === undefined ||
         item.quantity === null ||
         item.unit === null ||
+        item.unit === "Wybierz jednostkę" ||
+        item.unit === undefined ||
         item.quantity === ""
     );
-
+    console.log(incompleteProducts);
     if (incompleteProducts.length > 0) {
       setSubmitError(true);
       return;
@@ -263,35 +282,62 @@ const DeliveriesAddPage = () => {
                             changeProductHandler(item.id, event.target.value)
                           }
                         >
-                          {productItemsList.map((option) => {
-                            if (option === item.name) {
-                              return (
-                                <option selected value={option}>
-                                  {option}
-                                </option>
-                              );
-                            } else {
-                              return <option value={option}>{option}</option>;
-                            }
-                          })}
+                          <option value={null}>Wybierz produkt</option>
+                          {products &&
+                            !loadingProducts &&
+                            [
+                              ...new Set(
+                                products.products.map((option) => option.name)
+                              ),
+                            ].map((optionName) => {
+                              if (optionName === item.name) {
+                                return (
+                                  <option
+                                    key={optionName}
+                                    selected
+                                    value={optionName}
+                                  >
+                                    {optionName}
+                                  </option>
+                                );
+                              } else {
+                                return (
+                                  <option key={optionName} value={optionName}>
+                                    {optionName}
+                                  </option>
+                                );
+                              }
+                            })}
                         </select>
                       </div>
                     </div>
-                    <div className={style.selectBox}>
-                      <div className={style.selectBox}>
-                        <select
-                          defaultValue={item.unit}
-                          className={style.select}
-                          onChange={(event) =>
-                            changeUnitHandler(item.id, event.target.value)
-                          }
-                        >
-                          {unitItemsList.map((option) => (
-                            <option value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
+                    {item.product !== null &&
+                      item.product !== "Wybierz produkt" && (
+                        <div className={style.selectBox}>
+                          <div className={style.selectBox}>
+                            <select
+                              defaultValue={item.unit}
+                              className={style.select}
+                              onChange={(event) =>
+                                changeUnitHandler(item.id, event.target.value)
+                              }
+                            >
+                              <option value={null}>Wybierz jednostkę</option>
+                              {products &&
+                                !loadingProducts &&
+                                products.products.map((option) => {
+                                  if (option.name === item.product) {
+                                    return (
+                                      <option value={option.unit}>
+                                        {option.unit}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                            </select>
+                          </div>
+                        </div>
+                      )}
                     <div className={style.inputBox}>
                       <input
                         defaultValue={item.quantity}

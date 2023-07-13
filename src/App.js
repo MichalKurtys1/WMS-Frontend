@@ -24,6 +24,9 @@ import DeliveriesPage from "./pages/deliveries/DeliveriesPage";
 import DeliveriesAddPage from "./pages/deliveries/add/DeliveriesAddPage";
 import DeliveriesEditPage from "./pages/deliveries/edit/DeliveriesEditPage";
 import DeliveriesDetailsPage from "./pages/deliveries/details/DeliveriesDetailsPage";
+import ProductsPage from "./pages/products/ProductsPage";
+import ProductsAddPage from "./pages/products/add/ProductsAddPage";
+import ProductEditPage from "./pages/products/edit/ProductEditPage";
 
 const router = createBrowserRouter([
   {
@@ -100,6 +103,24 @@ const router = createBrowserRouter([
               {
                 path: "edit",
                 element: <EmployeeEditPage />,
+              },
+              {
+                path: "details",
+                element: <EmployeeDetailsPage />,
+              },
+            ],
+          },
+          {
+            path: "products",
+            children: [
+              { index: true, element: <ProductsPage /> },
+              {
+                path: "add",
+                element: <ProductsAddPage />,
+              },
+              {
+                path: "edit",
+                element: <ProductEditPage />,
               },
               {
                 path: "details",

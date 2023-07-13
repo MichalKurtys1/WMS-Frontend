@@ -8,8 +8,9 @@ import {
   BsFillFileEarmarkArrowDownFill,
   BsFillFileEarmarkArrowUpFill,
   BsGearFill,
+  BsFillBoxSeamFill,
 } from "react-icons/bs";
-import { FaCalendarAlt, FaEnvelope, FaUser } from "react-icons/fa";
+import { FaCalendarAlt, FaEnvelope, FaUser, FaBoxes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Navigation = () => {
@@ -149,16 +150,30 @@ const Navigation = () => {
               className={style.linkBox}
               style={{
                 color: `${
-                  location.pathname === "/employee" ? "#3054F2" : "#646e78"
+                  location.pathname === "/main/products" ? "#3054F2" : "#646e78"
                 }`,
               }}
             >
-              <BsPeopleFill className={style.iconS} />
+              <FaBoxes className={style.iconS} />
               <h2>Magazyn</h2>
             </div>
             <div className={style.linkContainer}>
               <div className={style.link}>
-                <h3>Lista produktów</h3>
+                <h3>
+                  <Link
+                    to={"/main/products"}
+                    style={{
+                      textDecoration: "none",
+                      color: `${
+                        location.pathname === "/main/products"
+                          ? "#3054F2"
+                          : "#646e78"
+                      }`,
+                    }}
+                  >
+                    Lista produktów
+                  </Link>
+                </h3>
               </div>
               <div className={style.link}>
                 <h3>Stan magazynowy</h3>

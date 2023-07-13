@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router";
 import style from "./DeliveriesDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 const ADD_DELIVERY = gql`
   mutation Mutation(
@@ -29,12 +29,26 @@ const ADD_DELIVERY = gql`
   }
 `;
 
+const GET_PRODUCTS = gql`
+  query Query {
+    products {
+      id
+      supplierId
+      name
+      type
+      capacity
+      unit
+      pricePerUnit
+    }
+  }
+`;
+
 const DeliveriesDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [addDelivery] = useMutation(ADD_DELIVERY);
-
-  console.log(location.state.products);
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
+  let totalPrice = 0;
 
   const submitHandler = () => {
     addDelivery({
@@ -56,6 +70,12 @@ const DeliveriesDetailsPage = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const priceHandler = (name, quantity) => {
+    const product = products.products.filter((item) => item.name === name);
+    totalPrice = totalPrice += quantity * product[0].pricePerUnit;
+    return quantity * product[0].pricePerUnit;
   };
 
   return (
@@ -127,21 +147,23 @@ const DeliveriesDetailsPage = () => {
             <p>Ilość</p>
             <p>Cena</p>
           </div>
-          {JSON.parse(location.state.products).map((item) => (
-            <div className={style.product}>
-              <p>{item.product}</p>
-              <p>
-                {item.quantity}x {item.unit}
-              </p>
-              <p>80zł</p>
-            </div>
-          ))}
+          {products &&
+            !loadingProducts &&
+            JSON.parse(location.state.products).map((item) => (
+              <div className={style.product}>
+                <p>{item.product}</p>
+                <p>
+                  {item.quantity}x {item.unit}
+                </p>
+                <p>{priceHandler(item.product, item.quantity)} zł</p>
+              </div>
+            ))}
         </div>
         <div className={style.summary}>
           <p>Razem</p>
         </div>
         <div className={style.summaryValue}>
-          <p>490zł</p>
+          <p>{totalPrice} zł</p>
         </div>
       </div>
       {!(location.state !== null && location.state.details) && (
