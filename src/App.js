@@ -29,6 +29,11 @@ import ProductsAddPage from "./pages/products/add/ProductsAddPage";
 import ProductEditPage from "./pages/products/edit/ProductEditPage";
 import OperationsPage from "./pages/operations/OperationsPage";
 import DeliveryActionsPage from "./pages/operations/actions/deilvery/DeliveryActionsPage";
+import OrderActionsPage from "./pages/operations/actions/order/OrderActionsPage";
+import OrdersPage from "./pages/orders/OrdersPage";
+import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
+import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
+import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +48,24 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           {
+            path: "orders",
+            children: [
+              { index: true, element: <OrdersPage /> },
+              {
+                path: "add",
+                element: <OrdersAddPage />,
+              },
+              {
+                path: "edit",
+                element: <OrdersEditPage />,
+              },
+              {
+                path: "details",
+                element: <OrdersDetailsPage />,
+              },
+            ],
+          },
+          {
             path: "change-password",
             element: <ChangePasswordPage />,
           },
@@ -56,6 +79,10 @@ const router = createBrowserRouter([
                   {
                     path: "delivery",
                     element: <DeliveryActionsPage />,
+                  },
+                  {
+                    path: "order",
+                    element: <OrderActionsPage />,
                   },
                 ],
               },

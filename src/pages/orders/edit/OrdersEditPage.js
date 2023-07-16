@@ -3,7 +3,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
-import style from "./DeliveriesEditPage.module.css";
+import style from "./OrdersEditPage.module.css";
 import { FaAngleLeft, FaPlus } from "react-icons/fa";
 import { BsTrashFill } from "react-icons/bs";
 import Spinner from "../../../components/Spiner";
@@ -11,36 +11,37 @@ import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
 import Input from "../../../components/Input";
 
-const UPDATE_DELIVERY = gql`
+const UPDATE_ORDER = gql`
   mutation Mutation(
-    $updateDeliveryId: ID!
-    $supplierId: ID!
+    $updateOrderId: ID!
+    $clientId: ID!
     $date: String!
     $warehouse: String!
     $comments: String!
     $products: JSON!
   ) {
-    updateDelivery(
-      id: $updateDeliveryId
-      supplierId: $supplierId
+    updateOrder(
+      id: $updateOrderId
+      clientId: $clientId
       date: $date
       warehouse: $warehouse
       comments: $comments
       products: $products
     ) {
       id
-      supplierId
+      clientId
       date
       warehouse
       comments
       products
+      state
     }
   }
 `;
 
-const GET_SUPPLIERS = gql`
+const GET_CLIENTS = gql`
   query Query {
-    suppliers {
+    clients {
       id
       name
       phone
@@ -48,19 +49,21 @@ const GET_SUPPLIERS = gql`
       city
       street
       number
+      nip
     }
   }
 `;
 
-const GET_DELIVERY = gql`
-  mutation Mutation($getDeliveryId: String!) {
-    getDelivery(id: $getDeliveryId) {
+const GET_ORDER = gql`
+  mutation GetOrder($getOrderId: String!) {
+    getOrder(id: $getOrderId) {
       id
-      supplierId
+      clientId
       date
       warehouse
       comments
       products
+      state
     }
   }
 `;
@@ -85,13 +88,13 @@ const selectValidator = (value) => {
   }
 };
 
-const DeliveriesEditPage = () => {
+const OrdersEditPage = () => {
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
-  const [getDelivery] = useMutation(GET_DELIVERY);
-  const [updateDelivery, { loading, error }] = useMutation(UPDATE_DELIVERY);
+  const [getOrder] = useMutation(GET_ORDER);
+  const [updateOrder, { loading, error }] = useMutation(UPDATE_ORDER);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCT);
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
+  const { data, loading: loadingClients } = useQuery(GET_CLIENTS);
   const location = useLocation();
   const [deliveryData, setDeliveryData] = useState();
   const [productList, setProductList] = useState(() => {
@@ -103,31 +106,34 @@ const DeliveriesEditPage = () => {
   });
   const [options, setOptions] = useState();
 
+  console.log(products ? products : "nic");
+  console.log(productList);
+
   useEffect(() => {
-    if (data && !loadingSuppliers) {
+    if (data && !loadingClients) {
       setOptions([
-        { name: "Wybierz Dostawcę", value: null },
-        ...data.suppliers.map((item) => ({
+        { name: "Wybierz Klienta", value: null },
+        ...data.clients.map((item) => ({
           name: item.name,
           value: item.name,
         })),
       ]);
     }
-  }, [data, loadingSuppliers]);
+  }, [data, loadingClients]);
 
   useEffect(() => {
-    getDelivery({ variables: { getDeliveryId: location.state.deliveryId } })
+    getOrder({ variables: { getOrderId: location.state.orderId } })
       .then((data) => {
-        setDeliveryData(data.data.getDelivery);
+        setDeliveryData(data.data.getOrder);
         const oldDeliveries = JSON.parse(
-          JSON.parse(data.data.getDelivery.products)
+          JSON.parse(data.data.getOrder.products)
         );
         setProductList(oldDeliveries);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [getDelivery, location.state.deliveryId]);
+  }, [getOrder, location.state.orderId]);
 
   const addProductInputCounter = () => {
     setProductList((prevList) => [
@@ -171,10 +177,10 @@ const DeliveriesEditPage = () => {
       return;
     }
 
-    updateDelivery({
+    updateOrder({
       variables: {
-        updateDeliveryId: location.state.deliveryId,
-        supplierId: values.supplier,
+        updateOrderId: location.state.orderId,
+        clientId: values.client,
         date: values.date,
         warehouse: values.magazine,
         comments: values.comments,
@@ -205,14 +211,11 @@ const DeliveriesEditPage = () => {
       .padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
   };
 
-  console.log(productList);
-
   const getSupplierHandler = () => {
-    const supplier = data.suppliers.filter(
-      (item) => item.id === deliveryData.supplierId
+    const client = data.clients.filter(
+      (item) => item.id === deliveryData.clientId
     );
-    console.log(supplier[0].name);
-    return supplier[0].name;
+    return client[0].name;
   };
 
   return (
@@ -260,7 +263,7 @@ const DeliveriesEditPage = () => {
                       <div className={style.column}>
                         <div className={style.selectBox}>
                           <Select
-                            fieldName="supplier"
+                            fieldName="client"
                             validator={selectValidator}
                             initVal={
                               location.state !== null
@@ -449,4 +452,4 @@ const DeliveriesEditPage = () => {
   );
 };
 
-export default DeliveriesEditPage;
+export default OrdersEditPage;

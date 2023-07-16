@@ -1,23 +1,18 @@
 import { useLocation, useNavigate } from "react-router";
 import Table from "../../components/Table";
-import style from "./DeliveriesPage.module.css";
+import style from "./OrdersPage.module.css";
 import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import PopUp from "../../components/PopUp";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { FaAngleLeft } from "react-icons/fa";
 
-const GETDELIVERIES = gql`
+const GET_ORDERS = gql`
   query Query {
-    deliveries {
+    orders {
       id
-      supplierId
-      date
-      warehouse
-      comments
-      products
-      state
-      supplier {
+      clientId
+      client {
         id
         name
         phone
@@ -25,17 +20,23 @@ const GETDELIVERIES = gql`
         city
         street
         number
+        nip
       }
+      date
+      warehouse
+      comments
+      products
+      state
     }
   }
 `;
 
-const GET_DELIVERY = gql`
-  mutation Mutation($getDeliveryId: String!) {
-    getDelivery(id: $getDeliveryId) {
+const GET_ORDER = gql`
+  mutation Mutation($getOrderId: String!) {
+    getOrder(id: $getOrderId) {
       id
-      supplierId
-      supplier {
+      clientId
+      client {
         id
         name
       }
@@ -48,22 +49,22 @@ const GET_DELIVERY = gql`
   }
 `;
 
-const DELETEDELIVERIES = gql`
-  mutation Mutation($deleteDeliveryId: String!) {
-    deleteDelivery(id: $deleteDeliveryId)
+const DELETE_ORDER = gql`
+  mutation Mutation($deleteOrderId: String!) {
+    deleteOrder(id: $deleteOrderId)
   }
 `;
 
-const DeliveriesPage = () => {
+const OrdersPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETDELIVERIES);
-  const [deleteDeliveries, { deleteError }] = useMutation(DELETEDELIVERIES);
-  const [getDelivery] = useMutation(GET_DELIVERY);
-  console.log(data);
+  const { data, refetch, getError } = useQuery(GET_ORDERS);
+  const [deleteOrder, { deleteError }] = useMutation(DELETE_ORDER);
+  const [getOrder] = useMutation(GET_ORDER);
+
   useEffect(() => {
     if (location.state) {
       refetch();
@@ -81,9 +82,9 @@ const DeliveriesPage = () => {
   const confirmedDeleteHandler = () => {
     setPopupIsOpen(false);
 
-    deleteDeliveries({
+    deleteOrder({
       variables: {
-        deleteDeliveryId: selectedRow,
+        deleteOrderId: selectedRow,
       },
     })
       .then((data) => {
@@ -103,18 +104,18 @@ const DeliveriesPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/deliveries/edit`, {
+    navigate(`/main/orders/edit`, {
       state: {
-        deliveryId: id,
+        orderId: id,
       },
     });
   };
 
   const detailsHandler = (id) => {
-    getDelivery({ variables: { getDeliveryId: id } })
+    getOrder({ variables: { getOrderId: id } })
       .then((data) => {
-        const products = JSON.parse(data.data.getDelivery.products);
-        const date = new Date(parseInt(data.data.getDelivery.date));
+        const products = JSON.parse(data.data.getOrder.products);
+        const date = new Date(parseInt(data.data.getOrder.date));
         const formattedDate = `${date.getUTCFullYear()}-${(
           date.getUTCMonth() + 1
         )
@@ -129,13 +130,13 @@ const DeliveriesPage = () => {
           .getUTCMinutes()
           .toString()
           .padStart(2, "0")}`;
-        navigate("/main/deliveries/details", {
+        navigate("/main/orders/details", {
           state: {
             details: true,
-            supplierId: data.data.getDelivery.supplier.name,
+            clientId: data.data.getOrder.client.name,
             date: formattedDate,
-            warehouse: data.data.getDelivery.warehouse,
-            comments: data.data.getDelivery.comments,
+            warehouse: data.data.getOrder.warehouse,
+            comments: data.data.getOrder.comments,
             products: products,
           },
         });
@@ -169,16 +170,16 @@ const DeliveriesPage = () => {
       )}
       {successMsg && (
         <div className={style.succes}>
-          <p>Client usunięty pomyślnie</p>
+          <p>Zamówienie usunięte pomyślnie</p>
         </div>
       )}
       <main>
         <div className={style.optionPanel}>
-          <h1>Dostawy</h1>
+          <h1>Zamówienia</h1>
           <div
             className={style.addOption}
             on
-            onClick={() => navigate(`/main/deliveries/add`)}
+            onClick={() => navigate(`/main/orders/add`)}
           >
             <FaUserPlus className={style.icon} />
             <p>Dodaj nowe</p>
@@ -193,7 +194,7 @@ const DeliveriesPage = () => {
               messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
-              data={data.deliveries.map((item) => {
+              data={data.orders.map((item) => {
                 const date = new Date(parseInt(item.date));
                 const options = {
                   year: "numeric",
@@ -206,11 +207,11 @@ const DeliveriesPage = () => {
                 return {
                   ...item,
                   date: polishDate,
-                  supplier: item.supplier.name,
+                  client: item.client.name,
                 };
               })}
-              format={["supplier", "date", "warehouse", "comments", "state"]}
-              titles={["Dostawca", "Termin", "Magazyn", "Uwagi", "Stan"]}
+              format={["client", "date", "warehouse", "comments", "state"]}
+              titles={["Klient", "Termin", "Magazyn", "Uwagi", "Stan"]}
             />
           )}
           {getError && (
@@ -228,7 +229,7 @@ const DeliveriesPage = () => {
       {popupIsOpen && (
         <PopUp
           message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
+            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczone zamówienie z systemu?"
           }
           button2={"Usuń"}
           button1={"Anuluj"}
@@ -240,4 +241,4 @@ const DeliveriesPage = () => {
   );
 };
 
-export default DeliveriesPage;
+export default OrdersPage;
