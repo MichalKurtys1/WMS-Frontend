@@ -8,7 +8,6 @@ import {
   BsFillFileEarmarkArrowDownFill,
   BsFillFileEarmarkArrowUpFill,
   BsGearFill,
-  BsFillBoxSeamFill,
 } from "react-icons/bs";
 import { FaCalendarAlt, FaEnvelope, FaUser, FaBoxes } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -210,12 +209,14 @@ const Navigation = () => {
                 <h2>Zamówienia</h2>
               </div>
             </Link>
-            <Link to={"/operations"} style={{ textDecoration: "none" }}>
+            <Link to={"/main/operations"} style={{ textDecoration: "none" }}>
               <div
                 className={style.linkBox}
                 style={{
                   color: `${
-                    location.pathname === "/operations" ? "#3054F2" : "#646e78"
+                    location.pathname === "/main/operations"
+                      ? "#3054F2"
+                      : "#646e78"
                   }`,
                 }}
               >

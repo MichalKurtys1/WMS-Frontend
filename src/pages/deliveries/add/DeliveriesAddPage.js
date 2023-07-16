@@ -37,17 +37,6 @@ const GET_PRODUCT = gql`
   }
 `;
 
-const unitItemsList = [
-  "Wybierz jednostkę",
-  "szt",
-  "op(4szt)",
-  "op(6szt)",
-  "op(8szt)",
-  "op(12szt)",
-  "op(16szt)",
-  "op(24szt)",
-];
-
 const selectValidator = (value) => {
   if (!value || value.includes("Wybierz")) {
     return "Wybierz jedną z opcji";
@@ -66,7 +55,7 @@ const DeliveriesAddPage = () => {
     if (location.state !== null) {
       return [];
     } else {
-      return [{ id: 0, name: null, unit: null, quantity: null }];
+      return [{ id: 0, product: null, unit: null, quantity: null }];
     }
   });
 
@@ -140,7 +129,7 @@ const DeliveriesAddPage = () => {
         supplierId: values.supplier,
         date: values.date,
         warehouse: values.magazine,
-        comments: values.comments,
+        comments: values.comments || "",
         products: JSON.stringify(productList),
       },
     });
@@ -285,25 +274,36 @@ const DeliveriesAddPage = () => {
                           <option value={null}>Wybierz produkt</option>
                           {products &&
                             !loadingProducts &&
-                            [
-                              ...new Set(
-                                products.products.map((option) => option.name)
-                              ),
-                            ].map((optionName) => {
-                              if (optionName === item.name) {
+                            products.products.map((option) => {
+                              if (option.name === item.name) {
                                 return (
                                   <option
-                                    key={optionName}
                                     selected
-                                    value={optionName}
+                                    value={
+                                      option.name +
+                                      " " +
+                                      option.type +
+                                      " " +
+                                      option.capacity
+                                    }
                                   >
-                                    {optionName}
+                                    {option.name} {option.type}{" "}
+                                    {option.capacity}
                                   </option>
                                 );
                               } else {
                                 return (
-                                  <option key={optionName} value={optionName}>
-                                    {optionName}
+                                  <option
+                                    value={
+                                      option.name +
+                                      " " +
+                                      option.type +
+                                      " " +
+                                      option.capacity
+                                    }
+                                  >
+                                    {option.name} {option.type}{" "}
+                                    {option.capacity}
                                   </option>
                                 );
                               }
@@ -326,12 +326,21 @@ const DeliveriesAddPage = () => {
                               {products &&
                                 !loadingProducts &&
                                 products.products.map((option) => {
-                                  if (option.name === item.product) {
+                                  if (
+                                    option.name +
+                                      " " +
+                                      option.type +
+                                      " " +
+                                      option.capacity ===
+                                    item.product
+                                  ) {
                                     return (
                                       <option value={option.unit}>
                                         {option.unit}
                                       </option>
                                     );
+                                  } else {
+                                    return null;
                                   }
                                 })}
                             </select>

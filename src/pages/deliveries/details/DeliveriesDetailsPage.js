@@ -73,7 +73,9 @@ const DeliveriesDetailsPage = () => {
   };
 
   const priceHandler = (name, quantity) => {
-    const product = products.products.filter((item) => item.name === name);
+    const product = products.products.filter(
+      (item) => item.name + " " + item.type + " " + item.capacity === name
+    );
     totalPrice = totalPrice += quantity * product[0].pricePerUnit;
     return quantity * product[0].pricePerUnit;
   };

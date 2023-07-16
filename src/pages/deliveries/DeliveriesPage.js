@@ -16,6 +16,7 @@ const GETDELIVERIES = gql`
       warehouse
       comments
       products
+      state
       supplier {
         id
         name
@@ -42,6 +43,7 @@ const GET_DELIVERY = gql`
       warehouse
       comments
       products
+      state
     }
   }
 `;
@@ -207,8 +209,8 @@ const DeliveriesPage = () => {
                   supplier: item.supplier.name,
                 };
               })}
-              format={["supplier", "date", "warehouse", "comments"]}
-              titles={["Dostawca", "Termin", "Magazyn", "Uwagi"]}
+              format={["supplier", "date", "warehouse", "comments", "state"]}
+              titles={["Dostawca", "Termin", "Magazyn", "Uwagi", "Stan"]}
             />
           )}
           {getError && (

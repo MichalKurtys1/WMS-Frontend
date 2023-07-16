@@ -27,6 +27,8 @@ import DeliveriesDetailsPage from "./pages/deliveries/details/DeliveriesDetailsP
 import ProductsPage from "./pages/products/ProductsPage";
 import ProductsAddPage from "./pages/products/add/ProductsAddPage";
 import ProductEditPage from "./pages/products/edit/ProductEditPage";
+import OperationsPage from "./pages/operations/OperationsPage";
+import DeliveryActionsPage from "./pages/operations/actions/deilvery/DeliveryActionsPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +45,21 @@ const router = createBrowserRouter([
           {
             path: "change-password",
             element: <ChangePasswordPage />,
+          },
+          {
+            path: "operations",
+            children: [
+              { index: true, element: <OperationsPage /> },
+              {
+                path: "action",
+                children: [
+                  {
+                    path: "delivery",
+                    element: <DeliveryActionsPage />,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: "clients",
