@@ -24,7 +24,7 @@ const OrderActionsPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [products, setProducts] = useState([]);
   const location = useLocation();
-
+  console.log(location);
   useEffect(() => {
     if (location.state.data.products) {
       if (location.state.operation) {
@@ -177,10 +177,10 @@ const OrderActionsPage = () => {
       <div>
         <Stepper activeStep={activeStep} alternativeLabel>
           <Step key={1}>
-            <StepLabel>{"Przyjęcie dostawy"}</StepLabel>
+            <StepLabel>{"Kompletowanie zamówienia"}</StepLabel>
           </Step>
           <Step key={2}>
-            <StepLabel>{"Transportowanie"}</StepLabel>
+            <StepLabel>{"Pakowanie"}</StepLabel>
           </Step>
           <Step key={3}>
             <StepLabel>{"Potwierdzenie"}</StepLabel>
@@ -250,7 +250,7 @@ const OrderActionsPage = () => {
             <div className={style.basicDataBox}>
               <div className={style.infoBox}>
                 <h3>Dostawca</h3>
-                <p>{location.state.data.supplier.name}</p>
+                <p>{location.state.data.client.name}</p>
               </div>
               <div className={style.infoBox}>
                 <h3>Termin</h3>

@@ -188,7 +188,7 @@ const OrdersEditPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/deliveries", {
+        navigate("/main/orders", {
           state: {
             userData: data.data.createClient,
           },
@@ -228,7 +228,7 @@ const OrdersEditPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/main/orders")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

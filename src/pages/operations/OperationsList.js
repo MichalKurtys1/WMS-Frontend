@@ -17,7 +17,7 @@ const formattedName = (name) => {
   if (name === "DeliveryList") {
     return "Dostawa";
   } else {
-    return null;
+    return "Zamówienie";
   }
 };
 
@@ -38,41 +38,64 @@ const OperationsList = (props) => {
 
   const clickHandler = (item) => {
     if (props.currentPage === 2) {
-      createOperation({
-        variables: {
-          deliveriesId: item.id,
-        },
-      })
-        .then((data) => {
-          navigate("/main/operations/action/delivery", {
-            state: {
-              id: data.data.createOperation.id,
-              data: item,
-              operation: null,
-            },
-          });
+      if (formattedName(item.__typename) === "Dostawa") {
+        createOperation({
+          variables: {
+            deliveriesId: item.id,
+          },
         })
-        .catch((err) => {
-          console.log(err);
+          .then((data) => {
+            navigate("/main/operations/action/delivery", {
+              state: {
+                id: data.data.createOperation.id,
+                data: item,
+                operation: null,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        createOperation({
+          variables: {
+            ordersId: item.id,
+          },
+        })
+          .then((data) => {
+            navigate("/main/operations/action/orders", {
+              state: {
+                id: data.data.createOperation.id,
+                data: item,
+                operation: null,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else {
+      if (formattedName(item.__typename) === "Dostawa") {
+        navigate("/main/operations/action/delivery", {
+          state: {
+            operation: props.operations.operations.filter(
+              (operation) => operation.deliveriesId === item.id
+            ),
+            data: item,
+          },
         });
-    } else if (props.currentPage === 1) {
-      navigate("/main/operations/action/delivery", {
-        state: {
-          operation: props.operations.operations.filter(
-            (operation) => operation.deliveriesId === item.id
-          ),
-          data: item,
-        },
-      });
-    } else if (props.currentPage === 3) {
-      navigate("/main/operations/action/delivery", {
-        state: {
-          operation: props.operations.operations.filter(
-            (operation) => operation.deliveriesId === item.id
-          ),
-          data: item,
-        },
-      });
+      } else {
+        console.log(props.operations.operations);
+        navigate("/main/operations/action/order", {
+          state: {
+            operation: props.operations.operations.filter(
+              (operation) => operation.ordersId === item.id
+            ),
+            data: item,
+          },
+        });
+      }
     }
   };
 
@@ -86,7 +109,11 @@ const OperationsList = (props) => {
               onClick={() => clickHandler(item)}
             >
               <h1>{formattedName(item.__typename)}</h1>
-              <p className={style.name}>{item.supplier.name}</p>
+              <p className={style.name}>
+                {item.supplier !== undefined
+                  ? item.supplier.name
+                  : item.client.name}
+              </p>
               <p className={style.date}>{formattedDate(item.date)}</p>
             </div>
             <button className={style.confirmBtn}>

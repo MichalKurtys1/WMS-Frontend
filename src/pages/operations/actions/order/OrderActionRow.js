@@ -1,4 +1,10 @@
-import { FaCheck, FaFileSignature, FaMinus, FaTimes } from "react-icons/fa";
+import {
+  FaCheck,
+  FaFileSignature,
+  FaMinus,
+  FaSearch,
+  FaTimes,
+} from "react-icons/fa";
 import style from "./OrderActionRow.module.css";
 import { useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
@@ -64,6 +70,11 @@ const OrderActionRow = (props) => {
                   props.modifyState(props.product.id, false);
                   setState(false);
                 }}
+              />
+              <FaSearch
+                className={style.icon}
+                style={{ color: "#646E78" }}
+                // onClick={() => setCommentsOpen(true)}
               />
               <FaFileSignature
                 className={style.icon}

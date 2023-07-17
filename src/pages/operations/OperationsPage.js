@@ -29,16 +29,50 @@ const GETDELIVERIES = gql`
   }
 `;
 
+const GET_ORDERS = gql`
+  query Query {
+    orders {
+      id
+      clientId
+      client {
+        id
+        name
+        phone
+        email
+        city
+        street
+        number
+        nip
+      }
+      date
+      warehouse
+      comments
+      products
+      state
+    }
+  }
+`;
+
 const GET_OPERATIONS = gql`
-  query Operations {
+  query Query {
     operations {
       id
       deliveriesId
+      ordersId
       stage
       data
       delivery {
         id
         supplierId
+        date
+        warehouse
+        comments
+        products
+        state
+      }
+      order {
+        id
+        clientId
         date
         warehouse
         comments
@@ -52,6 +86,7 @@ const GET_OPERATIONS = gql`
 const OperationsPage = () => {
   const navigate = useNavigate();
   const { data, refetch: refetchDeliveries } = useQuery(GETDELIVERIES);
+  const { data: orders, refetch: refetchOrders } = useQuery(GET_ORDERS);
   const { data: operations, refetch: refetchOperations } =
     useQuery(GET_OPERATIONS);
   const [currentPage, setCurrentPage] = useState(2);
@@ -60,25 +95,21 @@ const OperationsPage = () => {
   useEffect(() => {
     refetchDeliveries();
     refetchOperations();
-  }, [refetchDeliveries, refetchOperations]);
-
+    refetchOrders();
+  }, [refetchDeliveries, refetchOperations, refetchOrders]);
+  console.log(currentData);
   useEffect(() => {
-    if (data) {
+    if (data && orders) {
+      const dataArray = [...data.deliveries, ...orders.orders];
       if (currentPage === 2) {
-        setCurrentData(
-          data.deliveries.filter((item) => item.state === "Zlecone")
-        );
+        setCurrentData(dataArray.filter((item) => item.state === "Zlecone"));
       } else if (currentPage === 1) {
-        setCurrentData(
-          data.deliveries.filter((item) => item.state === "W trakcie")
-        );
+        setCurrentData(dataArray.filter((item) => item.state === "W trakcie"));
       } else if (currentPage === 3) {
-        setCurrentData(
-          data.deliveries.filter((item) => item.state === "Zakończone")
-        );
+        setCurrentData(dataArray.filter((item) => item.state === "Zakończone"));
       }
     }
-  }, [currentPage, data]);
+  }, [currentPage, data, orders]);
 
   return (
     <div className={style.container}>

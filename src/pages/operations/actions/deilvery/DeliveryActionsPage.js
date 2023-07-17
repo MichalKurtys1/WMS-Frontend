@@ -231,6 +231,9 @@ const DeliveryActionsPage = () => {
                     setActiveStep(
                       activeStep <= 2 ? activeStep + 1 : activeStep
                     );
+                    if (activeStep + 1 === 3) {
+                      navigate("/main/operations");
+                    }
                   })
                   .catch((err) => {
                     console.log(err);
