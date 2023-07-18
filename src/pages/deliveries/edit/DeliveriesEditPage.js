@@ -79,6 +79,15 @@ const GET_PRODUCT = gql`
   }
 `;
 
+const UPDATE_PRODUCT = gql`
+  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
+    updateAvailableStock(
+      id: $updateAvailableStockId
+      availableStock: $availableStock
+    )
+  }
+`;
+
 const selectValidator = (value) => {
   if (!value || value.includes("Wybierz")) {
     return "Wybierz jedną z opcji";
@@ -94,6 +103,7 @@ const DeliveriesEditPage = () => {
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
   const location = useLocation();
   const [deliveryData, setDeliveryData] = useState();
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -121,7 +131,12 @@ const DeliveriesEditPage = () => {
         setDeliveryData(data.data.getDelivery);
         const oldDeliveries = JSON.parse(
           JSON.parse(data.data.getDelivery.products)
-        );
+        ).map((item) => {
+          return {
+            ...item,
+            maxValue: item.quantity,
+          };
+        });
         setProductList(oldDeliveries);
       })
       .catch((err) => {
@@ -182,6 +197,28 @@ const DeliveriesEditPage = () => {
       },
     })
       .then((data) => {
+        productList.forEach((item) => {
+          const product = products.products.filter(
+            (product) =>
+              item.product.includes(product.name) &&
+              item.product.includes(product.type) &&
+              item.product.includes(product.capacity)
+          );
+          updateProduct({
+            variables: {
+              updateAvailableStockId: product[0].id,
+              availableStock: parseInt(item.quantity) - parseInt(item.maxValue),
+            },
+          })
+            .then((data) => {
+              navigate("/main/orders", {
+                state: {
+                  userData: data.data.createClient,
+                },
+              });
+            })
+            .catch((err) => console.log(err));
+        });
         navigate("/main/deliveries", {
           state: {
             userData: data.data.createClient,
@@ -204,8 +241,6 @@ const DeliveriesEditPage = () => {
       .toString()
       .padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
   };
-
-  console.log(productList);
 
   const getSupplierHandler = () => {
     const supplier = data.suppliers.filter(

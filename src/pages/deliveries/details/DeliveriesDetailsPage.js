@@ -43,10 +43,20 @@ const GET_PRODUCTS = gql`
   }
 `;
 
+const UPDATE_PRODUCT = gql`
+  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
+    updateAvailableStock(
+      id: $updateAvailableStockId
+      availableStock: $availableStock
+    )
+  }
+`;
+
 const DeliveriesDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [addDelivery] = useMutation(ADD_DELIVERY);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   let totalPrice = 0;
 
@@ -61,6 +71,21 @@ const DeliveriesDetailsPage = () => {
       },
     })
       .then((data) => {
+        JSON.parse(location.state.products).forEach((item) => {
+          const product = location.state.productsFromDB.products.filter(
+            (product) =>
+              item.product.includes(product.name) &&
+              item.product.includes(product.type) &&
+              item.product.includes(product.capacity)
+          );
+          updateProduct({
+            variables: {
+              updateAvailableStockId: product[0].id,
+              availableStock: parseInt(item.quantity),
+            },
+          }).catch((err) => console.log(err));
+        });
+
         navigate("/main/deliveries", {
           state: {
             userData: data.data.createClient,

@@ -288,3 +288,9 @@
 .error p {
   color: #f03a30;
 }
+
+.availableStockBox {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}

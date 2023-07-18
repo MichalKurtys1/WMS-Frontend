@@ -34,6 +34,7 @@ const GET_PRODUCT = gql`
       capacity
       unit
       pricePerUnit
+      availableStock
     }
   }
 `;
@@ -59,7 +60,7 @@ const OrdersAddPage = () => {
       return [{ id: 0, product: null, unit: null, quantity: null }];
     }
   });
-
+  console.log(products && products);
   useEffect(() => {
     if (data && !loadingClients) {
       setOptions([
@@ -117,7 +118,12 @@ const OrdersAddPage = () => {
         item.unit === null ||
         item.unit === "Wybierz jednostkę" ||
         item.unit === undefined ||
-        item.quantity === ""
+        item.quantity === "" ||
+        products.products.filter(
+          (option) =>
+            option.name + " " + option.type + " " + option.capacity ===
+            item.product
+        )[0].availableStock < parseInt(item.quantity)
     );
     console.log(incompleteProducts);
     if (incompleteProducts.length > 0) {
@@ -132,6 +138,7 @@ const OrdersAddPage = () => {
         warehouse: values.magazine,
         comments: values.comments || "",
         products: JSON.stringify(productList),
+        productsFromDB: products,
       },
     });
 
@@ -314,39 +321,55 @@ const OrdersAddPage = () => {
                     </div>
                     {item.product !== null &&
                       item.product !== "Wybierz produkt" && (
-                        <div className={style.selectBox}>
-                          <div className={style.selectBox}>
-                            <select
-                              defaultValue={item.unit}
-                              className={style.select}
-                              onChange={(event) =>
-                                changeUnitHandler(item.id, event.target.value)
-                              }
-                            >
-                              <option value={null}>Wybierz jednostkę</option>
-                              {products &&
-                                !loadingProducts &&
-                                products.products.map((option) => {
-                                  if (
-                                    option.name +
-                                      " " +
-                                      option.type +
-                                      " " +
-                                      option.capacity ===
-                                    item.product
-                                  ) {
-                                    return (
-                                      <option value={option.unit}>
-                                        {option.unit}
-                                      </option>
-                                    );
-                                  } else {
-                                    return null;
-                                  }
-                                })}
-                            </select>
+                        <>
+                          <div className={style.availableStockBox}>
+                            Dostępne:
+                            {
+                              products.products.filter(
+                                (option) =>
+                                  option.name +
+                                    " " +
+                                    option.type +
+                                    " " +
+                                    option.capacity ===
+                                  item.product
+                              )[0].availableStock
+                            }
                           </div>
-                        </div>
+                          <div className={style.selectBox}>
+                            <div className={style.selectBox}>
+                              <select
+                                defaultValue={item.unit}
+                                className={style.select}
+                                onChange={(event) =>
+                                  changeUnitHandler(item.id, event.target.value)
+                                }
+                              >
+                                <option value={null}>Wybierz jednostkę</option>
+                                {products &&
+                                  !loadingProducts &&
+                                  products.products.map((option) => {
+                                    if (
+                                      option.name +
+                                        " " +
+                                        option.type +
+                                        " " +
+                                        option.capacity ===
+                                      item.product
+                                    ) {
+                                      return (
+                                        <option value={option.unit}>
+                                          {option.unit}
+                                        </option>
+                                      );
+                                    } else {
+                                      return null;
+                                    }
+                                  })}
+                              </select>
+                            </div>
+                          </div>
+                        </>
                       )}
                     <div className={style.inputBox}>
                       <input

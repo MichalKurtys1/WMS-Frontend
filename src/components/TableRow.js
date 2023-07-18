@@ -47,13 +47,13 @@ const TableRow = (props) => {
               <BsTrashFill className={style.icon} />
               <p>Usuń</p>
             </div>
-            <div
+            {/* <div
               className={style.option}
               onClick={() => props.messageHandler(props.id)}
             >
               <FaEnvelope className={style.icon} />
               <p>Wiadomość</p>
-            </div>
+            </div> */}
             <div
               className={style.option}
               onClick={() => props.detailsHandler(props.id)}

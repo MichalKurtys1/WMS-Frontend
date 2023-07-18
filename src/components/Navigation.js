@@ -175,9 +175,6 @@ const Navigation = () => {
                 </h3>
               </div>
               <div className={style.link}>
-                <h3>Stan magazynowy</h3>
-              </div>
-              <div className={style.link}>
                 <h3>Wizualizacja</h3>
               </div>
             </div>

@@ -78,7 +78,17 @@ const GET_PRODUCT = gql`
       capacity
       unit
       pricePerUnit
+      availableStock
     }
+  }
+`;
+
+const UPDATE_PRODUCT = gql`
+  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
+    updateAvailableStock(
+      id: $updateAvailableStockId
+      availableStock: $availableStock
+    )
   }
 `;
 
@@ -97,6 +107,7 @@ const OrdersEditPage = () => {
   const { data, loading: loadingClients } = useQuery(GET_CLIENTS);
   const location = useLocation();
   const [deliveryData, setDeliveryData] = useState();
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -127,7 +138,12 @@ const OrdersEditPage = () => {
         setDeliveryData(data.data.getOrder);
         const oldDeliveries = JSON.parse(
           JSON.parse(data.data.getOrder.products)
-        );
+        ).map((item) => {
+          return {
+            ...item,
+            maxValue: item.quantity,
+          };
+        });
         setProductList(oldDeliveries);
       })
       .catch((err) => {
@@ -170,7 +186,14 @@ const OrdersEditPage = () => {
         item.product === null ||
         item.quantity === null ||
         item.unit === null ||
-        item.quantity === ""
+        item.quantity === "" ||
+        products.products.filter(
+          (option) =>
+            option.name + " " + option.type + " " + option.capacity ===
+            item.product
+        )[0].availableStock +
+          parseInt(item.maxValue) <
+          parseInt(item.quantity)
     );
     if (state.length > 0) {
       setSubmitError(true);
@@ -188,10 +211,28 @@ const OrdersEditPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/orders", {
-          state: {
-            userData: data.data.createClient,
-          },
+        productList.forEach((item) => {
+          const product = products.products.filter(
+            (product) =>
+              item.product.includes(product.name) &&
+              item.product.includes(product.type) &&
+              item.product.includes(product.capacity)
+          );
+          updateProduct({
+            variables: {
+              updateAvailableStockId: product[0].id,
+              availableStock:
+                (parseInt(item.quantity) - parseInt(item.maxValue)) * -1,
+            },
+          })
+            .then((data) => {
+              navigate("/main/orders", {
+                state: {
+                  userData: data.data.createClient,
+                },
+              });
+            })
+            .catch((err) => console.log(err));
         });
       })
       .catch((err) => {
@@ -389,39 +430,58 @@ const OrdersEditPage = () => {
                       </div>
                       {item.product !== null &&
                         item.product !== "Wybierz produkt" && (
-                          <div className={style.selectBox}>
-                            <div className={style.selectBox}>
-                              <select
-                                defaultValue={item.unit}
-                                className={style.select}
-                                onChange={(event) =>
-                                  changeUnitHandler(item.id, event.target.value)
-                                }
-                              >
-                                <option value={null}>Wybierz jednostkę</option>
-                                {products &&
-                                  !loadingProducts &&
-                                  products.products.map((option) => {
-                                    if (
-                                      option.name +
-                                        " " +
-                                        option.type +
-                                        " " +
-                                        option.capacity ===
-                                      item.product
-                                    ) {
-                                      return (
-                                        <option value={option.unit}>
-                                          {option.unit}
-                                        </option>
-                                      );
-                                    } else {
-                                      return null;
-                                    }
-                                  })}
-                              </select>
+                          <>
+                            <div className={style.availableStockBox}>
+                              Dostępne:
+                              {products.products.filter(
+                                (option) =>
+                                  option.name +
+                                    " " +
+                                    option.type +
+                                    " " +
+                                    option.capacity ===
+                                  item.product
+                              )[0].availableStock + parseInt(item.maxValue)}
                             </div>
-                          </div>
+                            <div className={style.selectBox}>
+                              <div className={style.selectBox}>
+                                <select
+                                  defaultValue={item.unit}
+                                  className={style.select}
+                                  onChange={(event) =>
+                                    changeUnitHandler(
+                                      item.id,
+                                      event.target.value
+                                    )
+                                  }
+                                >
+                                  <option value={null}>
+                                    Wybierz jednostkę
+                                  </option>
+                                  {products &&
+                                    !loadingProducts &&
+                                    products.products.map((option) => {
+                                      if (
+                                        option.name +
+                                          " " +
+                                          option.type +
+                                          " " +
+                                          option.capacity ===
+                                        item.product
+                                      ) {
+                                        return (
+                                          <option value={option.unit}>
+                                            {option.unit}
+                                          </option>
+                                        );
+                                      } else {
+                                        return null;
+                                      }
+                                    })}
+                                </select>
+                              </div>
+                            </div>
+                          </>
                         )}
                       <div className={style.inputBox}>
                         <input

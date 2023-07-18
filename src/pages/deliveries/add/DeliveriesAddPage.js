@@ -131,6 +131,7 @@ const DeliveriesAddPage = () => {
         warehouse: values.magazine,
         comments: values.comments || "",
         products: JSON.stringify(productList),
+        productsFromDB: products,
       },
     });
 

@@ -17,6 +17,7 @@ const GETPRODUCTS = gql`
       capacity
       unit
       pricePerUnit
+      availableStock
       supplier {
         id
         name
@@ -160,6 +161,7 @@ const ProductsPage = () => {
                 "capacity",
                 "unit",
                 "pricePerUnit",
+                "availableStock",
               ]}
               titles={[
                 "Dostawca",
@@ -168,6 +170,7 @@ const ProductsPage = () => {
                 "Pojemność",
                 "Jednostka",
                 "Cena za jednostkę",
+                "Stan magazynowy",
               ]}
             />
           )}
