@@ -97,7 +97,7 @@ const OperationsPage = () => {
     refetchOperations();
     refetchOrders();
   }, [refetchDeliveries, refetchOperations, refetchOrders]);
-  console.log(currentData);
+
   useEffect(() => {
     if (data && orders) {
       const dataArray = [...data.deliveries, ...orders.orders];

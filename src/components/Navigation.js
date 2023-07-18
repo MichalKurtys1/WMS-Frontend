@@ -175,7 +175,21 @@ const Navigation = () => {
                 </h3>
               </div>
               <div className={style.link}>
-                <h3>Wizualizacja</h3>
+                <h3>
+                  <Link
+                    to={"/main/visualisation"}
+                    style={{
+                      textDecoration: "none",
+                      color: `${
+                        location.pathname === "/main/visualisation"
+                          ? "#3054F2"
+                          : "#646e78"
+                      }`,
+                    }}
+                  >
+                    Wizualizacja
+                  </Link>
+                </h3>
               </div>
             </div>
             <Link to={"/main/deliveries"} style={{ textDecoration: "none" }}>

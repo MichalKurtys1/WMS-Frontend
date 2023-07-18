@@ -5,7 +5,7 @@ import { Step, StepLabel, Stepper } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import ActionRow from "./DeliveryActionRow";
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 const UPDATE_OPERATION = gql`
   mutation Mutation($operationId: ID!, $data: JSON!, $stage: Float!) {
@@ -18,9 +18,59 @@ const UPDATE_OPERATION = gql`
   }
 `;
 
+const GET_PRODUCT = gql`
+  query Query {
+    products {
+      id
+      supplierId
+      name
+      type
+      capacity
+      unit
+      pricePerUnit
+    }
+  }
+`;
+
+const ADD_LOCATION = gql`
+  mutation Mutation(
+    $operationId: ID!
+    $productId: ID!
+    $numberOfProducts: Float!
+    $posX: String!
+    $posY: String!
+  ) {
+    createLocation(
+      operationId: $operationId
+      productId: $productId
+      numberOfProducts: $numberOfProducts
+      posX: $posX
+      posY: $posY
+    ) {
+      id
+      productId
+      numberOfProducts
+      posX
+      posY
+      product {
+        id
+        supplierId
+        name
+        type
+        capacity
+        unit
+        pricePerUnit
+        availableStock
+      }
+    }
+  }
+`;
+
 const DeliveryActionsPage = () => {
   const navigate = useNavigate();
   const [updateOperation] = useMutation(UPDATE_OPERATION);
+  const [addLocation] = useMutation(ADD_LOCATION);
+  const { data: productsData } = useQuery(GET_PRODUCT);
   const [activeStep, setActiveStep] = useState(0);
   const [products, setProducts] = useState([]);
   const location = useLocation();
@@ -209,6 +259,28 @@ const DeliveryActionsPage = () => {
                   },
                 })
                   .then((data) => {
+                    if (activeStep === 1) {
+                      products.forEach((item) => {
+                        if ((item.posX !== null) & (item.posY !== null)) {
+                          const product = productsData.products.filter(
+                            (product) =>
+                              item.product.includes(product.name) &&
+                              item.product.includes(product.type) &&
+                              item.product.includes(product.capacity)
+                          );
+                          addLocation({
+                            variables: {
+                              operationId: location.state.operation[0].id,
+                              productId: product[0].id,
+                              numberOfProducts: parseInt(item.quantity),
+                              posX: item.posX.toString(),
+                              posY: item.posY.toString(),
+                            },
+                          }).catch((err) => console.log(err));
+                        }
+                      });
+                    }
+
                     setActiveStep(
                       activeStep <= 2 ? activeStep + 1 : activeStep
                     );
@@ -228,6 +300,28 @@ const DeliveryActionsPage = () => {
                   },
                 })
                   .then((data) => {
+                    if (activeStep === 1) {
+                      products.forEach((item) => {
+                        if ((item.posX !== null) & (item.posY !== null)) {
+                          const product = productsData.products.filter(
+                            (product) =>
+                              item.product.includes(product.name) &&
+                              item.product.includes(product.type) &&
+                              item.product.includes(product.capacity)
+                          );
+                          addLocation({
+                            variables: {
+                              operationId: data.data.updateOperation.id,
+                              productId: product[0].id,
+                              numberOfProducts: parseInt(item.quantity),
+                              posX: item.posX.toString(),
+                              posY: item.posY.toString(),
+                            },
+                          }).catch((err) => console.log(err));
+                        }
+                      });
+                    }
+
                     setActiveStep(
                       activeStep <= 2 ? activeStep + 1 : activeStep
                     );

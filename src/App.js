@@ -34,6 +34,7 @@ import OrdersPage from "./pages/orders/OrdersPage";
 import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
 import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
 import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
+import VisualizationPage from "./pages/visualization/VisualizationPage";
 
 const router = createBrowserRouter([
   {
@@ -127,6 +128,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <ProfilePage />,
+          },
+          {
+            path: "visualisation",
+            element: <VisualizationPage />,
           },
           {
             path: "messages",
