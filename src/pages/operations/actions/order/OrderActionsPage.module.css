@@ -90,6 +90,13 @@
 .basicData {
   border-bottom: 2px solid #646e78;
   margin: 20px 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.basicData .backIcon {
+  margin-left: 10px;
+  font-size: 22px;
 }
 
 .productData {
@@ -174,4 +181,118 @@
   margin: 5px;
   color: #2d3640;
   font-family: "Roboto", sans-serif;
+}
+
+/* select */
+
+.selectBox {
+  position: relative;
+  width: 45%;
+  margin-right: 10px;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  border-radius: 5px;
+  font-size: 22px;
+  padding: 12px 10px;
+  outline: none;
+  color: #777777;
+}
+
+.selectBox::after {
+  pointer-events: none;
+  content: "";
+  justify-self: end;
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 13px;
+  height: 10px;
+  background-color: grey;
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  transition: 0.5s;
+}
+
+.inputBox input:focus {
+  outline: none;
+}
+
+/* input */
+
+.inputBox {
+  width: 45%;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputBox input {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 12px 10px;
+  width: 100%;
+  height: 25px;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.inputBox input:focus {
+  outline: none;
+}
+
+.error {
+  position: absolute;
+  top: -7%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.error p {
+  color: #f03a30;
+}
+
+.inputBox button {
+  position: relative;
+  padding: 12px 12px;
+  height: 50px;
+  width: 50px;
+  margin: 0 10px;
+  border: none;
+  background-color: #8097ff;
+  color: white;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.palletInfo {
+  display: flex;
+  margin: 20px;
+}
+
+.sendBtn {
+  display: block;
+  padding: 12px 12px;
+  height: 50px;
+  width: 45%;
+  margin: 0 auto 40px;
+  border: none;
+  background-color: #8097ff;
+  color: white;
+  border-radius: 5px;
+  font-size: 22px;
 }

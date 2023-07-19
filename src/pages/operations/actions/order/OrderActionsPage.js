@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import ActionRow from "./OrderActionRow";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/client";
+import { AiOutlineSend } from "react-icons/ai";
+import { IoReturnUpBackOutline } from "react-icons/io5";
 
 const UPDATE_OPERATION = gql`
   mutation Mutation($operationId: ID!, $data: JSON!, $stage: Float!) {
@@ -18,13 +20,21 @@ const UPDATE_OPERATION = gql`
   }
 `;
 
+const palletList = ["1000 x 1200", "1016 x 1219", "1165 x 1165", "800 x 1200"];
+
 const OrderActionsPage = () => {
   const navigate = useNavigate();
   const [updateOperation] = useMutation(UPDATE_OPERATION);
   const [activeStep, setActiveStep] = useState(0);
   const [products, setProducts] = useState([]);
   const location = useLocation();
-  console.log(location);
+  const [palletNumber, setPalletNumber] = useState();
+  const [palletInfo, setPalletInfo] = useState([]);
+  const [palletFormActive, setPalletFormActive] = useState(false);
+
+  console.log(products);
+  console.log(palletInfo);
+
   useEffect(() => {
     if (location.state.data.products) {
       if (location.state.operation) {
@@ -38,22 +48,32 @@ const OrderActionsPage = () => {
         if (location.state.operation[0].data) {
           if (location.state.operation[0].data.length > 2) {
             setProducts(
-              JSON.parse(JSON.parse(location.state.operation[0].data)).map(
-                (item) => {
-                  return {
-                    id: item.id,
-                    product: item.product,
-                    unit: item.unit,
-                    quantity: item.quantity,
-                    state: item.state,
-                    commentState: item.commentState,
-                    commentLocation: item.commentLocation,
-                    posX: item.posX,
-                    posY: item.posY,
-                  };
-                }
-              )
+              JSON.parse(
+                JSON.parse(location.state.operation[0].data)
+              ).products.map((item) => {
+                return {
+                  id: item.id,
+                  product: item.product,
+                  unit: item.unit,
+                  quantity: item.quantity,
+                  state: item.state,
+                  comment: item.comment,
+                  palletInfo: item.palletInfo,
+                };
+              })
             );
+            setPalletInfo(
+              JSON.parse(
+                JSON.parse(location.state.operation[0].data)
+              ).palletInfo.map((item) => {
+                return {
+                  id: item.id,
+                  palletType: item.palletType,
+                  palletWeight: item.palletWeight,
+                };
+              })
+            );
+            setPalletFormActive(true);
           } else {
             JSON.parse(JSON.parse(location.state.data.products));
             setProducts(
@@ -65,10 +85,7 @@ const OrderActionsPage = () => {
                     unit: item.unit,
                     quantity: item.quantity,
                     state: null,
-                    commentState: "",
-                    commentLocation: "",
-                    posX: null,
-                    posY: null,
+                    comment: "",
                   };
                 }
               )
@@ -84,10 +101,7 @@ const OrderActionsPage = () => {
                 unit: item.unit,
                 quantity: item.quantity,
                 state: null,
-                commentState: "",
-                commentLocation: "",
-                posX: null,
-                posY: null,
+                comment: "",
               };
             })
           );
@@ -102,10 +116,7 @@ const OrderActionsPage = () => {
               unit: item.unit,
               quantity: item.quantity,
               state: null,
-              commentState: "",
-              commentLocation: "",
-              posX: null,
-              posY: null,
+              comment: "",
             };
           })
         );
@@ -145,7 +156,7 @@ const OrderActionsPage = () => {
   const modifyCommentLocation = (id, value) => {
     setProducts((prevList) =>
       prevList.map((item) =>
-        item.id === id ? { ...item, commentLocation: value } : item
+        item.id === id ? { ...item, comment: value } : item
       )
     );
   };
@@ -156,6 +167,84 @@ const OrderActionsPage = () => {
         item.id === id ? { ...item, posX: valueX, posY: valueY } : item
       )
     );
+  };
+
+  // ssss
+
+  const palletNumberHandler = () => {
+    const palletObjects = [];
+    for (let i = 0; i < palletNumber; i++) {
+      palletObjects.push({ id: i, palletType: null, palletWeight: null });
+    }
+    setPalletInfo(palletObjects);
+    setPalletFormActive(true);
+  };
+
+  const modifyPalletType = (id, value) => {
+    setPalletInfo((prevList) =>
+      prevList.map((item) =>
+        item.id === id ? { ...item, palletType: value } : item
+      )
+    );
+  };
+
+  const modifyPalletWeight = (id, value) => {
+    setPalletInfo((prevList) =>
+      prevList.map((item) =>
+        item.id === id ? { ...item, palletWeight: parseInt(value) } : item
+      )
+    );
+  };
+
+  const nextPageHandler = () => {
+    if (palletInfo.length === 0 || !palletFormActive) {
+      return;
+    }
+    const badInput = palletInfo.filter(
+      (item) => item.palletType === null || item.palletWeight === null
+    );
+    if (badInput.length > 0) {
+      return;
+    }
+
+    if (location.state.operation) {
+      updateOperation({
+        variables: {
+          operationId: location.state.operation[0].id,
+          stage: activeStep + 1,
+          data: JSON.stringify({
+            products: products,
+            palletInfo: palletInfo,
+          }),
+        },
+      })
+        .then((data) => {
+          setActiveStep(activeStep <= 2 ? activeStep + 1 : activeStep);
+          if (activeStep + 1 === 3) {
+            navigate("/main/operations");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      updateOperation({
+        variables: {
+          operationId: location.state.id,
+          stage: activeStep + 1,
+          data: JSON.stringify({
+            products: products,
+            palletInfo: palletInfo,
+          }),
+        },
+      })
+        .then((data) => {
+          setActiveStep(activeStep <= 2 ? activeStep + 1 : activeStep);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (
@@ -195,48 +284,9 @@ const OrderActionsPage = () => {
             <p>Wstecz</p>
           </button>
           <button
-            disabled={
-              activeStep === 0 &&
-              products.filter((item) => item.state === null).length !== 0
+            onClick={() =>
+              activeStep > 0 ? nextPageHandler() : setActiveStep(activeStep + 1)
             }
-            onClick={() => {
-              if (location.state.operation) {
-                updateOperation({
-                  variables: {
-                    operationId: location.state.operation[0].id,
-                    stage: activeStep + 1,
-                    data: JSON.stringify(products),
-                  },
-                })
-                  .then((data) => {
-                    setActiveStep(
-                      activeStep <= 2 ? activeStep + 1 : activeStep
-                    );
-                    if (activeStep + 1 === 3) {
-                      navigate("/main/operations");
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              } else {
-                updateOperation({
-                  variables: {
-                    operationId: location.state.id,
-                    stage: activeStep + 1,
-                    data: JSON.stringify(products),
-                  },
-                })
-                  .then((data) => {
-                    setActiveStep(
-                      activeStep <= 2 ? activeStep + 1 : activeStep
-                    );
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }
-            }}
           >
             <p>Dalej</p>
             <FaAngleRight />
@@ -249,7 +299,7 @@ const OrderActionsPage = () => {
             </div>
             <div className={style.basicDataBox}>
               <div className={style.infoBox}>
-                <h3>Dostawca</h3>
+                <h3>Klient</h3>
                 <p>{location.state.data.client.name}</p>
               </div>
               <div className={style.infoBox}>
@@ -304,16 +354,68 @@ const OrderActionsPage = () => {
                     modifyCommentLocation={modifyCommentLocation}
                     modifyProductPosition={modifyProductPosition}
                     product={item}
+                    palletInfo={palletInfo}
                     step={1}
                   />
                 ))}
             </div>
+            <div className={style.basicData}>
+              <p>Dodatkowe informacje</p>
+              <IoReturnUpBackOutline
+                className={style.backIcon}
+                onClick={() => setPalletFormActive(false)}
+              />
+            </div>
+            {!palletFormActive && (
+              <div className={style.inputBox}>
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Ilość palet"
+                  onChange={(event) => setPalletNumber(event.target.value)}
+                />
+                <button onClick={palletNumberHandler}>
+                  <AiOutlineSend />
+                </button>
+              </div>
+            )}
+            {palletInfo &&
+              palletFormActive &&
+              palletInfo.map((item) => (
+                <div className={style.palletInfo}>
+                  <div className={style.selectBox}>
+                    <select
+                      className={style.select}
+                      defaultValue={item.palletType}
+                      onChange={(event) =>
+                        modifyPalletType(item.id, event.target.value)
+                      }
+                    >
+                      <option value={null}>Wybierz jednostkę</option>
+                      {palletList.map((item) => (
+                        <option value={item}>{item}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={style.inputBox}>
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="Waga palety"
+                      defaultValue={item.palletWeight}
+                      onChange={(event) =>
+                        modifyPalletWeight(item.id, event.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
           </div>
         )}
         {activeStep === 2 && (
           <div className={style.dataBox}>
             <div className={style.basicData}>
-              <p>Przyjęte produkty</p>
+              <p>Produkty</p>
             </div>
             <div className={style.productBox}>
               <div className={style.titlesBox}>
@@ -338,8 +440,16 @@ const OrderActionsPage = () => {
             {products.map((item) => (
               <div className={style.notesBox}>
                 <h3>{item.product}</h3>
-                <p>{item.commentState || "-"}</p>
-                <p>{item.commentLocation || "-"}</p>
+                <p>{item.comment || "-"}</p>
+              </div>
+            ))}
+            <div className={style.basicData}>
+              <p>Dane dotyczące palet</p>
+            </div>
+            {palletInfo.map((item) => (
+              <div className={style.notesBox}>
+                <h3>{item.palletType || "-"}</h3>
+                <p>{item.palletWeight || "-"}</p>
               </div>
             ))}
           </div>

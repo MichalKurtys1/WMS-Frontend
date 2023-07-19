@@ -6,38 +6,99 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import style from "./OrderActionRow.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/client";
+
+const GET_LOCATIONS = gql`
+  query Query {
+    locations {
+      product {
+        name
+        type
+        capacity
+        unit
+      }
+      numberOfProducts
+      posX
+      posY
+    }
+  }
+`;
 
 const OrderActionRow = (props) => {
   const [state, setState] = useState(props.product.state);
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [commentStateValue, setCommentStateValue] = useState(
-    props.product.commentState
-  );
+  const { data: locations } = useQuery(GET_LOCATIONS);
   const [commentLocationValue, setCommentLocationValue] = useState(
-    props.product.commentLocation
+    props.product.comment
   );
   const [imageIsOpen, setImageIsOpen] = useState(false);
-  const [posX, setPosX] = useState(props.product.posX);
-  const [posY, setPosY] = useState(props.product.posY);
+  const [productLocations, setProductLocations] = useState();
 
-  const handleImageClick = (event) => {
-    const image = event.target;
-    const imageRect = image.getBoundingClientRect();
-    const offsetX = event.pageX - imageRect.left;
-    const offsetY = event.pageY - imageRect.top;
+  useEffect(() => {
+    if (locations && props.product) {
+      const location = locations.locations.filter(
+        (item) =>
+          props.product.product.includes(item.product.name) &&
+          props.product.product.includes(item.product.type) &&
+          props.product.product.includes(item.product.capacity)
+      );
+      setProductLocations(location);
+    }
+  }, [locations, props.product]);
 
-    props.modifyProductPosition(props.product.id, offsetX, offsetY);
-    setPosX(offsetX);
-    setPosY(offsetY);
-
-    setImageIsOpen(false);
-  };
   return (
     <>
       {props.step === 0 && (
+        <div className={style.product}>
+          {imageIsOpen && (
+            <div className={style.imageBox}>
+              <button onClick={() => setImageIsOpen(false)}>
+                <FaTimes />
+              </button>
+              <div className={style.innerBox}>
+                <img
+                  src={require("../../../../assets/Warehouse layout.png")}
+                  alt="layout"
+                />
+                {productLocations.map((item) => (
+                  <div className={style.locationBox}>
+                    <MdLocationOn
+                      style={{ top: `${item.posY}px`, left: `${item.posX}px` }}
+                      className={style.icon}
+                    />
+                    <h4
+                      className={style.description}
+                      style={{
+                        top: `${+item.posY - 5}px`,
+                        left: `${+item.posX + 15}px`,
+                      }}
+                    >
+                      {item.numberOfProducts}x {item.product.name}{" "}
+                      {item.product.type} {item.product.capacity}
+                    </h4>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <p>{props.product.product}</p>
+          <p>
+            {props.product.quantity}x {props.product.unit}
+          </p>
+          <div className={style.iconsBox}>
+            <FaSearch
+              className={style.icon}
+              style={{ color: "#646E78" }}
+              onClick={() => setImageIsOpen(true)}
+            />
+          </div>
+        </div>
+      )}
+      {props.step === 1 && (
         <div className={style.product}>
           {state === true && (
             <FaCheck className={style.icon} style={{ color: "#22E650" }} />
@@ -71,70 +132,6 @@ const OrderActionRow = (props) => {
                   setState(false);
                 }}
               />
-              <FaSearch
-                className={style.icon}
-                style={{ color: "#646E78" }}
-                // onClick={() => setCommentsOpen(true)}
-              />
-              <FaFileSignature
-                className={style.icon}
-                style={{ color: "#646E78" }}
-                onClick={() => setCommentsOpen(true)}
-              />
-            </div>
-          )}
-          {commentsOpen && (
-            <div className={style.comment}>
-              <input
-                placeholder="Napisz notatkę do tego produktu"
-                value={commentStateValue}
-                onChange={(e) => setCommentStateValue(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  props.modifyCommentState(props.product.id, commentStateValue);
-                  setCommentsOpen(false);
-                }}
-              >
-                <BsFillSendFill />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-      {props.step === 1 && props.product.state && (
-        <div className={style.product}>
-          {imageIsOpen && (
-            <div className={style.imageBox}>
-              <button onClick={() => setImageIsOpen(false)}>
-                <FaTimes />
-              </button>
-              <div className={style.innerBox}>
-                <img
-                  src={require("../../../../assets/Warehouse layout.png")}
-                  alt="layout"
-                  onClick={handleImageClick}
-                />
-                <MdLocationOn
-                  style={{ top: posY, left: posX }}
-                  className={style.icon}
-                />
-              </div>
-            </div>
-          )}
-          <p>{props.product.product}</p>
-          <p>
-            {props.product.quantity}x {props.product.unit}
-          </p>
-          {!commentsOpen && (
-            <div className={style.iconsBox}>
-              <MdLocationOn
-                className={style.locationIcon}
-                style={{ color: "#F03A30" }}
-                onClick={() => {
-                  setImageIsOpen(true);
-                }}
-              />
               <FaFileSignature
                 className={style.icon}
                 style={{ color: "#646E78" }}
@@ -164,37 +161,25 @@ const OrderActionRow = (props) => {
           )}
         </div>
       )}
-      {props.step === 2 && props.product.state && (
+      {props.step === 2 && (
         <div className={style.product}>
-          {imageIsOpen && (
-            <div className={style.imageBox}>
-              <button onClick={() => setImageIsOpen(false)}>
-                <FaTimes />
-              </button>
-              <div className={style.innerBox}>
-                <img
-                  src={require("../../../../assets/Warehouse layout.png")}
-                  alt="layout"
-                />
-                <MdLocationOn
-                  style={{ top: posY, left: posX }}
-                  className={style.icon}
-                />
-              </div>
-            </div>
-          )}
           <p>{props.product.product}</p>
           <p>
             {props.product.quantity}x {props.product.unit}
           </p>
           <div className={style.iconsBox}>
-            <MdLocationOn
-              className={style.locationIcon}
-              style={{ color: "#F03A30" }}
-              onClick={() => {
-                setImageIsOpen(true);
-              }}
-            />
+            {props.product.state && (
+              <FaCheck
+                className={style.locationIcon}
+                style={{ color: "#22E650" }}
+              />
+            )}
+            {!props.product.state && (
+              <FaTimes
+                className={style.locationIcon}
+                style={{ color: "#F03A30" }}
+              />
+            )}
           </div>
         </div>
       )}

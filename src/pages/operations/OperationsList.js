@@ -22,10 +22,11 @@ const formattedName = (name) => {
 };
 
 const CREATE_OPERATION = gql`
-  mutation Mutation($deliveriesId: ID!) {
-    createOperation(deliveriesId: $deliveriesId) {
+  mutation Mutation($ordersId: ID, $deliveriesId: ID) {
+    createOperation(ordersId: $ordersId, deliveriesId: $deliveriesId) {
       id
       deliveriesId
+      ordersId
       stage
       data
     }
@@ -63,7 +64,7 @@ const OperationsList = (props) => {
           },
         })
           .then((data) => {
-            navigate("/main/operations/action/orders", {
+            navigate("/main/operations/action/order", {
               state: {
                 id: data.data.createOperation.id,
                 data: item,
