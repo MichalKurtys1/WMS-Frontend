@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { ApolloProvider } from "@apollo/client";
-import { client } from "../src/utils/apolloClient";
+import { client } from "./utils/apollo/apolloClient";
 import { Provider } from "react-redux";
 import store from "./context";
 

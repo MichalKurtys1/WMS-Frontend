@@ -9,34 +9,18 @@ import style from "./OrderActionRow.module.css";
 import { useEffect, useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";
-import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/client";
-
-const GET_LOCATIONS = gql`
-  query Query {
-    locations {
-      product {
-        name
-        type
-        capacity
-        unit
-      }
-      numberOfProducts
-      posX
-      posY
-    }
-  }
-`;
+import { GET_LOCATIONS } from "../../../../utils/apollo/apolloQueries";
 
 const OrderActionRow = (props) => {
   const [state, setState] = useState(props.product.state);
+  const [imageIsOpen, setImageIsOpen] = useState(false);
+  const [productLocations, setProductLocations] = useState();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const { data: locations } = useQuery(GET_LOCATIONS);
   const [commentLocationValue, setCommentLocationValue] = useState(
     props.product.comment
   );
-  const [imageIsOpen, setImageIsOpen] = useState(false);
-  const [productLocations, setProductLocations] = useState();
 
   useEffect(() => {
     if (locations && props.product) {

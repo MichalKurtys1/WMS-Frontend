@@ -1,62 +1,19 @@
 import { useLocation, useNavigate } from "react-router";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  ADD_DELIVERY,
+  UPDATE_AVAILABLE_STOCK,
+} from "../../../utils/apollo/apolloMutations";
+import { GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
+
 import style from "./DeliveriesDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/client";
-
-const ADD_DELIVERY = gql`
-  mutation Mutation(
-    $supplierId: ID!
-    $date: String!
-    $warehouse: String!
-    $comments: String!
-    $products: JSON!
-  ) {
-    createDelivery(
-      supplierId: $supplierId
-      date: $date
-      warehouse: $warehouse
-      comments: $comments
-      products: $products
-    ) {
-      id
-      supplierId
-      date
-      warehouse
-      comments
-      products
-    }
-  }
-`;
-
-const GET_PRODUCTS = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const UPDATE_PRODUCT = gql`
-  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
-    updateAvailableStock(
-      id: $updateAvailableStockId
-      availableStock: $availableStock
-    )
-  }
-`;
 
 const DeliveriesDetailsPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [addDelivery] = useMutation(ADD_DELIVERY);
-  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [updateProduct] = useMutation(UPDATE_AVAILABLE_STOCK);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   let totalPrice = 0;
 

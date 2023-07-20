@@ -1,81 +1,21 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./SuppliersAddPage.module.css";
-import { FaAngleLeft, FaPlus } from "react-icons/fa";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router";
+import { ADD_SUPPLIER } from "../../../utils/apollo/apolloMutations";
+import {
+  emailValidator,
+  phoneValidator,
+  textValidator,
+} from "../../../utils/inputValidators";
+
+import style from "./SuppliersAddPage.module.css";
+import Input from "../../../components/Input";
 import Spinner from "../../../components/Spiner";
-
-const ADDSUPPLIER = gql`
-  mutation Mutation(
-    $name: String!
-    $phone: String!
-    $email: String!
-    $city: String!
-    $street: String!
-    $number: String!
-  ) {
-    createSupplier(
-      name: $name
-      phone: $phone
-      email: $email
-      city: $city
-      street: $street
-      number: $number
-    ) {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
-
-const nameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać nazwę klienta";
-  }
-  return undefined;
-};
-
-const numberValidator = (value) => {
-  if (!value) {
-    return "Proszę podać numer";
-  }
-  return undefined;
-};
-
-const cityValidator = (value) => {
-  if (!value) {
-    return "Proszę podać Miejscowość";
-  }
-  return undefined;
-};
-
-const emailValidator = (value) => {
-  if (!value) {
-    return "Proszę podać email";
-  }
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    return "Nie jest to email";
-  }
-  return undefined;
-};
-
-const telValidator = (value) => {
-  const phoneNumberRegex = /^\+?[1-9][0-9]{8}$/;
-  if (!phoneNumberRegex.test(value)) {
-    return "Nie podano numeru telefonu";
-  }
-  return undefined;
-};
+import { FaAngleLeft, FaPlus } from "react-icons/fa";
 
 const SuppliersAddPage = () => {
   const navigate = useNavigate();
-  const [addSupplier, { loading, error }] = useMutation(ADDSUPPLIER);
+  const [addSupplier, { loading, error }] = useMutation(ADD_SUPPLIER);
 
   const onSubmit = (values) => {
     addSupplier({
@@ -133,27 +73,26 @@ const SuppliersAddPage = () => {
                 oznaczone gwiazdką są obowiązkowe.
               </p>
               <div className={style.inputBox}>
-                {loading && (
+                {loading ? (
                   <div className={style.spinnerBox}>
                     <div className={style.spinner}>
                       <Spinner />
                     </div>
                   </div>
-                )}
-                {!loading && (
+                ) : (
                   <>
                     <Input
                       name="Nazwa *"
                       type="text"
                       fieldName="name"
-                      validator={nameValidator}
+                      validator={textValidator}
                       width="47%"
                     />
                     <Input
                       name="Numer telefonu *"
                       type="tel"
                       fieldName="phone"
-                      validator={telValidator}
+                      validator={phoneValidator}
                       width="47%"
                     />
                     <Input
@@ -167,7 +106,7 @@ const SuppliersAddPage = () => {
                       name="Miejscowość *"
                       type="text"
                       fieldName="city"
-                      validator={cityValidator}
+                      validator={textValidator}
                       width="47%"
                     />
                     <Input
@@ -180,7 +119,7 @@ const SuppliersAddPage = () => {
                       name="Numer *"
                       type="number"
                       fieldName="number"
-                      validator={numberValidator}
+                      validator={textValidator}
                       width="47%"
                     />
                     <button

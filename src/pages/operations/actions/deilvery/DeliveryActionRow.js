@@ -7,15 +7,15 @@ import { MdLocationOn } from "react-icons/md";
 const DeliveryActionRow = (props) => {
   const [state, setState] = useState(props.product.state);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [imageIsOpen, setImageIsOpen] = useState(false);
+  const [posX, setPosX] = useState(props.product.posX);
+  const [posY, setPosY] = useState(props.product.posY);
   const [commentStateValue, setCommentStateValue] = useState(
     props.product.commentState
   );
   const [commentLocationValue, setCommentLocationValue] = useState(
     props.product.commentLocation
   );
-  const [imageIsOpen, setImageIsOpen] = useState(false);
-  const [posX, setPosX] = useState(props.product.posX);
-  const [posY, setPosY] = useState(props.product.posY);
 
   const handleImageClick = (event) => {
     const image = event.target;

@@ -1,180 +1,77 @@
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import style from "./DeliveryActionsPage.module.css";
-import { useLocation, useNavigate } from "react-router";
-import { Step, StepLabel, Stepper } from "@material-ui/core";
-import { useEffect, useState } from "react";
-import ActionRow from "./DeliveryActionRow";
-import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import {
+  ADD_LOCATION,
+  UPDATE_OPERATION,
+} from "../../../../utils/apollo/apolloMutations";
+import { GET_PRODUCTS } from "../../../../utils/apollo/apolloQueries";
+import { dateToPolish } from "../../../../utils/dateFormatters";
 
-const UPDATE_OPERATION = gql`
-  mutation Mutation($operationId: ID!, $data: JSON!, $stage: Float!) {
-    updateOperation(operationId: $operationId, data: $data, stage: $stage) {
-      id
-      deliveriesId
-      stage
-      data
-    }
-  }
-`;
-
-const GET_PRODUCT = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const ADD_LOCATION = gql`
-  mutation Mutation(
-    $operationId: ID!
-    $productId: ID!
-    $numberOfProducts: Float!
-    $posX: String!
-    $posY: String!
-  ) {
-    createLocation(
-      operationId: $operationId
-      productId: $productId
-      numberOfProducts: $numberOfProducts
-      posX: $posX
-      posY: $posY
-    ) {
-      id
-      productId
-      numberOfProducts
-      posX
-      posY
-      product {
-        id
-        supplierId
-        name
-        type
-        capacity
-        unit
-        pricePerUnit
-        availableStock
-      }
-    }
-  }
-`;
+import style from "./DeliveryActionsPage.module.css";
+import ActionRow from "./DeliveryActionRow";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { Step, StepLabel, Stepper } from "@material-ui/core";
 
 const DeliveryActionsPage = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const [updateOperation] = useMutation(UPDATE_OPERATION);
-  const [addLocation] = useMutation(ADD_LOCATION);
-  const { data: productsData } = useQuery(GET_PRODUCT);
   const [activeStep, setActiveStep] = useState(0);
   const [products, setProducts] = useState([]);
-  const location = useLocation();
+  const [updateOperation] = useMutation(UPDATE_OPERATION);
+  const [addLocation] = useMutation(ADD_LOCATION);
+  const { data: productsData } = useQuery(GET_PRODUCTS);
 
   useEffect(() => {
-    if (location.state.data.products) {
-      if (location.state.operation) {
-        if (location.state.operation.length > 0) {
-          if (location.state.operation[0].stage === 3) {
-            setActiveStep(location.state.operation[0].stage - 1);
-          } else {
-            setActiveStep(location.state.operation[0].stage);
-          }
-        }
-        if (location.state.operation[0].data) {
-          if (location.state.operation[0].data.length > 2) {
-            setProducts(
-              JSON.parse(JSON.parse(location.state.operation[0].data)).map(
-                (item) => {
-                  return {
-                    id: item.id,
-                    product: item.product,
-                    unit: item.unit,
-                    quantity: item.quantity,
-                    state: item.state,
-                    commentState: item.commentState,
-                    commentLocation: item.commentLocation,
-                    posX: item.posX,
-                    posY: item.posY,
-                  };
-                }
-              )
-            );
-          } else {
-            JSON.parse(JSON.parse(location.state.data.products));
-            setProducts(
-              JSON.parse(JSON.parse(location.state.data.products)).map(
-                (item) => {
-                  return {
-                    id: item.id,
-                    product: item.product,
-                    unit: item.unit,
-                    quantity: item.quantity,
-                    state: null,
-                    commentState: "",
-                    commentLocation: "",
-                    posX: null,
-                    posY: null,
-                  };
-                }
-              )
-            );
-          }
-        } else {
-          JSON.parse(JSON.parse(location.state.data.products));
-          setProducts(
-            JSON.parse(JSON.parse(location.state.data.products)).map((item) => {
-              return {
-                id: item.id,
-                product: item.product,
-                unit: item.unit,
-                quantity: item.quantity,
-                state: null,
-                commentState: "",
-                commentLocation: "",
-                posX: null,
-                posY: null,
-              };
-            })
-          );
-        }
-      } else {
-        JSON.parse(JSON.parse(location.state.data.products));
-        setProducts(
-          JSON.parse(JSON.parse(location.state.data.products)).map((item) => {
-            return {
-              id: item.id,
-              product: item.product,
-              unit: item.unit,
-              quantity: item.quantity,
-              state: null,
-              commentState: "",
-              commentLocation: "",
-              posX: null,
-              posY: null,
-            };
-          })
-        );
-      }
-    }
-  }, [location.state.data.products, location.state.operation]);
+    if (!location.state.data.products) return;
 
-  const formattedDate = (dateNumber) => {
-    const date = new Date(parseInt(dateNumber));
-    return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date
-      .getUTCDate()
-      .toString()
-      .padStart(2, "0")}, ${date
-      .getUTCHours()
-      .toString()
-      .padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
-  };
+    if (
+      !location.state.operation ||
+      !location.state.operation[0].data ||
+      location.state.operation[0].data.length <= 2
+    ) {
+      setProducts(
+        JSON.parse(JSON.parse(location.state.data.products)).map((item) => {
+          return {
+            id: item.id,
+            product: item.product,
+            unit: item.unit,
+            quantity: item.quantity,
+            state: null,
+            commentState: "",
+            commentLocation: "",
+            posX: null,
+            posY: null,
+          };
+        })
+      );
+      return;
+    }
+
+    if (location.state.operation.length > 0) {
+      setActiveStep(
+        location.state.operation[0].stage === 3
+          ? location.state.operation[0].stage - 1
+          : location.state.operation[0].stage
+      );
+    }
+
+    setProducts(
+      JSON.parse(JSON.parse(location.state.operation[0].data)).map((item) => {
+        return {
+          id: item.id,
+          product: item.product,
+          unit: item.unit,
+          quantity: item.quantity,
+          state: item.state,
+          commentState: item.commentState,
+          commentLocation: item.commentLocation,
+          posX: item.posX,
+          posY: item.posY,
+        };
+      })
+    );
+  }, [location.state.data.products, location.state.operation]);
 
   const modifyPoductState = (id, value) => {
     setProducts((prevList) =>
@@ -206,6 +103,61 @@ const DeliveryActionsPage = () => {
         item.id === id ? { ...item, posX: valueX, posY: valueY } : item
       )
     );
+  };
+
+  const processProducts = () => {
+    products.forEach((item) => {
+      if (item.posX !== null && item.posY !== null) {
+        const product = productsData.products.find(
+          (product) =>
+            item.product.includes(product.name) &&
+            item.product.includes(product.type) &&
+            item.product.includes(product.capacity)
+        );
+
+        if (product) {
+          addLocation({
+            variables: {
+              operationId: location.state.operation
+                ? location.state.operation[0].id
+                : location.state.id,
+              productId: product.id,
+              numberOfProducts: parseInt(item.quantity),
+              posX: item.posX.toString(),
+              posY: item.posY.toString(),
+            },
+          }).catch((err) => console.log(err));
+        }
+      }
+    });
+  };
+
+  const nextPageHandler = () => {
+    const operationId = location.state.operation
+      ? location.state.operation[0].id
+      : location.state.id;
+
+    updateOperation({
+      variables: {
+        operationId: operationId,
+        stage: activeStep + 1,
+        data: JSON.stringify(products),
+      },
+    })
+      .then((data) => {
+        if (activeStep === 1) {
+          processProducts();
+        }
+
+        setActiveStep(activeStep <= 2 ? activeStep + 1 : activeStep);
+
+        if (activeStep + 1 === 3) {
+          navigate("/main/operations");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -249,91 +201,7 @@ const DeliveryActionsPage = () => {
               activeStep === 0 &&
               products.filter((item) => item.state === null).length !== 0
             }
-            onClick={() => {
-              if (location.state.operation) {
-                updateOperation({
-                  variables: {
-                    operationId: location.state.operation[0].id,
-                    stage: activeStep + 1,
-                    data: JSON.stringify(products),
-                  },
-                })
-                  .then((data) => {
-                    if (activeStep === 1) {
-                      products.forEach((item) => {
-                        if ((item.posX !== null) & (item.posY !== null)) {
-                          const product = productsData.products.filter(
-                            (product) =>
-                              item.product.includes(product.name) &&
-                              item.product.includes(product.type) &&
-                              item.product.includes(product.capacity)
-                          );
-                          addLocation({
-                            variables: {
-                              operationId: location.state.operation[0].id,
-                              productId: product[0].id,
-                              numberOfProducts: parseInt(item.quantity),
-                              posX: item.posX.toString(),
-                              posY: item.posY.toString(),
-                            },
-                          }).catch((err) => console.log(err));
-                        }
-                      });
-                    }
-
-                    setActiveStep(
-                      activeStep <= 2 ? activeStep + 1 : activeStep
-                    );
-                    if (activeStep + 1 === 3) {
-                      navigate("/main/operations");
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              } else {
-                updateOperation({
-                  variables: {
-                    operationId: location.state.id,
-                    stage: activeStep + 1,
-                    data: JSON.stringify(products),
-                  },
-                })
-                  .then((data) => {
-                    if (activeStep === 1) {
-                      products.forEach((item) => {
-                        if ((item.posX !== null) & (item.posY !== null)) {
-                          const product = productsData.products.filter(
-                            (product) =>
-                              item.product.includes(product.name) &&
-                              item.product.includes(product.type) &&
-                              item.product.includes(product.capacity)
-                          );
-                          addLocation({
-                            variables: {
-                              operationId: data.data.updateOperation.id,
-                              productId: product[0].id,
-                              numberOfProducts: parseInt(item.quantity),
-                              posX: item.posX.toString(),
-                              posY: item.posY.toString(),
-                            },
-                          }).catch((err) => console.log(err));
-                        }
-                      });
-                    }
-
-                    setActiveStep(
-                      activeStep <= 2 ? activeStep + 1 : activeStep
-                    );
-                    if (activeStep + 1 === 3) {
-                      navigate("/main/operations");
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }
-            }}
+            onClick={nextPageHandler}
           >
             <p>Dalej</p>
             <FaAngleRight />
@@ -351,7 +219,7 @@ const DeliveryActionsPage = () => {
               </div>
               <div className={style.infoBox}>
                 <h3>Termin</h3>
-                <p>{formattedDate(location.state.data.date)}</p>
+                <p>{dateToPolish(location.state.data.date)}</p>
               </div>
               <div className={style.infoBox}>
                 <h3>Magazyn</h3>

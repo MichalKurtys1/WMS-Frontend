@@ -1,96 +1,24 @@
-import { FaAngleLeft } from "react-icons/fa";
-import style from "./OperationsPage.module.css";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/client";
 import OperationsList from "./OperationsList";
+import {
+  GET_DELIVERIES,
+  GET_OPERATIONS,
+  GET_ORDERS,
+} from "../../utils/apollo/apolloQueries";
 
-const GETDELIVERIES = gql`
-  query Query {
-    deliveries {
-      id
-      supplierId
-      date
-      warehouse
-      comments
-      products
-      state
-      supplier {
-        id
-        name
-        phone
-        email
-        city
-        street
-        number
-      }
-    }
-  }
-`;
-
-const GET_ORDERS = gql`
-  query Query {
-    orders {
-      id
-      clientId
-      client {
-        id
-        name
-        phone
-        email
-        city
-        street
-        number
-        nip
-      }
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const GET_OPERATIONS = gql`
-  query Query {
-    operations {
-      id
-      deliveriesId
-      ordersId
-      stage
-      data
-      delivery {
-        id
-        supplierId
-        date
-        warehouse
-        comments
-        products
-        state
-      }
-      order {
-        id
-        clientId
-        date
-        warehouse
-        comments
-        products
-        state
-      }
-    }
-  }
-`;
+import style from "./OperationsPage.module.css";
+import { FaAngleLeft } from "react-icons/fa";
 
 const OperationsPage = () => {
   const navigate = useNavigate();
-  const { data, refetch: refetchDeliveries } = useQuery(GETDELIVERIES);
+  const [currentPage, setCurrentPage] = useState(2);
+  const [currentData, setCurrentData] = useState();
+  const { data, refetch: refetchDeliveries } = useQuery(GET_DELIVERIES);
   const { data: orders, refetch: refetchOrders } = useQuery(GET_ORDERS);
   const { data: operations, refetch: refetchOperations } =
     useQuery(GET_OPERATIONS);
-  const [currentPage, setCurrentPage] = useState(2);
-  const [currentData, setCurrentData] = useState();
 
   useEffect(() => {
     refetchDeliveries();

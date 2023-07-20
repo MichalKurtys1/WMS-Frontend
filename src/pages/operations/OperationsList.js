@@ -1,41 +1,20 @@
 import { useNavigate } from "react-router";
-import style from "./OperationsList.module.css";
-import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/client";
-
-const formattedDate = (dateNumber) => {
-  const date = new Date(parseInt(dateNumber));
-  return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${date.getUTCDate().toString().padStart(2, "0")}, ${date
-    .getUTCHours()
-    .toString()
-    .padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
-};
-
-const formattedName = (name) => {
-  if (name === "DeliveryList") {
-    return "Dostawa";
-  } else {
-    return "Zamówienie";
-  }
-};
-
-const CREATE_OPERATION = gql`
-  mutation Mutation($ordersId: ID, $deliveriesId: ID) {
-    createOperation(ordersId: $ordersId, deliveriesId: $deliveriesId) {
-      id
-      deliveriesId
-      ordersId
-      stage
-      data
-    }
-  }
-`;
+import { ADD_OPERATION } from "../../utils/apollo/apolloMutations";
+import { dateToPolish } from "../../utils/dateFormatters";
+import style from "./OperationsList.module.css";
 
 const OperationsList = (props) => {
   const navigate = useNavigate();
-  const [createOperation] = useMutation(CREATE_OPERATION);
+  const [createOperation] = useMutation(ADD_OPERATION);
+
+  const formattedName = (name) => {
+    if (name === "DeliveryList") {
+      return "Dostawa";
+    } else {
+      return "Zamówienie";
+    }
+  };
 
   const clickHandler = (item) => {
     if (props.currentPage === 2) {
@@ -87,7 +66,6 @@ const OperationsList = (props) => {
           },
         });
       } else {
-        console.log(props.operations.operations);
         navigate("/main/operations/action/order", {
           state: {
             operation: props.operations.operations.filter(
@@ -115,7 +93,7 @@ const OperationsList = (props) => {
                   ? item.supplier.name
                   : item.client.name}
               </p>
-              <p className={style.date}>{formattedDate(item.date)}</p>
+              <p className={style.date}>{dateToPolish(item.date)}</p>
             </div>
             <button className={style.confirmBtn}>
               {props.currentPage === 2 ? "Przyjmij" : "Kontynuuj"}

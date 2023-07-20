@@ -1,58 +1,17 @@
 import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./DeliveriesPage.module.css";
-import { FaUserPlus } from "react-icons/fa";
+import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
+import { GET_DELIVERIES } from "../../utils/apollo/apolloQueries";
+import {
+  DELETE_DELIVERY,
+  GET_DELIVERY,
+} from "../../utils/apollo/apolloMutations";
+
+import style from "./DeliveriesPage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GETDELIVERIES = gql`
-  query Query {
-    deliveries {
-      id
-      supplierId
-      date
-      warehouse
-      comments
-      products
-      state
-      supplier {
-        id
-        name
-        phone
-        email
-        city
-        street
-        number
-      }
-    }
-  }
-`;
-
-const GET_DELIVERY = gql`
-  mutation Mutation($getDeliveryId: String!) {
-    getDelivery(id: $getDeliveryId) {
-      id
-      supplierId
-      supplier {
-        id
-        name
-      }
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const DELETEDELIVERIES = gql`
-  mutation Mutation($deleteDeliveryId: String!) {
-    deleteDelivery(id: $deleteDeliveryId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { dateToPolish } from "../../utils/dateFormatters";
 
 const DeliveriesPage = () => {
   const navigate = useNavigate();
@@ -60,10 +19,10 @@ const DeliveriesPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETDELIVERIES);
-  const [deleteDeliveries, { deleteError }] = useMutation(DELETEDELIVERIES);
+  const { data, refetch } = useQuery(GET_DELIVERIES);
+  const [deleteDeliveries] = useMutation(DELETE_DELIVERY);
   const [getDelivery] = useMutation(GET_DELIVERY);
-  console.log(data);
+
   useEffect(() => {
     if (location.state) {
       refetch();
@@ -110,43 +69,27 @@ const DeliveriesPage = () => {
     });
   };
 
+  const messageHandler = () => {
+    navigate("/main/messages");
+  };
+
   const detailsHandler = (id) => {
     getDelivery({ variables: { getDeliveryId: id } })
       .then((data) => {
-        const products = JSON.parse(data.data.getDelivery.products);
-        const date = new Date(parseInt(data.data.getDelivery.date));
-        const formattedDate = `${date.getUTCFullYear()}-${(
-          date.getUTCMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}-${date
-          .getUTCDate()
-          .toString()
-          .padStart(2, "0")}T${date
-          .getUTCHours()
-          .toString()
-          .padStart(2, "0")}:${date
-          .getUTCMinutes()
-          .toString()
-          .padStart(2, "0")}`;
         navigate("/main/deliveries/details", {
           state: {
             details: true,
             supplierId: data.data.getDelivery.supplier.name,
-            date: formattedDate,
+            date: dateToPolish(data.data.getDelivery.date),
             warehouse: data.data.getDelivery.warehouse,
             comments: data.data.getDelivery.comments,
-            products: products,
+            products: JSON.parse(data.data.getDelivery.products),
           },
         });
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  const messageHandler = () => {
-    navigate("/main/messages");
   };
 
   return (
@@ -162,14 +105,9 @@ const DeliveriesPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
-          <p>Client usunięty pomyślnie</p>
+          <p>Dostawa usunięta pomyślnie</p>
         </div>
       )}
       <main>
@@ -194,34 +132,15 @@ const DeliveriesPage = () => {
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
               data={data.deliveries.map((item) => {
-                const date = new Date(parseInt(item.date));
-                const options = {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                };
-                const polishDate = date.toLocaleString("pl-PL", options);
                 return {
                   ...item,
-                  date: polishDate,
+                  date: dateToPolish(item.date),
                   supplier: item.supplier.name,
                 };
               })}
               format={["supplier", "date", "warehouse", "comments", "state"]}
               titles={["Dostawca", "Termin", "Magazyn", "Uwagi", "Stan"]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

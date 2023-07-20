@@ -1,31 +1,13 @@
 import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./SuppliersPage.module.css";
-import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
+import { DELETE_SUPPLIER } from "../../utils/apollo/apolloMutations";
+
+import style from "./SuppliersPage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GETSUPPLIERS = gql`
-  query Query {
-    suppliers {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
-
-const DELETESUPPLIER = gql`
-  mutation Mutation($deleteSupplierId: String!) {
-    deleteSupplier(id: $deleteSupplierId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 
 const SuppliersPage = () => {
   const navigate = useNavigate();
@@ -33,8 +15,8 @@ const SuppliersPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETSUPPLIERS);
-  const [deleteSupplier, { deleteError }] = useMutation(DELETESUPPLIER);
+  const { data, refetch } = useQuery(GET_SUPPLIERS);
+  const [deleteSupplier] = useMutation(DELETE_SUPPLIER);
 
   useEffect(() => {
     if (location.state) {
@@ -107,11 +89,6 @@ const SuppliersPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
           <p>Dostawca usunięty pomyślnie</p>
@@ -149,16 +126,6 @@ const SuppliersPage = () => {
                 "Numer",
               ]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

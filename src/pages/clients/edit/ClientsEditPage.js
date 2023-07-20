@@ -1,104 +1,27 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./ClientsEditPage.module.css";
-import { FaAngleLeft, FaPen } from "react-icons/fa";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
-import Spinner from "../../../components/Spiner";
 import { useEffect, useState } from "react";
+import {
+  GET_CLIENT,
+  UPDATE_CLIENT,
+} from "../../../utils/apollo/apolloMutations";
+import {
+  emailValidator,
+  phoneValidator,
+  textValidator,
+} from "../../../utils/inputValidators";
 
-const GETCLIENT = gql`
-  mutation Mutation($getClientId: String!) {
-    getClient(id: $getClientId) {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-      nip
-    }
-  }
-`;
-
-const UPDATECLIENT = gql`
-  mutation Mutation(
-    $name: String!
-    $phone: String!
-    $email: String!
-    $city: String!
-    $street: String!
-    $number: String!
-    $nip: String
-    $updateClientId: String!
-  ) {
-    updateClient(
-      name: $name
-      phone: $phone
-      email: $email
-      city: $city
-      street: $street
-      number: $number
-      nip: $nip
-      id: $updateClientId
-    ) {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-      nip
-    }
-  }
-`;
-
-const nameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać nazwę klienta";
-  }
-  return undefined;
-};
-
-const numberValidator = (value) => {
-  if (!value) {
-    return "Proszę podać numer";
-  }
-  return undefined;
-};
-
-const cityValidator = (value) => {
-  if (!value) {
-    return "Proszę podać Miejscowość";
-  }
-  return undefined;
-};
-
-const emailValidator = (value) => {
-  if (!value) {
-    return "Proszę podać email";
-  }
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    return "Nie jest to email";
-  }
-  return undefined;
-};
-
-const telValidator = (value) => {
-  const phoneNumberRegex = /^\+?[1-9][0-9]{8}$/;
-  if (!phoneNumberRegex.test(value)) {
-    return "Nie podano numeru telefonu";
-  }
-  return undefined;
-};
+import style from "./ClientsEditPage.module.css";
+import Input from "../../../components/Input";
+import Spinner from "../../../components/Spiner";
+import { FaAngleLeft, FaPen } from "react-icons/fa";
 
 const ClientsEditPage = () => {
-  const navigate = useNavigate();
-  const [getClient, { loading }] = useMutation(GETCLIENT);
-  const [updateClient, { error }] = useMutation(UPDATECLIENT);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [getClient, { loading }] = useMutation(GET_CLIENT);
+  const [updateClient, { error }] = useMutation(UPDATE_CLIENT);
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -171,20 +94,19 @@ const ClientsEditPage = () => {
                   są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading && (
+                  {loading ? (
                     <div className={style.spinnerBox}>
                       <div className={style.spinner}>
                         <Spinner />
                       </div>
                     </div>
-                  )}
-                  {!loading && (
+                  ) : (
                     <>
                       <Input
                         name="Nazwa *"
                         type="text"
                         fieldName="name"
-                        validator={nameValidator}
+                        validator={textValidator}
                         initVal={data.name}
                         width="47%"
                       />
@@ -192,7 +114,7 @@ const ClientsEditPage = () => {
                         name="Numer telefonu *"
                         type="tel"
                         fieldName="phone"
-                        validator={telValidator}
+                        validator={phoneValidator}
                         initVal={data.phone}
                         width="47%"
                       />
@@ -208,7 +130,7 @@ const ClientsEditPage = () => {
                         name="Miejscowość *"
                         type="text"
                         fieldName="city"
-                        validator={cityValidator}
+                        validator={textValidator}
                         initVal={data.city}
                         width="47%"
                       />
@@ -223,7 +145,7 @@ const ClientsEditPage = () => {
                         name="Numer *"
                         type="number"
                         fieldName="number"
-                        validator={numberValidator}
+                        validator={textValidator}
                         initVal={data.number}
                         width="47%"
                       />

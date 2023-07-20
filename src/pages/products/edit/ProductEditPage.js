@@ -1,70 +1,19 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./ProductEditPage.module.css";
-import { FaAngleLeft } from "react-icons/fa";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
-import Spinner from "../../../components/Spiner";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useLocation, useNavigate } from "react-router";
+import {
+  GET_PRODUCT,
+  UPDATE_PRODUCT,
+} from "../../../utils/apollo/apolloMutations";
+import { GET_SUPPLIERS } from "../../../utils/apollo/apolloQueries";
+
+import style from "./ProductEditPage.module.css";
+import Input from "../../../components/Input";
+import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
-
-const GET_PRODUCT = gql`
-  mutation Mutation($getProductId: String!) {
-    getProduct(id: $getProductId) {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const UPDATEPRODUCT = gql`
-  mutation Mutation(
-    $updateProductId: String!
-    $supplierId: ID!
-    $name: String!
-    $type: String!
-    $capacity: String!
-    $unit: String!
-    $pricePerUnit: Float!
-  ) {
-    updateProduct(
-      id: $updateProductId
-      supplierId: $supplierId
-      name: $name
-      type: $type
-      capacity: $capacity
-      unit: $unit
-      pricePerUnit: $pricePerUnit
-    ) {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const GET_SUPPLIERS = gql`
-  query Query {
-    suppliers {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
+import { FaAngleLeft } from "react-icons/fa";
+import { selectValidator, textValidator } from "../../../utils/inputValidators";
 
 const unitItemsList = [
   { name: "Wybierz jednostkę" },
@@ -77,48 +26,14 @@ const unitItemsList = [
   { name: "op(24szt)" },
 ];
 
-const nameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać nazwę produktu";
-  }
-  return undefined;
-};
-
-const priceValidator = (value) => {
-  if (!value) {
-    return "Proszę podać cene produktu";
-  }
-  return undefined;
-};
-
-const typeValidator = (value) => {
-  if (!value) {
-    return "Proszę podać typ produktu";
-  }
-  return undefined;
-};
-
-const selectValidator = (value) => {
-  if (!value || value.includes("Wybierz")) {
-    return "Wybierz jedną z opcji";
-  }
-};
-
-const capacityValidator = (value) => {
-  if (!value) {
-    return "Proszę podać pojemnośc produktu";
-  }
-  return undefined;
-};
-
 const ProductEditPage = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [getProduct, { loading }] = useMutation(GET_PRODUCT);
-  const [updateProduct, { error }] = useMutation(UPDATEPRODUCT);
-  const location = useLocation();
-  const [data, setData] = useState();
+  const [updateProduct, { error }] = useMutation(UPDATE_PRODUCT);
   const { data: suppliersData, loading: loadingSuppliers } =
     useQuery(GET_SUPPLIERS);
+  const [data, setData] = useState();
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
@@ -148,8 +63,6 @@ const ProductEditPage = () => {
   }, [getProduct, location.state.userId]);
 
   const onSubmit = (values) => {
-    console.log(values);
-    console.log(data.id);
     updateProduct({
       variables: {
         updateProductId: data.id,
@@ -205,19 +118,18 @@ const ProductEditPage = () => {
             onSubmit={onSubmit}
             render={({ handleSubmit, invalid }) => (
               <form className={style.form} onSubmit={handleSubmit}>
-                <h1>Edytowanie pracownika</h1>
+                <h1>Edytowanie produktu</h1>
                 <p>
                   Edytuj wybrane dane. Pamiętaj, że wszystkie pola są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading && (
+                  {loading ? (
                     <div className={style.spinnerBox}>
                       <div className={style.spinner}>
                         <Spinner />
                       </div>
                     </div>
-                  )}
-                  {!loading && (
+                  ) : (
                     <>
                       <div className={style.selectBox}>
                         <Select
@@ -231,7 +143,7 @@ const ProductEditPage = () => {
                         name="Nazwa"
                         type="text"
                         fieldName="name"
-                        validator={nameValidator}
+                        validator={textValidator}
                         width="47%"
                         initVal={data.name}
                       />
@@ -239,7 +151,7 @@ const ProductEditPage = () => {
                         name="Typ"
                         type="text"
                         fieldName="type"
-                        validator={typeValidator}
+                        validator={textValidator}
                         width="47%"
                         initVal={data.type}
                       />
@@ -247,7 +159,7 @@ const ProductEditPage = () => {
                         name="Pojemoność"
                         type="text"
                         fieldName="capacity"
-                        validator={capacityValidator}
+                        validator={textValidator}
                         width="47%"
                         initVal={data.capacity}
                       />
@@ -263,7 +175,7 @@ const ProductEditPage = () => {
                         name="Cena za jednostkę"
                         type="number"
                         fieldName="pricePerUnit"
-                        validator={priceValidator}
+                        validator={textValidator}
                         width="47%"
                         initVal={data.pricePerUnit}
                       />

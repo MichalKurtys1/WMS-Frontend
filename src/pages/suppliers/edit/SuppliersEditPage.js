@@ -1,100 +1,27 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./SuppliersEditPage.module.css";
-import { FaAngleLeft, FaPen } from "react-icons/fa";
-import { gql, useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
-import Spinner from "../../../components/Spiner";
 import { useEffect, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { useLocation, useNavigate } from "react-router";
+import {
+  GET_SUPPLIER,
+  UPDATE_SUPPLIER,
+} from "../../../utils/apollo/apolloMutations";
+import {
+  emailValidator,
+  phoneValidator,
+  textValidator,
+} from "../../../utils/inputValidators";
 
-const GETSUPPLIER = gql`
-  mutation Mutation($getSupplierId: String!) {
-    getSupplier(id: $getSupplierId) {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
-
-const UPDATESUPPLIER = gql`
-  mutation Mutation(
-    $updateSupplierId: String!
-    $name: String!
-    $phone: String!
-    $email: String!
-    $city: String!
-    $street: String!
-    $number: String!
-  ) {
-    updateSupplier(
-      id: $updateSupplierId
-      name: $name
-      phone: $phone
-      email: $email
-      city: $city
-      street: $street
-      number: $number
-    ) {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
-
-const nameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać nazwę klienta";
-  }
-  return undefined;
-};
-
-const numberValidator = (value) => {
-  if (!value) {
-    return "Proszę podać numer";
-  }
-  return undefined;
-};
-
-const cityValidator = (value) => {
-  if (!value) {
-    return "Proszę podać Miejscowość";
-  }
-  return undefined;
-};
-
-const emailValidator = (value) => {
-  if (!value) {
-    return "Proszę podać email";
-  }
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    return "Nie jest to email";
-  }
-  return undefined;
-};
-
-const telValidator = (value) => {
-  const phoneNumberRegex = /^\+?[1-9][0-9]{8}$/;
-  if (!phoneNumberRegex.test(value)) {
-    return "Nie podano numeru telefonu";
-  }
-  return undefined;
-};
+import style from "./SuppliersEditPage.module.css";
+import Input from "../../../components/Input";
+import Spinner from "../../../components/Spiner";
+import { FaAngleLeft, FaPen } from "react-icons/fa";
 
 const SuppliersEditPage = () => {
-  const navigate = useNavigate();
-  const [getSupplier, { loading }] = useMutation(GETSUPPLIER);
-  const [updateSupplier, { error }] = useMutation(UPDATESUPPLIER);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [getSupplier, { loading }] = useMutation(GET_SUPPLIER);
+  const [updateSupplier, { error }] = useMutation(UPDATE_SUPPLIER);
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -166,20 +93,19 @@ const SuppliersEditPage = () => {
                   są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading && (
+                  {loading ? (
                     <div className={style.spinnerBox}>
                       <div className={style.spinner}>
                         <Spinner />
                       </div>
                     </div>
-                  )}
-                  {!loading && (
+                  ) : (
                     <>
                       <Input
                         name="Nazwa *"
                         type="text"
                         fieldName="name"
-                        validator={nameValidator}
+                        validator={textValidator}
                         initVal={data.name}
                         width="47%"
                       />
@@ -187,7 +113,7 @@ const SuppliersEditPage = () => {
                         name="Numer telefonu *"
                         type="tel"
                         fieldName="phone"
-                        validator={telValidator}
+                        validator={phoneValidator}
                         initVal={data.phone}
                         width="47%"
                       />
@@ -203,7 +129,7 @@ const SuppliersEditPage = () => {
                         name="Miejscowość *"
                         type="text"
                         fieldName="city"
-                        validator={cityValidator}
+                        validator={textValidator}
                         initVal={data.city}
                         width="47%"
                       />
@@ -218,7 +144,7 @@ const SuppliersEditPage = () => {
                         name="Numer *"
                         type="number"
                         fieldName="number"
-                        validator={numberValidator}
+                        validator={textValidator}
                         initVal={data.number}
                         width="47%"
                       />

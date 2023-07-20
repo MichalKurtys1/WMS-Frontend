@@ -1,68 +1,23 @@
 import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./OrdersPage.module.css";
-import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { dateToPolish } from "../../utils/dateFormatters";
+import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
+import { DELETE_ORDER, GET_ORDER } from "../../utils/apollo/apolloMutations";
+
+import style from "./OrdersPage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GET_ORDERS = gql`
-  query Query {
-    orders {
-      id
-      clientId
-      client {
-        id
-        name
-        phone
-        email
-        city
-        street
-        number
-        nip
-      }
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const GET_ORDER = gql`
-  mutation Mutation($getOrderId: String!) {
-    getOrder(id: $getOrderId) {
-      id
-      clientId
-      client {
-        id
-        name
-      }
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const DELETE_ORDER = gql`
-  mutation Mutation($deleteOrderId: String!) {
-    deleteOrder(id: $deleteOrderId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 
 const OrdersPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GET_ORDERS);
-  const [deleteOrder, { deleteError }] = useMutation(DELETE_ORDER);
+  const { data, refetch } = useQuery(GET_ORDERS);
+  const [deleteOrder] = useMutation(DELETE_ORDER);
   const [getOrder] = useMutation(GET_ORDER);
 
   useEffect(() => {
@@ -111,43 +66,27 @@ const OrdersPage = () => {
     });
   };
 
+  const messageHandler = () => {
+    navigate("/main/messages");
+  };
+
   const detailsHandler = (id) => {
     getOrder({ variables: { getOrderId: id } })
       .then((data) => {
-        const products = JSON.parse(data.data.getOrder.products);
-        const date = new Date(parseInt(data.data.getOrder.date));
-        const formattedDate = `${date.getUTCFullYear()}-${(
-          date.getUTCMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}-${date
-          .getUTCDate()
-          .toString()
-          .padStart(2, "0")}T${date
-          .getUTCHours()
-          .toString()
-          .padStart(2, "0")}:${date
-          .getUTCMinutes()
-          .toString()
-          .padStart(2, "0")}`;
         navigate("/main/orders/details", {
           state: {
             details: true,
             clientId: data.data.getOrder.client.name,
-            date: formattedDate,
+            date: dateToPolish(data.data.getOrder.date),
             warehouse: data.data.getOrder.warehouse,
             comments: data.data.getOrder.comments,
-            products: products,
+            products: JSON.parse(data.data.getOrder.products),
           },
         });
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  const messageHandler = () => {
-    navigate("/main/messages");
   };
 
   return (
@@ -163,11 +102,6 @@ const OrdersPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
           <p>Zamówienie usunięte pomyślnie</p>
@@ -195,34 +129,15 @@ const OrdersPage = () => {
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
               data={data.orders.map((item) => {
-                const date = new Date(parseInt(item.date));
-                const options = {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                };
-                const polishDate = date.toLocaleString("pl-PL", options);
                 return {
                   ...item,
-                  date: polishDate,
+                  date: dateToPolish(item.date),
                   client: item.client.name,
                 };
               })}
               format={["client", "date", "warehouse", "comments", "state"]}
               titles={["Klient", "Termin", "Magazyn", "Uwagi", "Stan"]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

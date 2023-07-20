@@ -1,63 +1,43 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./DeliveriesAddPage.module.css";
-import { FaAngleLeft, FaPlus } from "react-icons/fa";
-import { BsTrashFill } from "react-icons/bs";
-import { gql, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import {
+  GET_PRODUCTS,
+  GET_SUPPLIERS,
+} from "../../../utils/apollo/apolloQueries";
+import { useQuery } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
+import { selectValidator } from "../../../utils/inputValidators";
+
+import style from "./DeliveriesAddPage.module.css";
+import Input from "../../../components/Input";
 import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
-import { useEffect, useState } from "react";
+import { FaAngleLeft } from "react-icons/fa";
+import ProductList from "../ProductsList";
 
-const GET_SUPPLIERS = gql`
-  query Query {
-    suppliers {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-    }
-  }
-`;
-
-const GET_PRODUCT = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const selectValidator = (value) => {
-  if (!value || value.includes("Wybierz")) {
-    return "Wybierz jedną z opcji";
-  }
-};
+const warehouseList = [
+  { name: "Wybierz Magazyn" },
+  { name: "Centralny" },
+  {
+    name: "ul. Cicha 2 Bydgoszcz",
+  },
+  {
+    name: "ul. Głośna 12 Bydgoszcz",
+  },
+];
 
 const DeliveriesAddPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCT);
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   const [options, setOptions] = useState([]);
-
-  const [productList, setProductList] = useState(() => {
-    if (location.state !== null) {
-      return [];
-    } else {
-      return [{ id: 0, product: null, unit: null, quantity: null }];
-    }
-  });
+  const [productList, setProductList] = useState(
+    location.state !== null
+      ? location.state.savedData.products
+      : [{ id: 0, product: null, unit: null, quantity: null }]
+  );
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -70,12 +50,6 @@ const DeliveriesAddPage = () => {
       ]);
     }
   }, [data, loadingSuppliers]);
-
-  useEffect(() => {
-    if (location.state !== null) {
-      setProductList(location.state.savedData.products);
-    }
-  }, [data, location.state]);
 
   const addProductInputCounter = () => {
     setProductList((prevList) => [
@@ -118,7 +92,7 @@ const DeliveriesAddPage = () => {
         item.unit === undefined ||
         item.quantity === ""
     );
-    console.log(incompleteProducts);
+
     if (incompleteProducts.length > 0) {
       setSubmitError(true);
       return;
@@ -172,7 +146,7 @@ const DeliveriesAddPage = () => {
                   <p>Dane podstawowe</p>
                 </div>
                 <div className={style.inputBox}>
-                  {data !== undefined && !loadingSuppliers && (
+                  {data && !loadingSuppliers && (
                     <>
                       <div className={style.column}>
                         <div className={style.selectBox}>
@@ -207,18 +181,7 @@ const DeliveriesAddPage = () => {
                                 ? location.state.savedData.warehouse
                                 : null
                             }
-                            options={[
-                              { name: "Wybierz Magazyn", value: null },
-                              { name: "Centralny", value: "Centralny" },
-                              {
-                                name: "ul. Cicha 2 Bydgoszcz",
-                                value: "ul. Cicha 2",
-                              },
-                              {
-                                name: "ul. Głośna 12 Bydgoszcz",
-                                value: "ul. Głośna 12",
-                              },
-                            ]}
+                            options={warehouseList}
                           />
                         </div>
                       </div>
@@ -257,116 +220,16 @@ const DeliveriesAddPage = () => {
                     <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
                   </div>
                 )}
-                {productList.map((item) => (
-                  <div className={style.productBox}>
-                    <BsTrashFill
-                      className={style.trashIcon}
-                      onClick={() => deleteHandler(item.id)}
-                    />
-                    <div className={style.selectBox}>
-                      <div className={style.selectBox}>
-                        <select
-                          defaultValue={item.product}
-                          className={style.select}
-                          onChange={(event) =>
-                            changeProductHandler(item.id, event.target.value)
-                          }
-                        >
-                          <option value={null}>Wybierz produkt</option>
-                          {products &&
-                            !loadingProducts &&
-                            products.products.map((option) => {
-                              if (option.name === item.name) {
-                                return (
-                                  <option
-                                    selected
-                                    value={
-                                      option.name +
-                                      " " +
-                                      option.type +
-                                      " " +
-                                      option.capacity
-                                    }
-                                  >
-                                    {option.name} {option.type}{" "}
-                                    {option.capacity}
-                                  </option>
-                                );
-                              } else {
-                                return (
-                                  <option
-                                    value={
-                                      option.name +
-                                      " " +
-                                      option.type +
-                                      " " +
-                                      option.capacity
-                                    }
-                                  >
-                                    {option.name} {option.type}{" "}
-                                    {option.capacity}
-                                  </option>
-                                );
-                              }
-                            })}
-                        </select>
-                      </div>
-                    </div>
-                    {item.product !== null &&
-                      item.product !== "Wybierz produkt" && (
-                        <div className={style.selectBox}>
-                          <div className={style.selectBox}>
-                            <select
-                              defaultValue={item.unit}
-                              className={style.select}
-                              onChange={(event) =>
-                                changeUnitHandler(item.id, event.target.value)
-                              }
-                            >
-                              <option value={null}>Wybierz jednostkę</option>
-                              {products &&
-                                !loadingProducts &&
-                                products.products.map((option) => {
-                                  if (
-                                    option.name +
-                                      " " +
-                                      option.type +
-                                      " " +
-                                      option.capacity ===
-                                    item.product
-                                  ) {
-                                    return (
-                                      <option value={option.unit}>
-                                        {option.unit}
-                                      </option>
-                                    );
-                                  } else {
-                                    return null;
-                                  }
-                                })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                    <div className={style.inputBox}>
-                      <input
-                        defaultValue={item.quantity}
-                        type="number"
-                        min={0}
-                        placeholder="Ilość"
-                        onChange={(event) =>
-                          quantityUnitHandler(item.id, event.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
-                ))}
-                <div
-                  className={style.productBox}
-                  onClick={addProductInputCounter}
-                >
-                  <FaPlus className={style.plusIcon} />
-                </div>
+                <ProductList
+                  productList={productList}
+                  products={products}
+                  loadingProducts={loadingProducts}
+                  deleteHandler={deleteHandler}
+                  changeProductHandler={changeProductHandler}
+                  changeUnitHandler={changeUnitHandler}
+                  quantityUnitHandler={quantityUnitHandler}
+                  addProductInputCounter={addProductInputCounter}
+                />
               </div>
             </form>
           )}

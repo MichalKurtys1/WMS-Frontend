@@ -1,113 +1,51 @@
 import { Form } from "react-final-form";
-import Input from "../../../components/Input";
-import style from "./EmployeeEditPage.module.css";
-import { FaAngleLeft, FaPen } from "react-icons/fa";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
-import Spinner from "../../../components/Spiner";
 import { useEffect, useState } from "react";
+import {
+  GET_EMPLOYEE,
+  UPDATE_EMPLOYEE,
+} from "../../../utils/apollo/apolloMutations";
+import {
+  emailValidator,
+  phoneValidator,
+  selectValidator,
+  textValidator,
+} from "../../../utils/inputValidators";
+
+import style from "./EmployeeEditPage.module.css";
+import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
+import Input from "../../../components/Input";
+import { FaAngleLeft, FaPen } from "react-icons/fa";
 
-const GETUSER = gql`
-  mutation Mutation($getUserId: String!) {
-    getUser(id: $getUserId) {
-      id
-      email
-      firstname
-      lastname
-      phone
-      magazine
-      position
-      adres
-    }
-  }
-`;
+const warehouseList = [
+  { name: "Wybierz Magazyn" },
+  { name: "Centralny" },
+  {
+    name: "ul. Cicha 2 Bydgoszcz",
+  },
+  {
+    name: "ul. Głośna 12 Bydgoszcz",
+  },
+];
 
-const UPDATEUSER = gql`
-  mutation Mutation(
-    $updateUserId: String!
-    $email: String!
-    $firstname: String!
-    $lastname: String!
-    $phone: String!
-    $magazine: String!
-    $position: String!
-    $adres: String!
-  ) {
-    updateUser(
-      id: $updateUserId
-      email: $email
-      firstname: $firstname
-      lastname: $lastname
-      phone: $phone
-      magazine: $magazine
-      position: $position
-      adres: $adres
-    ) {
-      id
-      email
-      firstname
-      lastname
-      phone
-      magazine
-      position
-      adres
-    }
-  }
-`;
-
-const nameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać imię";
-  }
-  return undefined;
-};
-
-const surnameValidator = (value) => {
-  if (!value) {
-    return "Proszę podać nazwisko";
-  }
-  return undefined;
-};
-
-const emailValidator = (value) => {
-  if (!value) {
-    return "Proszę podać email";
-  }
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    return "Nie jest to email";
-  }
-  return undefined;
-};
-
-const selectValidator = (value) => {
-  if (!value) {
-    return "Wybierz jedną z opcji";
-  }
-  if (value.includes("Wybierz")) {
-    return "Wybierz jedną z opcji";
-  }
-
-  return undefined;
-};
-
-const telValidator = (value) => {
-  const phoneNumberRegex = /^\+?[1-9][0-9]{8}$/;
-  if (!phoneNumberRegex.test(value)) {
-    return "Nie podano numeru telefonu";
-  }
-  return undefined;
-};
+const positonList = [
+  { name: "Wybierz Stanowisko" },
+  { name: "Magazynier" },
+  { name: "Księgowy" },
+  { name: "Menadżer" },
+];
 
 const EmployeeEditPage = () => {
-  const navigate = useNavigate();
-  const [getUser, { loading }] = useMutation(GETUSER);
-  const [updateUser, { error }] = useMutation(UPDATEUSER);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [getEmployee, { loading }] = useMutation(GET_EMPLOYEE);
+  const [updateEmployee, { error }] = useMutation(UPDATE_EMPLOYEE);
   const [data, setData] = useState();
 
   useEffect(() => {
-    getUser({
+    getEmployee({
       variables: {
         getUserId: location.state.userId,
       },
@@ -118,10 +56,10 @@ const EmployeeEditPage = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [getUser, location.state.userId]);
+  }, [getEmployee, location.state.userId]);
 
   const onSubmit = (values) => {
-    updateUser({
+    updateEmployee({
       variables: {
         updateUserId: data.id,
         email: values.email,
@@ -175,20 +113,19 @@ const EmployeeEditPage = () => {
                   Edytuj wybrane dane. Pamiętaj, że wszystkie pola są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading && (
+                  {loading ? (
                     <div className={style.spinnerBox}>
                       <div className={style.spinner}>
                         <Spinner />
                       </div>
                     </div>
-                  )}
-                  {!loading && (
+                  ) : (
                     <>
                       <Input
                         name="Imię"
                         type="text"
                         fieldName="name"
-                        validator={nameValidator}
+                        validator={textValidator}
                         initVal={data.firstname}
                         width="47%"
                       />
@@ -196,7 +133,7 @@ const EmployeeEditPage = () => {
                         name="Nazwisko"
                         type="text"
                         fieldName="surname"
-                        validator={surnameValidator}
+                        validator={textValidator}
                         initVal={data.lastname}
                         width="47%"
                       />
@@ -213,7 +150,7 @@ const EmployeeEditPage = () => {
                         name="Numer telefonu"
                         type="number"
                         fieldName="phone"
-                        validator={telValidator}
+                        validator={phoneValidator}
                         initVal={data.phone}
                         width="47%"
                       />
@@ -221,6 +158,7 @@ const EmployeeEditPage = () => {
                         name="Adres zamieszkania"
                         type="text"
                         fieldName="adress"
+                        validator={textValidator}
                         initVal={data.adres}
                         width="47%"
                       />
@@ -229,18 +167,7 @@ const EmployeeEditPage = () => {
                           fieldName="magazine"
                           validator={selectValidator}
                           initVal={data.magazine}
-                          options={[
-                            { name: "Wybierz Magazyn", value: null },
-                            { name: "Centralny", value: "Centralny" },
-                            {
-                              name: "ul. Cicha 2 Bydgoszcz",
-                              value: "ul. Cicha 2",
-                            },
-                            {
-                              name: "ul. Głośna 12 Bydgoszcz",
-                              value: "ul. Głośna 12",
-                            },
-                          ]}
+                          options={warehouseList}
                           title="Magazny"
                         />
                       </div>
@@ -249,12 +176,7 @@ const EmployeeEditPage = () => {
                           fieldName="position"
                           validator={selectValidator}
                           initVal={data.position}
-                          options={[
-                            { name: "Wybierz Stanowisko", value: null },
-                            { name: "Magazynier", value: "Magazynier" },
-                            { name: "Księgowy", value: "Księgowy" },
-                            { name: "Menadżer", value: "Menadżer" },
-                          ]}
+                          options={positonList}
                           title="Stanowisko"
                         />
                       </div>

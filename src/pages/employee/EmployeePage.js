@@ -1,34 +1,13 @@
 import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./EmployeePage.module.css";
-import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_EMPLOYYES } from "../../utils/apollo/apolloQueries";
+import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
+
+import style from "./EmployeePage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GETEMPLOYYE = gql`
-  query Query {
-    users {
-      id
-      email
-      password
-      firstname
-      lastname
-      phone
-      magazine
-      position
-      token
-      firstLogin
-    }
-  }
-`;
-
-const DELETEEMPLOYYE = gql`
-  mutation Mutation($deleteUserId: String!) {
-    deleteUser(id: $deleteUserId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 
 const EmployeePage = () => {
   const navigate = useNavigate();
@@ -36,8 +15,8 @@ const EmployeePage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETEMPLOYYE);
-  const [deleteEmployye, { deleteError }] = useMutation(DELETEEMPLOYYE);
+  const { data, refetch } = useQuery(GET_EMPLOYYES);
+  const [deleteEmployye] = useMutation(DELETE_EMPLOYYE);
 
   useEffect(() => {
     if (location.state) {
@@ -61,7 +40,7 @@ const EmployeePage = () => {
         deleteUserId: selectedRow,
       },
     })
-      .then((data) => {
+      .then(() => {
         setSuccessMsg(true);
         setTimeout(() => {
           setSuccessMsg(false);
@@ -110,11 +89,6 @@ const EmployeePage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
           <p>Pracownik usunięty pomyślnie</p>
@@ -125,7 +99,6 @@ const EmployeePage = () => {
           <h1>Pracownicy</h1>
           <div
             className={style.addOption}
-            on
             onClick={() => navigate(`/main/employees/add`)}
           >
             <FaUserPlus className={style.icon} />
@@ -133,7 +106,7 @@ const EmployeePage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {data && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
@@ -159,16 +132,6 @@ const EmployeePage = () => {
                 "Stanowisko",
               ]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

@@ -1,50 +1,22 @@
-import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./ProductsPage.module.css";
-import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_PRODUCTS } from "../../utils/apollo/apolloQueries";
+import { DELETE_PRODUCT } from "../../utils/apollo/apolloMutations";
+
+import style from "./ProductsPage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GETPRODUCTS = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-      availableStock
-      supplier {
-        id
-        name
-        phone
-        email
-        city
-        street
-        number
-      }
-    }
-  }
-`;
-
-const DELETEPRODUCT = gql`
-  mutation Mutation($deleteProductId: String!) {
-    deleteProduct(id: $deleteProductId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 
 const ProductsPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETPRODUCTS);
-  const [deleteProduct, { deleteError }] = useMutation(DELETEPRODUCT);
+  const { data, refetch } = useQuery(GET_PRODUCTS);
+  const [deleteProduct] = useMutation(DELETE_PRODUCT);
 
   useEffect(() => {
     if (location.state) {
@@ -117,11 +89,6 @@ const ProductsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
           <p>Produkt usunięty pomyślnie</p>
@@ -140,7 +107,7 @@ const ProductsPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {data && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
@@ -173,16 +140,6 @@ const ProductsPage = () => {
                 "Stan magazynowy",
               ]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

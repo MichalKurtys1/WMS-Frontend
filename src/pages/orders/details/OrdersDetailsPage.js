@@ -1,68 +1,23 @@
 import { useLocation, useNavigate } from "react-router";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  ADD_ORDER,
+  UPDATE_AVAILABLE_STOCK,
+} from "../../../utils/apollo/apolloMutations";
+import { GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
+
 import style from "./OrdersDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/client";
-
-const ADD_ORDER = gql`
-  mutation Mutation(
-    $clientId: ID!
-    $date: String!
-    $warehouse: String!
-    $comments: String!
-    $products: JSON!
-  ) {
-    createOrder(
-      clientId: $clientId
-      date: $date
-      warehouse: $warehouse
-      comments: $comments
-      products: $products
-    ) {
-      id
-      clientId
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const GET_PRODUCTS = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-    }
-  }
-`;
-
-const UPDATE_PRODUCT = gql`
-  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
-    updateAvailableStock(
-      id: $updateAvailableStockId
-      availableStock: $availableStock
-    )
-  }
-`;
 
 const OrdersDetailsPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [addOrder] = useMutation(ADD_ORDER);
-  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [updateProduct] = useMutation(UPDATE_AVAILABLE_STOCK);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   let totalPrice = 0;
 
   const submitHandler = () => {
-    console.log(location.state.supplierId);
     addOrder({
       variables: {
         clientId: location.state.clientId,
@@ -151,8 +106,8 @@ const OrdersDetailsPage = () => {
         </div>
         <div className={style.basicDataBox}>
           <div className={style.infoBox}>
-            <h3>Dostawca</h3>
-            <p>{location.state.supplierId}</p>
+            <h3>Klient</h3>
+            <p>{location.state.clientId}</p>
           </div>
           <div className={style.infoBox}>
             <h3>Termin</h3>

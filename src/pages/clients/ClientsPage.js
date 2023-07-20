@@ -1,32 +1,13 @@
 import { useLocation, useNavigate } from "react-router";
-import Table from "../../components/Table";
-import style from "./ClientsPage.module.css";
-import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_CLIENTS } from "../../utils/apollo/apolloQueries";
+import { DELETE_CLIENT } from "../../utils/apollo/apolloMutations";
+
+import style from "./ClientsPage.module.css";
+import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FaAngleLeft } from "react-icons/fa";
-
-const GETCLIENTS = gql`
-  query Query {
-    clients {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-      nip
-    }
-  }
-`;
-
-const DELETECLIENT = gql`
-  mutation Mutation($deleteClientId: String!) {
-    deleteClient(id: $deleteClientId)
-  }
-`;
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
@@ -34,8 +15,8 @@ const ClientsPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch, getError } = useQuery(GETCLIENTS);
-  const [deleteClient, { deleteError }] = useMutation(DELETECLIENT);
+  const { data, refetch } = useQuery(GET_CLIENTS);
+  const [deleteClient] = useMutation(DELETE_CLIENT);
 
   useEffect(() => {
     if (location.state) {
@@ -108,14 +89,9 @@ const ClientsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {deleteError && (
-        <div className={style.error}>
-          <p>Wystąpił nieoczekiwany błąd</p>
-        </div>
-      )}
       {successMsg && (
         <div className={style.succes}>
-          <p>Client usunięty pomyślnie</p>
+          <p>Klient usunięty pomyślnie</p>
         </div>
       )}
       <main>
@@ -131,7 +107,7 @@ const ClientsPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {data && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
@@ -159,16 +135,6 @@ const ClientsPage = () => {
                 "NIP",
               ]}
             />
-          )}
-          {getError && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
-          )}
-          {data && data === null && (
-            <div className={style.error}>
-              <p>Wystąpił nieoczekiwany błąd</p>
-            </div>
           )}
         </div>
       </main>

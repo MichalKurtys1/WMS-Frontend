@@ -1,113 +1,46 @@
 import { Form } from "react-final-form";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { dateToInput } from "../../../utils/dateFormatters";
+import { selectValidator } from "../../../utils/inputValidators";
+import {
+  GET_ORDER,
+  UPDATE_AVAILABLE_STOCK,
+  UPDATE_ORDER,
+} from "../../../utils/apollo/apolloMutations";
+import { GET_CLIENTS, GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
 
 import style from "./OrdersEditPage.module.css";
-import { FaAngleLeft, FaPlus } from "react-icons/fa";
-import { BsTrashFill } from "react-icons/bs";
+import { FaAngleLeft } from "react-icons/fa";
 import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
 import Input from "../../../components/Input";
+import ProductList from "../../orders/ProductsList";
 
-const UPDATE_ORDER = gql`
-  mutation Mutation(
-    $updateOrderId: ID!
-    $clientId: ID!
-    $date: String!
-    $warehouse: String!
-    $comments: String!
-    $products: JSON!
-  ) {
-    updateOrder(
-      id: $updateOrderId
-      clientId: $clientId
-      date: $date
-      warehouse: $warehouse
-      comments: $comments
-      products: $products
-    ) {
-      id
-      clientId
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const GET_CLIENTS = gql`
-  query Query {
-    clients {
-      id
-      name
-      phone
-      email
-      city
-      street
-      number
-      nip
-    }
-  }
-`;
-
-const GET_ORDER = gql`
-  mutation GetOrder($getOrderId: String!) {
-    getOrder(id: $getOrderId) {
-      id
-      clientId
-      date
-      warehouse
-      comments
-      products
-      state
-    }
-  }
-`;
-
-const GET_PRODUCT = gql`
-  query Query {
-    products {
-      id
-      supplierId
-      name
-      type
-      capacity
-      unit
-      pricePerUnit
-      availableStock
-    }
-  }
-`;
-
-const UPDATE_PRODUCT = gql`
-  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
-    updateAvailableStock(
-      id: $updateAvailableStockId
-      availableStock: $availableStock
-    )
-  }
-`;
-
-const selectValidator = (value) => {
-  if (!value || value.includes("Wybierz")) {
-    return "Wybierz jedną z opcji";
-  }
-};
+const warehouseList = [
+  { name: "Wybierz Magazyn" },
+  { name: "Centralny" },
+  {
+    name: "ul. Cicha 2 Bydgoszcz",
+  },
+  {
+    name: "ul. Głośna 12 Bydgoszcz",
+  },
+];
 
 const OrdersEditPage = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
   const [getOrder] = useMutation(GET_ORDER);
   const [updateOrder, { loading, error }] = useMutation(UPDATE_ORDER);
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCT);
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   const { data, loading: loadingClients } = useQuery(GET_CLIENTS);
-  const location = useLocation();
   const [deliveryData, setDeliveryData] = useState();
-  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [updateAvailableStock] = useMutation(UPDATE_AVAILABLE_STOCK);
+  const [options, setOptions] = useState();
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -115,10 +48,6 @@ const OrdersEditPage = () => {
       return [{ id: 0, product: null, unit: null, quantity: null }];
     }
   });
-  const [options, setOptions] = useState();
-
-  console.log(products ? products : "nic");
-  console.log(productList);
 
   useEffect(() => {
     if (data && !loadingClients) {
@@ -218,7 +147,7 @@ const OrdersEditPage = () => {
               item.product.includes(product.type) &&
               item.product.includes(product.capacity)
           );
-          updateProduct({
+          updateAvailableStock({
             variables: {
               updateAvailableStockId: product[0].id,
               availableStock:
@@ -240,16 +169,6 @@ const OrdersEditPage = () => {
       });
 
     setSubmitError(false);
-  };
-
-  const formattedDate = () => {
-    const date = new Date(parseInt(deliveryData.date));
-    return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date.getUTCDate().toString().padStart(2, "0")}T${date
-      .getUTCHours()
-      .toString()
-      .padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
   };
 
   const getSupplierHandler = () => {
@@ -319,25 +238,14 @@ const OrdersEditPage = () => {
                           type="datetime-local"
                           fieldName="date"
                           width="90%"
-                          initVal={formattedDate()}
+                          initVal={dateToInput(deliveryData.date)}
                         />
                         <div className={style.selectBox}>
                           <Select
                             fieldName="magazine"
                             validator={selectValidator}
                             initVal={deliveryData.warehouse}
-                            options={[
-                              { name: "Wybierz Magazyn", value: null },
-                              { name: "Centralny", value: "Centralny" },
-                              {
-                                name: "ul. Cicha 2 Bydgoszcz",
-                                value: "ul. Cicha 2",
-                              },
-                              {
-                                name: "ul. Głośna 12 Bydgoszcz",
-                                value: "ul. Głośna 12",
-                              },
-                            ]}
+                            options={warehouseList}
                           />
                         </div>
                       </div>
@@ -373,135 +281,17 @@ const OrdersEditPage = () => {
                       <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
                     </div>
                   )}
-                  {productList.map((item) => (
-                    <div className={style.productBox}>
-                      <BsTrashFill
-                        className={style.trashIcon}
-                        onClick={() => deleteHandler(item.id)}
-                      />
-                      <div className={style.selectBox}>
-                        <div className={style.selectBox}>
-                          <select
-                            defaultValue={item.product}
-                            className={style.select}
-                            onChange={(event) =>
-                              changeProductHandler(item.id, event.target.value)
-                            }
-                          >
-                            <option value={null}>Wybierz produkt</option>
-                            {products &&
-                              !loadingProducts &&
-                              products.products.map((option) => {
-                                if (option.name === item.name) {
-                                  return (
-                                    <option
-                                      selected
-                                      value={
-                                        option.name +
-                                        " " +
-                                        option.type +
-                                        " " +
-                                        option.capacity
-                                      }
-                                    >
-                                      {option.name} {option.type}{" "}
-                                      {option.capacity}
-                                    </option>
-                                  );
-                                } else {
-                                  return (
-                                    <option
-                                      value={
-                                        option.name +
-                                        " " +
-                                        option.type +
-                                        " " +
-                                        option.capacity
-                                      }
-                                    >
-                                      {option.name} {option.type}{" "}
-                                      {option.capacity}
-                                    </option>
-                                  );
-                                }
-                              })}
-                          </select>
-                        </div>
-                      </div>
-                      {item.product !== null &&
-                        item.product !== "Wybierz produkt" && (
-                          <>
-                            <div className={style.availableStockBox}>
-                              Dostępne:
-                              {products.products.filter(
-                                (option) =>
-                                  option.name +
-                                    " " +
-                                    option.type +
-                                    " " +
-                                    option.capacity ===
-                                  item.product
-                              )[0].availableStock + parseInt(item.maxValue)}
-                            </div>
-                            <div className={style.selectBox}>
-                              <div className={style.selectBox}>
-                                <select
-                                  defaultValue={item.unit}
-                                  className={style.select}
-                                  onChange={(event) =>
-                                    changeUnitHandler(
-                                      item.id,
-                                      event.target.value
-                                    )
-                                  }
-                                >
-                                  <option value={null}>
-                                    Wybierz jednostkę
-                                  </option>
-                                  {products &&
-                                    !loadingProducts &&
-                                    products.products.map((option) => {
-                                      if (
-                                        option.name +
-                                          " " +
-                                          option.type +
-                                          " " +
-                                          option.capacity ===
-                                        item.product
-                                      ) {
-                                        return (
-                                          <option value={option.unit}>
-                                            {option.unit}
-                                          </option>
-                                        );
-                                      } else {
-                                        return null;
-                                      }
-                                    })}
-                                </select>
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      <div className={style.inputBox}>
-                        <input
-                          defaultValue={item.quantity}
-                          type="number"
-                          min={0}
-                          placeholder="Ilość"
-                          onChange={(event) =>
-                            quantityUnitHandler(item.id, event.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  <div
-                    className={style.productBox}
-                    onClick={addProductInputCounter}
-                  >
-                    <FaPlus className={style.plusIcon} />
-                  </div>
+                  <ProductList
+                    productList={productList}
+                    products={products}
+                    loadingProducts={loadingProducts}
+                    submitError={submitError}
+                    deleteHandler={deleteHandler}
+                    changeProductHandler={changeProductHandler}
+                    changeUnitHandler={changeUnitHandler}
+                    quantityUnitHandler={quantityUnitHandler}
+                    addProductInputCounter={addProductInputCounter}
+                  />
                 </div>
               )}
             </form>

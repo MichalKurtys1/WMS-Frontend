@@ -149,7 +149,10 @@ const Navigation = () => {
               className={style.linkBox}
               style={{
                 color: `${
-                  location.pathname === "/main/products" ? "#3054F2" : "#646e78"
+                  location.pathname === "/main/products" ||
+                  location.pathname === "/main/visualisation"
+                    ? "#3054F2"
+                    : "#646e78"
                 }`,
               }}
             >
