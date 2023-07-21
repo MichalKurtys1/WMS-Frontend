@@ -45,7 +45,7 @@
 
 .container main {
   position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 20px auto;
@@ -79,10 +79,12 @@
 }
 
 .form button {
+  display: block;
   border: none;
   background-color: #8097ff;
   width: 47%;
   height: 50px;
+  margin: 0 auto;
   margin-bottom: 40px;
   padding: 10px;
   border-radius: 5px;

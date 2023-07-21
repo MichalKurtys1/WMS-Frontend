@@ -104,6 +104,7 @@ const OrdersAddPage = () => {
       state: {
         clientId: values.client,
         date: values.date,
+        client: data.clients.filter((item) => item.name === values.client)[0],
         warehouse: values.magazine,
         comments: values.comments || "",
         products: JSON.stringify(productList),
@@ -111,6 +112,17 @@ const OrdersAddPage = () => {
       },
     });
     setSubmitError(false);
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    console.log(`${year}-${month}-${day}T${hours}:${minutes}`);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const getSupplierHandler = () => {
@@ -166,6 +178,7 @@ const OrdersAddPage = () => {
                           name="date"
                           type="datetime-local"
                           fieldName="date"
+                          min={getCurrentDateTime()}
                           width="90%"
                           initVal={
                             location.state !== null

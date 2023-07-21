@@ -110,6 +110,9 @@ export const ADD_SUPPLIER = gql`
     $city: String!
     $street: String!
     $number: String!
+    $bank: String!
+    $accountNumber: String!
+    $nip: String!
   ) {
     createSupplier(
       name: $name
@@ -118,6 +121,9 @@ export const ADD_SUPPLIER = gql`
       city: $city
       street: $street
       number: $number
+      bank: $bank
+      accountNumber: $accountNumber
+      nip: $nip
     ) {
       id
       name
@@ -126,6 +132,9 @@ export const ADD_SUPPLIER = gql`
       city
       street
       number
+      bank
+      accountNumber
+      nip
     }
   }
 `;
@@ -297,6 +306,9 @@ export const GET_SUPPLIER = gql`
       city
       street
       number
+      bank
+      accountNumber
+      nip
     }
   }
 `;
@@ -323,6 +335,14 @@ export const GET_DELIVERY = gql`
       supplier {
         id
         name
+        phone
+        email
+        city
+        street
+        number
+        bank
+        accountNumber
+        nip
       }
       date
       warehouse
@@ -341,6 +361,12 @@ export const GET_ORDER = gql`
       client {
         id
         name
+        phone
+        email
+        city
+        street
+        number
+        nip
       }
       date
       warehouse
@@ -428,6 +454,9 @@ export const UPDATE_SUPPLIER = gql`
     $city: String!
     $street: String!
     $number: String!
+    $bank: String!
+    $accountNumber: String!
+    $nip: String!
   ) {
     updateSupplier(
       id: $updateSupplierId
@@ -437,6 +466,9 @@ export const UPDATE_SUPPLIER = gql`
       city: $city
       street: $street
       number: $number
+      bank: $bank
+      accountNumber: $accountNumber
+      nip: $nip
     ) {
       id
       name
@@ -445,6 +477,9 @@ export const UPDATE_SUPPLIER = gql`
       city
       street
       number
+      bank
+      accountNumber
+      nip
     }
   }
 `;

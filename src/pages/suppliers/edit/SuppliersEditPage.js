@@ -48,6 +48,9 @@ const SuppliersEditPage = () => {
         city: values.city,
         street: values.street,
         number: values.number,
+        bank: values.bank,
+        accountNumber: values.accountNumber,
+        nip: values.nip,
       },
     })
       .then((data) => {
@@ -124,6 +127,30 @@ const SuppliersEditPage = () => {
                         validator={emailValidator}
                         initVal={data.email}
                         width="100%"
+                      />
+                      <Input
+                        name="Nazwa banku"
+                        initVal={data.bank}
+                        type="text"
+                        fieldName="bank"
+                        validator={textValidator}
+                        width="100%"
+                      />
+                      <Input
+                        name="Numer konta"
+                        initVal={data.accountNumber}
+                        type="text"
+                        fieldName="accountNumber"
+                        validator={textValidator}
+                        width="100%"
+                      />
+                      <Input
+                        name="NIP"
+                        initVal={data.nip}
+                        type="text"
+                        fieldName="nip"
+                        validator={textValidator}
+                        width="47%"
                       />
                       <Input
                         name="Miejscowość *"

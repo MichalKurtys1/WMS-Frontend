@@ -46,142 +46,203 @@
 /*  */
 
 .dataBox {
-  width: 55%;
-  margin: 0 auto;
+  width: 80%;
+  margin: 10px auto;
+}
+
+.dataBox .upperBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upperBox .logoBox {
+  width: 50%;
+}
+
+.upperBox .logoBox img {
+  object-fit: cover;
+  width: 50%;
+}
+
+.datesData {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.datesData .row {
+  width: 100%;
+  display: flex;
+  width: 100%;
+}
+
+.datesData .row h4 {
+  display: block;
+  width: 50%;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  padding: 3px;
+  border: 1px solid #646e78;
+  text-align: center;
+  margin: 0;
+}
+
+.datesData .row p {
+  display: block;
+  width: 50%;
+  border: 1px solid #646e78;
+  margin: 0;
+  text-align: center;
+  padding: 3px;
+}
+
+.dataBox .row:first-child h4,
+.dataBox .row:first-child p {
+  border-bottom: none;
+}
+
+.dataBox .row:last-child h4,
+.dataBox .row:last-child p {
+  border-top: none;
+}
+
+.dataBox .personalData {
+  display: flex;
+  justify-content: space-between;
+}
+
+.personalData .companyData {
+  margin-top: 20px;
+  width: 45%;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #646e78;
+}
+
+.personalData .companyData h2 {
+  margin: 0;
+  background-color: #f5f5f5;
+  text-align: center;
+  font-size: 18px;
+  padding: 5px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  border: 1px solid #646e78;
+}
+
+.personalData .companyData p {
+  margin: 0;
 }
 
 .dataBox h1 {
-  margin: 20px 0 0;
+  margin-top: 30px;
+  text-align: center;
 }
 
-.basicData {
-  border-bottom: 2px solid #646e78;
-  margin: 20px 0 20px;
+/* Table */
+
+.invoiceTable {
+  border-spacing: 0;
+  width: 100%;
 }
 
-.productData {
-  border-bottom: 2px solid #646e78;
-  margin: 20px 0;
-}
-
-.basicData p {
+.invoiceTable thead th {
   color: #2d3640;
-  font-weight: 500;
-  margin: 10px 0;
-  font-size: 18px;
+  border: 1px solid #646e78;
+  border-right: none;
+  background-color: #f5f5f5;
+  padding: 5px;
+  font-size: 15px;
   font-family: "Roboto", sans-serif;
+}
+
+.invoiceTable thead th:last-of-type {
+  border-right: 1px solid #646e78;
+}
+
+.invoiceTable tbody td {
+  color: #2d3640;
+  text-align: center;
+  border: 1px solid #646e78;
+  border-top: none;
+  border-right: none;
+  padding: 5px;
+  font-size: 15px;
+  font-family: "Roboto", sans-serif;
+}
+
+.invoiceTable tbody td:last-of-type {
+  border-right: 1px solid #646e78;
 }
 
 /*  */
 
-.basicDataBox {
-  padding: 0 10px;
+.dataBox .summaryTable {
+  margin: 40px 0;
+  width: 60%;
 }
 
-.basicDataBox .infoBox {
+.tablesBox {
+  position: relative;
+  height: 32vh;
+}
+
+.dataBox .summaryBox {
+  width: 60%;
+}
+
+.dataBox .summaryBox .upperBox {
   display: flex;
-  align-items: center;
-  margin: 10px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #646e78;
 }
 
-.infoBox h3 {
-  font-family: "Roboto", sans-serif;
-  display: block;
-  width: 20%;
-  margin: 0;
-  color: #424d58;
-  font-weight: normal;
-}
-
-.infoBox p {
-  font-family: "Roboto", sans-serif;
-  margin: 0;
+.dataBox .summaryBox .upperBox p {
   color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
   font-weight: 500;
-  font-size: 18px;
+  padding: 8px;
+  margin: 0;
 }
 
-/*  */
-
-.titlesBox {
+.dataBox .signatureBox {
+  margin: 40px 0;
   display: flex;
-  width: 100%;
-  align-items: center;
   justify-content: space-between;
 }
 
-.titlesBox p {
-  font-family: "Roboto", sans-serif;
-  color: #424d58;
-  font-weight: normal;
-  font-size: 18px;
-  text-align: center;
+.dataBox .signatureBox .signature {
+  margin: 60px 0;
+  width: 45%;
+}
+
+.dataBox .signatureBox .signature h4 {
   margin: 0;
-  display: block;
-  width: 33.33%;
-}
-
-.productBox {
-  width: 100%;
-}
-
-.product {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.product p {
-  font-family: "Roboto", sans-serif;
-  color: #2d3640;
-  font-weight: 500;
-  font-size: 18px;
+  background-color: #f5f5f5;
   text-align: center;
-  margin: 10px;
-  display: block;
-  width: 33.33%;
+  font-size: 18px;
+  padding: 5px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
 }
 
-.confirmBtn {
+.dataBox .signatureBox .signature p {
+  text-align: center;
+  font-size: 20px;
+}
+
+.container .confirmBtn {
   display: block;
-  border: none;
+  margin: 0 auto;
+  width: 30%;
   background-color: #8097ff;
-  width: 25%;
-  height: 50px;
+  border: none;
   padding: 10px;
-  border-radius: 5px;
+  font-size: 26px;
   color: white;
-  font-size: 22px;
-  transition: 0.5s;
-  margin: 40px auto;
-}
-
-.confirmBtn:hover {
-  background-color: #3054f2;
-}
-
-/*  */
-
-.summary {
-  border-bottom: 2px solid #646e78;
-  margin: 20px 0 20px;
-}
-
-.summary p {
-  color: #2d3640;
-  font-weight: 500;
-  margin: 10px 0;
-  font-size: 18px;
-  font-family: "Roboto", sans-serif;
-  text-align: right;
-  padding: 0 20px;
-}
-
-.summaryValue p {
-  text-align: right;
-  padding: 0 27px;
-  color: #2d3640;
-  font-weight: bold;
+  border-radius: 10px;
   font-family: "Roboto", sans-serif;
 }

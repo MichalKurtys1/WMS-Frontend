@@ -11,7 +11,7 @@ import {
 import style from "./SuppliersAddPage.module.css";
 import Input from "../../../components/Input";
 import Spinner from "../../../components/Spiner";
-import { FaAngleLeft, FaPlus } from "react-icons/fa";
+import { FaAngleLeft } from "react-icons/fa";
 
 const SuppliersAddPage = () => {
   const navigate = useNavigate();
@@ -26,6 +26,9 @@ const SuppliersAddPage = () => {
         city: values.city,
         street: values.street,
         number: values.number,
+        nip: values.nip,
+        bank: values.bank,
+        accountNumber: values.accountNumber,
       },
     })
       .then((data) => {
@@ -103,6 +106,27 @@ const SuppliersAddPage = () => {
                       width="100%"
                     />
                     <Input
+                      name="Nazwa banku"
+                      type="text"
+                      fieldName="bank"
+                      validator={textValidator}
+                      width="100%"
+                    />
+                    <Input
+                      name="Numer konta"
+                      type="text"
+                      fieldName="accountNumber"
+                      validator={textValidator}
+                      width="100%"
+                    />
+                    <Input
+                      name="NIP"
+                      type="text"
+                      fieldName="nip"
+                      validator={textValidator}
+                      width="47%"
+                    />
+                    <Input
                       name="Miejscowość *"
                       type="text"
                       fieldName="city"
@@ -127,7 +151,6 @@ const SuppliersAddPage = () => {
                       type="submit"
                       style={{ backgroundColor: invalid ? "#B6BABF" : null }}
                     >
-                      <FaPlus className={style.icon} />
                       Dodaj
                     </button>
                   </>

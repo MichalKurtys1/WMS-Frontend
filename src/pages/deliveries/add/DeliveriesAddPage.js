@@ -97,10 +97,12 @@ const DeliveriesAddPage = () => {
       setSubmitError(true);
       return;
     }
-
     navigate("/main/deliveries/details", {
       state: {
         supplierId: values.supplier,
+        supplier: data.suppliers.filter(
+          (item) => item.name === values.supplier
+        )[0],
         date: values.date,
         warehouse: values.magazine,
         comments: values.comments || "",
@@ -110,6 +112,17 @@ const DeliveriesAddPage = () => {
     });
 
     setSubmitError(false);
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    console.log(`${year}-${month}-${day}T${hours}:${minutes}`);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const getSupplierHandler = () => {
@@ -165,6 +178,7 @@ const DeliveriesAddPage = () => {
                           name="date"
                           type="datetime-local"
                           fieldName="date"
+                          min={getCurrentDateTime()}
                           width="90%"
                           initVal={
                             location.state !== null

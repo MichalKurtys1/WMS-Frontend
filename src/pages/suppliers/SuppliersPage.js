@@ -65,6 +65,7 @@ const SuppliersPage = () => {
   };
 
   const detailsHandler = (id) => {
+    console.log(id);
     navigate(`/main/suppliers/details`, {
       state: {
         userId: id,
@@ -115,15 +116,28 @@ const SuppliersPage = () => {
               messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
-              data={data.suppliers}
-              format={["name", "phone", "email", "city", "street", "number"]}
+              data={data.suppliers.map((item) => {
+                return {
+                  ...item,
+                  address:
+                    "ul. " + item.street + " " + item.number + " " + item.city,
+                };
+              })}
+              format={[
+                "name",
+                "phone",
+                "email",
+                "address",
+                "bank",
+                "accountNumber",
+              ]}
               titles={[
                 "Nazwa",
                 "Telefon",
                 "E-mail",
-                "Miejscowość",
-                "Ulica",
-                "Numer",
+                "Adres",
+                "Bank",
+                "Numer konta",
               ]}
             />
           )}

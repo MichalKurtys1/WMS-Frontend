@@ -77,7 +77,8 @@ const OrdersPage = () => {
           state: {
             details: true,
             clientId: data.data.getOrder.client.name,
-            date: dateToPolish(data.data.getOrder.date),
+            client: data.data.getOrder.client,
+            dateNumber: data.data.getOrder.date,
             warehouse: data.data.getOrder.warehouse,
             comments: data.data.getOrder.comments,
             products: JSON.parse(data.data.getOrder.products),

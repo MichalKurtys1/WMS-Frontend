@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BsThreeDotsVertical, BsTrashFill, BsGearFill } from "react-icons/bs";
-import { FaPen, FaEnvelope } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import style from "./TableRow.module.css";
 
 const TableRow = (props) => {

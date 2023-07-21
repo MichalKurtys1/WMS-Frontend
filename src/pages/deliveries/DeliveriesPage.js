@@ -76,11 +76,13 @@ const DeliveriesPage = () => {
   const detailsHandler = (id) => {
     getDelivery({ variables: { getDeliveryId: id } })
       .then((data) => {
+        console.log(data.data.getDelivery.date);
         navigate("/main/deliveries/details", {
           state: {
             details: true,
+            supplier: data.data.getDelivery.supplier,
             supplierId: data.data.getDelivery.supplier.name,
-            date: dateToPolish(data.data.getDelivery.date),
+            dateNumber: data.data.getDelivery.date,
             warehouse: data.data.getDelivery.warehouse,
             comments: data.data.getDelivery.comments,
             products: JSON.parse(data.data.getDelivery.products),

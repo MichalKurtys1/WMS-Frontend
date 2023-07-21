@@ -44,6 +44,9 @@ export const GET_SUPPLIERS = gql`
       city
       street
       number
+      bank
+      accountNumber
+      nip
     }
   }
 `;
@@ -58,7 +61,6 @@ export const GET_PRODUCTS = gql`
       capacity
       unit
       pricePerUnit
-      availableStock
       supplier {
         id
         name
@@ -67,7 +69,11 @@ export const GET_PRODUCTS = gql`
         city
         street
         number
+        bank
+        accountNumber
+        nip
       }
+      availableStock
     }
   }
 `;

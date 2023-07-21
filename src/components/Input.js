@@ -22,7 +22,7 @@ const Input = ({
             }}
             id={fieldName}
             type={type}
-            min={new Date().toISOString().split("T")[0] || 0}
+            min={min}
             placeholder={name}
             {...input}
           />
