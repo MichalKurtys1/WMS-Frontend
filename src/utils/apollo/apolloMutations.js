@@ -38,6 +38,12 @@ export const DELETE_ORDER = gql`
   }
 `;
 
+export const DELETE_TRANSFER = gql`
+  mutation Mutation($deleteTransferId: String!) {
+    deleteTransfer(id: $deleteTransferId)
+  }
+`;
+
 // add
 
 export const ADD_EMPLOYEE = gql`
@@ -219,11 +225,16 @@ export const ADD_ORDER = gql`
 `;
 
 export const ADD_OPERATION = gql`
-  mutation Mutation($ordersId: ID, $deliveriesId: ID) {
-    createOperation(ordersId: $ordersId, deliveriesId: $deliveriesId) {
+  mutation Mutation($transfersId: ID, $ordersId: ID, $deliveriesId: ID) {
+    createOperation(
+      transfersId: $transfersId
+      ordersId: $ordersId
+      deliveriesId: $deliveriesId
+    ) {
       id
       deliveriesId
       ordersId
+      transferId
       stage
       data
     }
@@ -260,6 +271,18 @@ export const ADD_LOCATION = gql`
         pricePerUnit
         availableStock
       }
+    }
+  }
+`;
+
+export const ADD_TRANSFER = gql`
+  mutation Mutation($employee: String!, $date: String!, $data: JSON!) {
+    createTransfer(employee: $employee, date: $date, data: $data) {
+      id
+      employee
+      date
+      data
+      state
     }
   }
 `;

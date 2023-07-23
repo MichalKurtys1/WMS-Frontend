@@ -131,6 +131,7 @@ export const GET_OPERATIONS = gql`
       id
       deliveriesId
       ordersId
+      transfersId
       stage
       data
       delivery {
@@ -151,6 +152,13 @@ export const GET_OPERATIONS = gql`
         products
         state
       }
+      transfer {
+        id
+        employee
+        date
+        data
+        state
+      }
     }
   }
 `;
@@ -158,15 +166,34 @@ export const GET_OPERATIONS = gql`
 export const GET_LOCATIONS = gql`
   query Query {
     locations {
+      id
+      productId
       product {
+        id
+        supplierId
         name
         type
         capacity
         unit
+        pricePerUnit
+        availableStock
       }
       numberOfProducts
       posX
       posY
+      state
+    }
+  }
+`;
+
+export const GET_TRANSFERS = gql`
+  query Query {
+    transfers {
+      id
+      employee
+      date
+      data
+      state
     }
   }
 `;

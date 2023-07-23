@@ -61,14 +61,27 @@
   height: 100%;
 }
 
-.imageBox button {
+.innerBox button {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: transparent;
+  top: 0;
+  left: -50px;
+  z-index: 20;
+  width: 20%;
   border: none;
-  font-size: 30px;
+  font-size: 20px;
+  background-color: #8097ff;
+  border-radius: 5px;
+  padding: 5px;
   color: white;
+  transition: 0.5s;
+}
+
+.innerBox button:hover {
+  background-color: #3054f2;
+}
+
+.innerBox button:nth-of-type(2) {
+  top: 50px;
 }
 
 .imageBox .icon {

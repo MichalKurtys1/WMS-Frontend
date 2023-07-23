@@ -6,6 +6,7 @@ import {
   GET_DELIVERIES,
   GET_OPERATIONS,
   GET_ORDERS,
+  GET_TRANSFERS,
 } from "../../utils/apollo/apolloQueries";
 
 import style from "./OperationsPage.module.css";
@@ -17,18 +18,26 @@ const OperationsPage = () => {
   const [currentData, setCurrentData] = useState();
   const { data, refetch: refetchDeliveries } = useQuery(GET_DELIVERIES);
   const { data: orders, refetch: refetchOrders } = useQuery(GET_ORDERS);
+  const { data: transfers, refetch: refetchTransfers } =
+    useQuery(GET_TRANSFERS);
   const { data: operations, refetch: refetchOperations } =
     useQuery(GET_OPERATIONS);
 
   useEffect(() => {
     refetchDeliveries();
     refetchOperations();
+    refetchTransfers();
     refetchOrders();
-  }, [refetchDeliveries, refetchOperations, refetchOrders]);
+  }, [refetchDeliveries, refetchOperations, refetchOrders, refetchTransfers]);
 
   useEffect(() => {
-    if (data && orders) {
-      const dataArray = [...data.deliveries, ...orders.orders];
+    if (data && orders && transfers) {
+      const dataArray = [
+        ...data.deliveries,
+        ...orders.orders,
+        ...transfers.transfers,
+      ];
+      console.log(dataArray);
       if (currentPage === 2) {
         setCurrentData(dataArray.filter((item) => item.state === "Zlecone"));
       } else if (currentPage === 1) {
@@ -37,7 +46,7 @@ const OperationsPage = () => {
         setCurrentData(dataArray.filter((item) => item.state === "Zakończone"));
       }
     }
-  }, [currentPage, data, orders]);
+  }, [currentPage, data, orders, transfers]);
 
   return (
     <div className={style.container}>

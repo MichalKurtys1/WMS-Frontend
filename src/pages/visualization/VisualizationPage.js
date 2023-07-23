@@ -1,35 +1,31 @@
 import { useNavigate } from "react-router";
 import style from "./VisualizationPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
-import { MdLocationOn } from "react-icons/md";
-import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/client";
-
-const GET_LOCATIONS = gql`
-  query Query {
-    locations {
-      id
-      productId
-      product {
-        id
-        supplierId
-        name
-        type
-        capacity
-        unit
-        pricePerUnit
-        availableStock
-      }
-      numberOfProducts
-      posX
-      posY
-    }
-  }
-`;
+import LocationItem from "./LocationItem";
+import { GET_LOCATIONS } from "../../utils/apollo/apolloQueries";
+import { useState } from "react";
 
 const VisualizationPage = () => {
   const navigate = useNavigate();
   const { data: locations } = useQuery(GET_LOCATIONS);
+  const [selectedLocations, setSelectedLocations] = useState([]);
+
+  const addSelectedLocation = (id) => {
+    setSelectedLocations((prevList) => [...prevList, id]);
+  };
+
+  const deleteSelectedLocation = (id) => {
+    setSelectedLocations((prevList) => prevList.filter((item) => item !== id));
+  };
+
+  const moveProductsHandler = () => {
+    navigate("/main/visualisation/move-products", {
+      state: {
+        selectedLocations,
+      },
+    });
+  };
 
   return (
     <div className={style.container}>
@@ -46,28 +42,23 @@ const VisualizationPage = () => {
       </div>
       <div className={style.imageBox}>
         <div className={style.innerBox}>
+          <button onClick={() => navigate("/main/visualisation/transfers")}>
+            Transfery
+          </button>
+          {selectedLocations.length > 0 && (
+            <button onClick={moveProductsHandler}>Prenieś asortyment</button>
+          )}
           <img
             src={require("../../assets/Warehouse layout.png")}
             alt="layout"
           />
           {locations &&
             locations.locations.map((item) => (
-              <div className={style.locationBox}>
-                <MdLocationOn
-                  className={style.icon}
-                  style={{ top: `${item.posY}px`, left: `${item.posX}px` }}
-                />
-                <p
-                  className={style.description}
-                  style={{
-                    top: `${+item.posY - 5}px`,
-                    left: `${+item.posX + 15}px`,
-                  }}
-                >
-                  {item.numberOfProducts}x {item.product.name}{" "}
-                  {item.product.type} {item.product.capacity}
-                </p>
-              </div>
+              <LocationItem
+                item={item}
+                addSelectedLocation={addSelectedLocation}
+                deleteSelectedLocation={deleteSelectedLocation}
+              ></LocationItem>
             ))}
         </div>
       </div>

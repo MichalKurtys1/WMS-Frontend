@@ -1,0 +1,19 @@
+.icon {
+  position: absolute;
+  z-index: 20;
+}
+
+.locationBox {
+  display: flex;
+}
+
+.description {
+  display: none;
+  position: absolute;
+  z-index: 20;
+  margin: 0;
+}
+
+.icon:hover + .description {
+  display: block;
+}

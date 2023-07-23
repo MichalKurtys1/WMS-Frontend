@@ -35,6 +35,9 @@ import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
 import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
 import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
 import VisualizationPage from "./pages/visualization/VisualizationPage";
+import MoveProductsPage from "./pages/visualization/MoveProductsPage";
+import TransferActionsPage from "./pages/operations/actions/transfer/TransferActionsPage";
+import TransfersPage from "./pages/visualization/transfers/TarnsfersPage";
 
 const router = createBrowserRouter([
   {
@@ -85,6 +88,10 @@ const router = createBrowserRouter([
                     path: "order",
                     element: <OrderActionsPage />,
                   },
+                  {
+                    path: "transfers",
+                    element: <TransferActionsPage />,
+                  },
                 ],
               },
             ],
@@ -131,7 +138,20 @@ const router = createBrowserRouter([
           },
           {
             path: "visualisation",
-            element: <VisualizationPage />,
+            children: [
+              {
+                index: true,
+                element: <VisualizationPage />,
+              },
+              {
+                path: "move-products",
+                element: <MoveProductsPage />,
+              },
+              {
+                path: "transfers",
+                element: <TransfersPage />,
+              },
+            ],
           },
           {
             path: "messages",

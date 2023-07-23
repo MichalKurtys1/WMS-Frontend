@@ -1,0 +1,298 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 17%;
+  width: 83%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.logoImg {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  width: 120px;
+  height: 45px;
+  object-fit: cover;
+}
+
+.titileBox {
+  width: 95%;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #646e78;
+}
+
+.returnBox {
+  display: flex;
+  align-items: center;
+  color: #2d3640;
+}
+
+.returnBox .icon {
+  margin: 20px 0 10px;
+  font-size: 20px;
+}
+.returnBox p {
+  font-weight: bold;
+  font-family: "Roboto";
+  font-size: 20px;
+  margin: 20px 0 10px;
+}
+
+/*  */
+
+.buttons {
+  width: 60%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons button {
+  border: none;
+  background-color: #8097ff;
+  color: white;
+  font-size: 24px;
+  font-family: "Roboto", sans-serif;
+  padding: 5px;
+  width: 25%;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttons button[disabled] {
+  background-color: #ced3d9;
+}
+
+.buttons button p {
+  margin: 0;
+  padding: 3px;
+}
+
+/*  */
+
+.dataBox {
+  width: 55%;
+  margin: 0 auto;
+}
+
+.dataBox h1 {
+  margin: 20px 0 0;
+}
+
+.basicData {
+  border-bottom: 2px solid #646e78;
+  margin: 20px 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.basicData .backIcon {
+  margin-left: 10px;
+  font-size: 22px;
+}
+
+.productData {
+  border-bottom: 2px solid #646e78;
+  margin: 20px 0;
+}
+
+.basicData p {
+  color: #2d3640;
+  font-weight: 500;
+  margin: 10px 0;
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
+}
+
+/*  */
+
+.basicDataBox {
+  padding: 0 10px;
+}
+
+.basicDataBox .infoBox {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+.infoBox h3 {
+  font-family: "Roboto", sans-serif;
+  display: block;
+  width: 20%;
+  margin: 0;
+  color: #424d58;
+  font-weight: normal;
+}
+
+.infoBox p {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  color: #2d3640;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+/*  */
+
+.titlesBox {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  /* justify-content: space-between; */
+}
+
+.titlesBox p {
+  font-family: "Roboto", sans-serif;
+  color: #424d58;
+  font-weight: normal;
+  font-size: 18px;
+  text-align: center;
+  margin: 0;
+  display: block;
+  width: 32.5%;
+}
+
+/*  */
+
+.notesBox {
+  width: 80%;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  margin: 0 auto;
+}
+
+.notesBox h3 {
+  margin: 5px;
+  color: #424d58;
+  font-family: "Roboto", sans-serif;
+}
+
+.notesBox p {
+  margin: 5px;
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+}
+
+/* select */
+
+.selectBox {
+  position: relative;
+  width: 45%;
+  margin-right: 10px;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  border-radius: 5px;
+  font-size: 22px;
+  padding: 12px 10px;
+  outline: none;
+  color: #777777;
+}
+
+.selectBox::after {
+  pointer-events: none;
+  content: "";
+  justify-self: end;
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 13px;
+  height: 10px;
+  background-color: grey;
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  transition: 0.5s;
+}
+
+.inputBox input:focus {
+  outline: none;
+}
+
+/* input */
+
+.inputBox {
+  width: 45%;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputBox input {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 12px 10px;
+  width: 100%;
+  height: 25px;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.inputBox input:focus {
+  outline: none;
+}
+
+.error {
+  position: absolute;
+  top: -7%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.error p {
+  color: #f03a30;
+}
+
+.inputBox button {
+  position: relative;
+  padding: 12px 12px;
+  height: 50px;
+  width: 50px;
+  margin: 0 10px;
+  border: none;
+  background-color: #8097ff;
+  color: white;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.palletInfo {
+  display: flex;
+  margin: 20px;
+}
+
+.sendBtn {
+  display: block;
+  padding: 12px 12px;
+  height: 50px;
+  width: 45%;
+  margin: 0 auto 40px;
+  border: none;
+  background-color: #8097ff;
+  color: white;
+  border-radius: 5px;
+  font-size: 22px;
+}

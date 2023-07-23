@@ -11,8 +11,10 @@ const OperationsList = (props) => {
   const formattedName = (name) => {
     if (name === "DeliveryList") {
       return "Dostawa";
-    } else {
+    } else if (name === "OrderList") {
       return "Zamówienie";
+    } else {
+      return "Transfer";
     }
   };
 
@@ -36,7 +38,7 @@ const OperationsList = (props) => {
           .catch((err) => {
             console.log(err);
           });
-      } else {
+      } else if (formattedName(item.__typename) === "Zamówienie") {
         createOperation({
           variables: {
             ordersId: item.id,
@@ -44,6 +46,25 @@ const OperationsList = (props) => {
         })
           .then((data) => {
             navigate("/main/operations/action/order", {
+              state: {
+                id: data.data.createOperation.id,
+                data: item,
+                operation: null,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        console.log(item.id);
+        createOperation({
+          variables: {
+            transfersId: item.id,
+          },
+        })
+          .then((data) => {
+            navigate("/main/operations/action/transfers", {
               state: {
                 id: data.data.createOperation.id,
                 data: item,
@@ -65,7 +86,7 @@ const OperationsList = (props) => {
             data: item,
           },
         });
-      } else {
+      } else if (formattedName(item.__typename) === "Zamówienie") {
         navigate("/main/operations/action/order", {
           state: {
             operation: props.operations.operations.filter(
@@ -74,10 +95,19 @@ const OperationsList = (props) => {
             data: item,
           },
         });
+      } else {
+        navigate("/main/operations/action/transfers", {
+          state: {
+            operation: props.operations.operations.filter(
+              (operation) => operation.transfersId === item.id
+            ),
+            data: item,
+          },
+        });
       }
     }
   };
-
+  console.log(props.data);
   return (
     <div className={style.container}>
       {props.data &&
@@ -91,7 +121,9 @@ const OperationsList = (props) => {
               <p className={style.name}>
                 {item.supplier !== undefined
                   ? item.supplier.name
-                  : item.client.name}
+                  : item.client
+                  ? item.client.name
+                  : item.employee}
               </p>
               <p className={style.date}>{dateToPolish(item.date)}</p>
             </div>
