@@ -1,19 +1,30 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+// import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./utils/apollo/apolloClient";
 import { Provider } from "react-redux";
 import store from "./context";
+import ReactDOM from "react-dom";
+// const root = ReactDOM.createRoot(document.getElementById("root"));
+// root.render(
+//   <ApolloProvider client={client}>
+//     <Provider store={store}>
+//       <React.StrictMode>
+//         <App />
+//       </React.StrictMode>
+//     </Provider>
+//   </ApolloProvider>
+// );
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+ReactDOM.render(
   <ApolloProvider client={client}>
     <Provider store={store}>
       <React.StrictMode>
         <App />
       </React.StrictMode>
     </Provider>
-  </ApolloProvider>
+  </ApolloProvider>,
+  document.getElementById("root")
 );

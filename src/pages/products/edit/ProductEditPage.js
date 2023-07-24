@@ -14,6 +14,7 @@ import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import { FaAngleLeft } from "react-icons/fa";
 import { selectValidator, textValidator } from "../../../utils/inputValidators";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const unitItemsList = [
   { name: "Wybierz jednostkę" },
@@ -29,12 +30,25 @@ const unitItemsList = [
 const ProductEditPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [getProduct, { loading }] = useMutation(GET_PRODUCT);
-  const [updateProduct, { error }] = useMutation(UPDATE_PRODUCT);
-  const { data: suppliersData, loading: loadingSuppliers } =
-    useQuery(GET_SUPPLIERS);
   const [data, setData] = useState();
   const [options, setOptions] = useState([]);
+  const [error, setError] = useState();
+
+  const [getProduct, { loading }] = useMutation(GET_PRODUCT, {
+    onError: (error) => setError(error),
+  });
+  const [updateProduct, { loading: updateLoading }] = useMutation(
+    UPDATE_PRODUCT,
+    {
+      onError: (error) => setError(error),
+    }
+  );
+  const { data: suppliersData, loading: loadingSuppliers } = useQuery(
+    GET_SUPPLIERS,
+    {
+      onError: (error) => setError(error),
+    }
+  );
 
   useEffect(() => {
     if (suppliersData && !loadingSuppliers) {
@@ -109,11 +123,16 @@ const ProductEditPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {data && !loading && (
+      <ErrorHandler error={error} />
+      {(loading || updateLoading || loadingSuppliers) && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {data && (
         <main>
-          {error && error.message === "USER DONT EXISTS" && (
-            <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-          )}
           <Form
             onSubmit={onSubmit}
             render={({ handleSubmit, invalid }) => (
@@ -123,71 +142,61 @@ const ProductEditPage = () => {
                   Edytuj wybrane dane. Pamiętaj, że wszystkie pola są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading ? (
-                    <div className={style.spinnerBox}>
-                      <div className={style.spinner}>
-                        <Spinner />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="supplier"
-                          validator={selectValidator}
-                          options={options}
-                          initVal={getSupplierHandler()}
-                        />
-                      </div>
-                      <Input
-                        name="Nazwa"
-                        type="text"
-                        fieldName="name"
-                        validator={textValidator}
-                        width="47%"
-                        initVal={data.name}
-                      />
-                      <Input
-                        name="Typ"
-                        type="text"
-                        fieldName="type"
-                        validator={textValidator}
-                        width="47%"
-                        initVal={data.type}
-                      />
-                      <Input
-                        name="Pojemoność"
-                        type="text"
-                        fieldName="capacity"
-                        validator={textValidator}
-                        width="47%"
-                        initVal={data.capacity}
-                      />
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="unit"
-                          validator={selectValidator}
-                          options={unitItemsList}
-                          initVal={data.unit}
-                        />
-                      </div>
-                      <Input
-                        name="Cena za jednostkę"
-                        type="number"
-                        fieldName="pricePerUnit"
-                        validator={textValidator}
-                        width="47%"
-                        initVal={data.pricePerUnit}
-                      />
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                      >
-                        Edytuj
-                      </button>
-                    </>
-                  )}
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="supplier"
+                      validator={selectValidator}
+                      options={options}
+                      initVal={getSupplierHandler()}
+                    />
+                  </div>
+                  <Input
+                    name="Nazwa"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    width="47%"
+                    initVal={data.name}
+                  />
+                  <Input
+                    name="Typ"
+                    type="text"
+                    fieldName="type"
+                    validator={textValidator}
+                    width="47%"
+                    initVal={data.type}
+                  />
+                  <Input
+                    name="Pojemoność"
+                    type="text"
+                    fieldName="capacity"
+                    validator={textValidator}
+                    width="47%"
+                    initVal={data.capacity}
+                  />
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="unit"
+                      validator={selectValidator}
+                      options={unitItemsList}
+                      initVal={data.unit}
+                    />
+                  </div>
+                  <Input
+                    name="Cena za jednostkę"
+                    type="number"
+                    fieldName="pricePerUnit"
+                    validator={textValidator}
+                    width="47%"
+                    initVal={data.pricePerUnit}
+                  />
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    Edytuj
+                  </button>
                 </div>
               </form>
             )}

@@ -14,6 +14,8 @@ import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import { FaAngleLeft, FaPlus } from "react-icons/fa";
 import { ADD_EMPLOYEE } from "../../../utils/apollo/apolloMutations";
+import { useState } from "react";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -35,7 +37,10 @@ const positonList = [
 
 const EmployeeAddPage = () => {
   const navigate = useNavigate();
-  const [addEmployee, { loading, error }] = useMutation(ADD_EMPLOYEE);
+  const [error, setError] = useState();
+  const [addEmployee, { loading }] = useMutation(ADD_EMPLOYEE, {
+    onError: (error) => setError(error),
+  });
 
   const onSubmit = (values) => {
     addEmployee({
@@ -77,97 +82,91 @@ const EmployeeAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      <main>
-        {error && error.message === "EMAIL TAKEN" && (
-          <p className={style.errorText}>Podany email jest już zajęty</p>
-        )}
-        {error && error.message === "SERVER_ERROR" && (
-          <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-        )}
-        <Form
-          onSubmit={onSubmit}
-          render={({ handleSubmit, invalid }) => (
-            <form className={style.form} onSubmit={handleSubmit}>
-              <h1>Dodawanie pracownika</h1>
-              <p>
-                Uzupełnij dane żeby dodać nowego pracownika do systemu.
-                Tymczasowe hasło zostanie mu wysłane na jego email.
-              </p>
-              <div className={style.inputBox}>
-                {loading ? (
-                  <div className={style.spinnerBox}>
-                    <div className={style.spinner}>
-                      <Spinner />
-                    </div>
+      <ErrorHandler error={error} />
+      {loading && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {!loading && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                <h1>Dodawanie pracownika</h1>
+                <p>
+                  Uzupełnij dane żeby dodać nowego pracownika do systemu.
+                  Tymczasowe hasło zostanie mu wysłane na jego email.
+                </p>
+                <div className={style.inputBox}>
+                  <Input
+                    name="Imię"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Nazwisko"
+                    type="text"
+                    fieldName="surname"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Adres e-mail"
+                    type="email"
+                    fieldName="email"
+                    validator={emailValidator}
+                    width="100%"
+                  />
+                  <Input
+                    name="Numer telefonu"
+                    type="tel"
+                    fieldName="phone"
+                    validator={phoneValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Adres zamieszkania"
+                    type="text"
+                    fieldName="adres"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="warehouse"
+                      validator={selectValidator}
+                      options={warehouseList}
+                      title="Magazny"
+                    />
                   </div>
-                ) : (
-                  <>
-                    <Input
-                      name="Imię"
-                      type="text"
-                      fieldName="name"
-                      validator={textValidator}
-                      width="47%"
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="position"
+                      validator={selectValidator}
+                      options={positonList}
+                      title="Stanowisko"
                     />
-                    <Input
-                      name="Nazwisko"
-                      type="text"
-                      fieldName="surname"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Adres e-mail"
-                      type="email"
-                      fieldName="email"
-                      validator={emailValidator}
-                      width="100%"
-                    />
-                    <Input
-                      name="Numer telefonu"
-                      type="tel"
-                      fieldName="phone"
-                      validator={phoneValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Adres zamieszkania"
-                      type="text"
-                      fieldName="adres"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <div className={style.selectBox}>
-                      <Select
-                        fieldName="warehouse"
-                        validator={selectValidator}
-                        options={warehouseList}
-                        title="Magazny"
-                      />
-                    </div>
-                    <div className={style.selectBox}>
-                      <Select
-                        fieldName="position"
-                        validator={selectValidator}
-                        options={positonList}
-                        title="Stanowisko"
-                      />
-                    </div>
-                    <button
-                      disabled={invalid}
-                      type="submit"
-                      style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                    >
-                      <FaPlus className={style.icon} />
-                      Dodaj
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
-          )}
-        />
-      </main>
+                  </div>
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    <FaPlus className={style.icon} />
+                    Dodaj
+                  </button>
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

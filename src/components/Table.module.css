@@ -27,6 +27,11 @@ thead th {
   border-bottom: 2px solid #ced3d9;
 }
 
+.emptyData {
+  text-align: center;
+  width: 100%;
+}
+
 .table tbody tr:last-child td {
   border-bottom: none;
   border: none;

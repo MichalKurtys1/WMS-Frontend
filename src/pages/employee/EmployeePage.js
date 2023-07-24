@@ -8,6 +8,8 @@ import style from "./EmployeePage.module.css";
 import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const EmployeePage = () => {
   const navigate = useNavigate();
@@ -15,8 +17,17 @@ const EmployeePage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_EMPLOYYES);
-  const [deleteEmployye] = useMutation(DELETE_EMPLOYYE);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_EMPLOYYES, {
+    onError: (error) => setError(error),
+  });
+  const [deleteEmployye] = useMutation(DELETE_EMPLOYYE, {
+    onError: (error) => setError(error),
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [location.pathname, refetch]);
 
   useEffect(() => {
     if (location.state) {
@@ -75,7 +86,6 @@ const EmployeePage = () => {
   const messageHandler = () => {
     navigate("/main/messages");
   };
-
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -89,6 +99,7 @@ const EmployeePage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Pracownik usunięty pomyślnie</p>
@@ -106,7 +117,14 @@ const EmployeePage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.users && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
@@ -135,6 +153,7 @@ const EmployeePage = () => {
           )}
         </div>
       </main>
+
       {popupIsOpen && (
         <PopUp
           message={

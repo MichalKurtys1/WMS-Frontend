@@ -8,6 +8,8 @@ import style from "./ProductsPage.module.css";
 import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const ProductsPage = () => {
   const location = useLocation();
@@ -15,8 +17,13 @@ const ProductsPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_PRODUCTS);
-  const [deleteProduct] = useMutation(DELETE_PRODUCT);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+  });
+  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -89,6 +96,7 @@ const ProductsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Produkt usunięty pomyślnie</p>
@@ -107,7 +115,14 @@ const ProductsPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.products && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}

@@ -11,11 +11,9 @@ import { checkToken } from "./utils/auth";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
 import EmployeeEditPage from "./pages/employee/edit/EmployeeEditPage";
-import EmployeeDetailsPage from "./pages/employee/details/EmployeeDetailsPage";
 import ClientsPage from "./pages/clients/ClientsPage";
 import ClientsAddPage from "./pages/clients/add/ClientsAddPage";
 import ClientsEditPage from "./pages/clients/edit/ClientsEditPage";
-import ClientsDetailsPage from "./pages/clients/details/ClientsDetailsPage";
 import SuppliersAddPage from "./pages/suppliers/add/SuppliersAddPage";
 import SuppliersEditPage from "./pages/suppliers/edit/SuppliersEditPage";
 import SuppliersDetailsPage from "./pages/suppliers/details/SuppliersDetailsPage";
@@ -108,10 +106,6 @@ const router = createBrowserRouter([
                 path: "edit",
                 element: <ClientsEditPage />,
               },
-              {
-                path: "details",
-                element: <ClientsDetailsPage />,
-              },
             ],
           },
           {
@@ -173,10 +167,6 @@ const router = createBrowserRouter([
                 path: "edit",
                 element: <EmployeeEditPage />,
               },
-              {
-                path: "details",
-                element: <EmployeeDetailsPage />,
-              },
             ],
           },
           {
@@ -190,10 +180,6 @@ const router = createBrowserRouter([
               {
                 path: "edit",
                 element: <ProductEditPage />,
-              },
-              {
-                path: "details",
-                element: <EmployeeDetailsPage />,
               },
             ],
           },

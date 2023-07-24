@@ -1,15 +1,31 @@
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import style from "./VisualizationPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
 import { useQuery } from "@apollo/client";
 import LocationItem from "./LocationItem";
 import { GET_LOCATIONS } from "../../utils/apollo/apolloQueries";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const VisualizationPage = () => {
   const navigate = useNavigate();
-  const { data: locations } = useQuery(GET_LOCATIONS);
+  const location = useLocation();
+  const [error, setError] = useState();
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const {
+    data: locations,
+    loading,
+    refetch,
+  } = useQuery(GET_LOCATIONS, {
+    onError: (error) => setError(error),
+  });
+
+  useEffect(() => {
+    if (location.state) {
+      refetch();
+    }
+  });
 
   const addSelectedLocation = (id) => {
     setSelectedLocations((prevList) => [...prevList, id]);
@@ -40,6 +56,7 @@ const VisualizationPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       <div className={style.imageBox}>
         <div className={style.innerBox}>
           <button onClick={() => navigate("/main/visualisation/transfers")}>
@@ -48,10 +65,19 @@ const VisualizationPage = () => {
           {selectedLocations.length > 0 && (
             <button onClick={moveProductsHandler}>Prenieś asortyment</button>
           )}
-          <img
-            src={require("../../assets/Warehouse layout.png")}
-            alt="layout"
-          />
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {locations && (
+            <img
+              src={require("../../assets/Warehouse layout.png")}
+              alt="layout"
+            />
+          )}
           {locations &&
             locations.locations.map((item) => (
               <LocationItem

@@ -14,6 +14,8 @@ import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
 import { FaAngleLeft } from "react-icons/fa";
 import ProductList from "../ProductsList";
+import Spinner from "../../../components/Spiner";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -30,8 +32,13 @@ const DeliveriesAddPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
+  const [error, setError] = useState();
+  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
+    onError: (error) => setError(error),
+  });
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+  });
   const [options, setOptions] = useState([]);
   const [productList, setProductList] = useState(
     location.state !== null
@@ -148,107 +155,113 @@ const DeliveriesAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      <main>
-        <Form
-          onSubmit={onSubmit}
-          render={({ handleSubmit, invalid }) => (
-            <form className={style.form} onSubmit={handleSubmit}>
-              <div className={style.basicInfoBox}>
-                <h1>Dodawanie dostawy</h1>
-                <div className={style.basicData}>
-                  <p>Dane podstawowe</p>
-                </div>
-                <div className={style.inputBox}>
-                  {data && !loadingSuppliers && (
-                    <>
-                      <div className={style.column}>
-                        <div className={style.selectBox}>
-                          <Select
-                            fieldName="supplier"
-                            validator={selectValidator}
-                            initVal={
-                              location.state !== null
-                                ? getSupplierHandler()
-                                : null
-                            }
-                            options={options || []}
-                          />
-                        </div>
-                        <Input
-                          name="date"
-                          type="datetime-local"
-                          fieldName="date"
-                          min={getCurrentDateTime()}
-                          width="90%"
-                          initVal={
-                            location.state !== null
-                              ? location.state.savedData.date
-                              : null
-                          }
-                        />
-                        <div className={style.selectBox}>
-                          <Select
-                            fieldName="magazine"
-                            validator={selectValidator}
-                            initVal={
-                              location.state !== null
-                                ? location.state.savedData.warehouse
-                                : null
-                            }
-                            options={warehouseList}
-                          />
-                        </div>
-                      </div>
-                      <div className={style.column}>
-                        <TextArea
-                          name="Dodatkowe informacje"
-                          type="text"
-                          fieldName="comments"
-                          width="100%"
-                          initVal={
-                            location.state !== null
-                              ? location.state.savedData.comments
-                              : null
-                          }
-                        />
-                        <button
-                          disabled={invalid}
-                          type="submit"
-                          style={{
-                            backgroundColor: invalid ? "#B6BABF" : null,
-                          }}
-                        >
-                          Dalej
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className={style.productData}>
-                <p>Produkty</p>
-              </div>
-              <div className={style.productContainer}>
-                {submitError && (
-                  <div className={style.error}>
-                    <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
+      <ErrorHandler error={error} />
+      {(loadingSuppliers || loadingProducts) && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {(!loadingSuppliers || !loadingProducts) && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                <div className={style.basicInfoBox}>
+                  <h1>Dodawanie dostawy</h1>
+                  <div className={style.basicData}>
+                    <p>Dane podstawowe</p>
                   </div>
-                )}
-                <ProductList
-                  productList={productList}
-                  products={products}
-                  loadingProducts={loadingProducts}
-                  deleteHandler={deleteHandler}
-                  changeProductHandler={changeProductHandler}
-                  changeUnitHandler={changeUnitHandler}
-                  quantityUnitHandler={quantityUnitHandler}
-                  addProductInputCounter={addProductInputCounter}
-                />
-              </div>
-            </form>
-          )}
-        />
-      </main>
+                  <div className={style.inputBox}>
+                    <div className={style.column}>
+                      <div className={style.selectBox}>
+                        <Select
+                          fieldName="supplier"
+                          validator={selectValidator}
+                          initVal={
+                            location.state !== null
+                              ? getSupplierHandler()
+                              : null
+                          }
+                          options={options || []}
+                        />
+                      </div>
+                      <Input
+                        name="date"
+                        type="datetime-local"
+                        fieldName="date"
+                        min={getCurrentDateTime()}
+                        width="90%"
+                        initVal={
+                          location.state !== null
+                            ? location.state.savedData.date
+                            : null
+                        }
+                      />
+                      <div className={style.selectBox}>
+                        <Select
+                          fieldName="magazine"
+                          validator={selectValidator}
+                          initVal={
+                            location.state !== null
+                              ? location.state.savedData.warehouse
+                              : null
+                          }
+                          options={warehouseList}
+                        />
+                      </div>
+                    </div>
+                    <div className={style.column}>
+                      <TextArea
+                        name="Dodatkowe informacje"
+                        type="text"
+                        fieldName="comments"
+                        width="100%"
+                        initVal={
+                          location.state !== null
+                            ? location.state.savedData.comments
+                            : null
+                        }
+                      />
+                      <button
+                        disabled={invalid}
+                        type="submit"
+                        style={{
+                          backgroundColor: invalid ? "#B6BABF" : null,
+                        }}
+                      >
+                        Dalej
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className={style.productData}>
+                  <p>Produkty</p>
+                </div>
+                <div className={style.productContainer}>
+                  {submitError && (
+                    <div className={style.error}>
+                      <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
+                    </div>
+                  )}
+                  <ProductList
+                    productList={productList}
+                    products={products}
+                    loadingProducts={loadingProducts}
+                    deleteHandler={deleteHandler}
+                    changeProductHandler={changeProductHandler}
+                    changeUnitHandler={changeUnitHandler}
+                    quantityUnitHandler={quantityUnitHandler}
+                    addProductInputCounter={addProductInputCounter}
+                  />
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

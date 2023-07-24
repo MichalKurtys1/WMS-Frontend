@@ -4,12 +4,17 @@ import { FaAngleLeft } from "react-icons/fa";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_SUPPLIER } from "../../../utils/apollo/apolloMutations";
+import Spinner from "../../../components/Spiner";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const SuppliersDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [getSupplier] = useMutation(GET_SUPPLIER);
+  const [error, setError] = useState();
   const [data, setData] = useState();
+  const [getSupplier, { loading }] = useMutation(GET_SUPPLIER, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     getSupplier({
@@ -41,6 +46,14 @@ const SuppliersDetailsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
+      {loading && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
       {data && (
         <div className={style.supplierBox}>
           <h1>{data.name}</h1>

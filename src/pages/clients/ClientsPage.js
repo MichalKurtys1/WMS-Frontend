@@ -8,6 +8,8 @@ import style from "./ClientsPage.module.css";
 import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
@@ -15,8 +17,13 @@ const ClientsPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_CLIENTS);
-  const [deleteClient] = useMutation(DELETE_CLIENT);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_CLIENTS, {
+    onError: (error) => setError(error),
+  });
+  const [deleteClient] = useMutation(DELETE_CLIENT, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -89,6 +96,7 @@ const ClientsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Klient usunięty pomyślnie</p>
@@ -107,7 +115,14 @@ const ClientsPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.clients && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}

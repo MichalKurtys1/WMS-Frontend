@@ -12,10 +12,15 @@ import style from "./SuppliersAddPage.module.css";
 import Input from "../../../components/Input";
 import Spinner from "../../../components/Spiner";
 import { FaAngleLeft } from "react-icons/fa";
+import { useState } from "react";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const SuppliersAddPage = () => {
   const navigate = useNavigate();
-  const [addSupplier, { loading, error }] = useMutation(ADD_SUPPLIER);
+  const [error, setError] = useState();
+  const [addSupplier, { loading }] = useMutation(ADD_SUPPLIER, {
+    onError: (error) => setError(error),
+  });
 
   const onSubmit = (values) => {
     addSupplier({
@@ -59,107 +64,101 @@ const SuppliersAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      <main>
-        {error && error.message === "EMAIL TAKEN" && (
-          <p className={style.errorText}>Podany email jest już zajęty</p>
-        )}
-        {error && error.message === "SERVER_ERROR" && (
-          <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-        )}
-        <Form
-          onSubmit={onSubmit}
-          render={({ handleSubmit, invalid }) => (
-            <form className={style.form} onSubmit={handleSubmit}>
-              <h1>Dodawanie dostawcy</h1>
-              <p>
-                Uzupełnij dane żeby dodać nowego dostawce do systemu. Dane
-                oznaczone gwiazdką są obowiązkowe.
-              </p>
-              <div className={style.inputBox}>
-                {loading ? (
-                  <div className={style.spinnerBox}>
-                    <div className={style.spinner}>
-                      <Spinner />
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Input
-                      name="Nazwa *"
-                      type="text"
-                      fieldName="name"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Numer telefonu *"
-                      type="tel"
-                      fieldName="phone"
-                      validator={phoneValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Adres e-mail *"
-                      type="email"
-                      fieldName="email"
-                      validator={emailValidator}
-                      width="100%"
-                    />
-                    <Input
-                      name="Nazwa banku"
-                      type="text"
-                      fieldName="bank"
-                      validator={textValidator}
-                      width="100%"
-                    />
-                    <Input
-                      name="Numer konta"
-                      type="text"
-                      fieldName="accountNumber"
-                      validator={textValidator}
-                      width="100%"
-                    />
-                    <Input
-                      name="NIP"
-                      type="text"
-                      fieldName="nip"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Miejscowość *"
-                      type="text"
-                      fieldName="city"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Ulica *"
-                      type="text"
-                      fieldName="street"
-                      width="47%"
-                    />
-                    <Input
-                      name="Numer *"
-                      type="number"
-                      fieldName="number"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <button
-                      disabled={invalid}
-                      type="submit"
-                      style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                    >
-                      Dodaj
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
-          )}
-        />
-      </main>
+      <ErrorHandler error={error} />
+      {loading && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {!loading && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                <h1>Dodawanie dostawcy</h1>
+                <p>
+                  Uzupełnij dane żeby dodać nowego dostawce do systemu. Dane
+                  oznaczone gwiazdką są obowiązkowe.
+                </p>
+                <div className={style.inputBox}>
+                  <Input
+                    name="Nazwa *"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Numer telefonu *"
+                    type="tel"
+                    fieldName="phone"
+                    validator={phoneValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Adres e-mail *"
+                    type="email"
+                    fieldName="email"
+                    validator={emailValidator}
+                    width="100%"
+                  />
+                  <Input
+                    name="Nazwa banku"
+                    type="text"
+                    fieldName="bank"
+                    validator={textValidator}
+                    width="100%"
+                  />
+                  <Input
+                    name="Numer konta"
+                    type="text"
+                    fieldName="accountNumber"
+                    validator={textValidator}
+                    width="100%"
+                  />
+                  <Input
+                    name="NIP"
+                    type="text"
+                    fieldName="nip"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Miejscowość *"
+                    type="text"
+                    fieldName="city"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Ulica *"
+                    type="text"
+                    fieldName="street"
+                    width="47%"
+                  />
+                  <Input
+                    name="Numer *"
+                    type="number"
+                    fieldName="number"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

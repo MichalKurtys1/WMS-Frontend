@@ -16,13 +16,19 @@ import style from "./ClientsEditPage.module.css";
 import Input from "../../../components/Input";
 import Spinner from "../../../components/Spiner";
 import { FaAngleLeft, FaPen } from "react-icons/fa";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const ClientsEditPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [getClient, { loading }] = useMutation(GET_CLIENT);
-  const [updateClient, { error }] = useMutation(UPDATE_CLIENT);
+  const [error, setError] = useState();
   const [data, setData] = useState();
+  const [getClient, { loading }] = useMutation(GET_CLIENT, {
+    onError: (error) => setError(error),
+  });
+  const [updateClient, { updateLoading }] = useMutation(UPDATE_CLIENT, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     getClient({
@@ -79,11 +85,16 @@ const ClientsEditPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {data && !loading && (
+      <ErrorHandler error={error} />
+      {(loading || updateLoading) && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {data && (
         <main>
-          {error && error.message === "USER DONT EXISTS" && (
-            <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-          )}
           <Form
             onSubmit={onSubmit}
             render={({ handleSubmit, invalid }) => (
@@ -94,78 +105,68 @@ const ClientsEditPage = () => {
                   są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading ? (
-                    <div className={style.spinnerBox}>
-                      <div className={style.spinner}>
-                        <Spinner />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <Input
-                        name="Nazwa *"
-                        type="text"
-                        fieldName="name"
-                        validator={textValidator}
-                        initVal={data.name}
-                        width="47%"
-                      />
-                      <Input
-                        name="Numer telefonu *"
-                        type="tel"
-                        fieldName="phone"
-                        validator={phoneValidator}
-                        initVal={data.phone}
-                        width="47%"
-                      />
-                      <Input
-                        name="Adres e-mail *"
-                        type="email"
-                        fieldName="email"
-                        validator={emailValidator}
-                        initVal={data.email}
-                        width="100%"
-                      />
-                      <Input
-                        name="Miejscowość *"
-                        type="text"
-                        fieldName="city"
-                        validator={textValidator}
-                        initVal={data.city}
-                        width="47%"
-                      />
-                      <Input
-                        name="Ulica *"
-                        type="text"
-                        fieldName="street"
-                        initVal={data.street}
-                        width="47%"
-                      />
-                      <Input
-                        name="Numer *"
-                        type="number"
-                        fieldName="number"
-                        validator={textValidator}
-                        initVal={data.number}
-                        width="47%"
-                      />
-                      <Input
-                        name="NIP"
-                        type="text"
-                        fieldName="nip"
-                        initVal={data.nip || "-"}
-                        width="47%"
-                      />
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                      >
-                        <FaPen className={style.icon} />
-                        Edytuj
-                      </button>
-                    </>
-                  )}
+                  <Input
+                    name="Nazwa *"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    initVal={data.name}
+                    width="47%"
+                  />
+                  <Input
+                    name="Numer telefonu *"
+                    type="tel"
+                    fieldName="phone"
+                    validator={phoneValidator}
+                    initVal={data.phone}
+                    width="47%"
+                  />
+                  <Input
+                    name="Adres e-mail *"
+                    type="email"
+                    fieldName="email"
+                    validator={emailValidator}
+                    initVal={data.email}
+                    width="100%"
+                  />
+                  <Input
+                    name="Miejscowość *"
+                    type="text"
+                    fieldName="city"
+                    validator={textValidator}
+                    initVal={data.city}
+                    width="47%"
+                  />
+                  <Input
+                    name="Ulica *"
+                    type="text"
+                    fieldName="street"
+                    initVal={data.street}
+                    width="47%"
+                  />
+                  <Input
+                    name="Numer *"
+                    type="number"
+                    fieldName="number"
+                    validator={textValidator}
+                    initVal={data.number}
+                    width="47%"
+                  />
+                  <Input
+                    name="NIP"
+                    type="text"
+                    fieldName="nip"
+                    initVal={data.nip || "-"}
+                    width="47%"
+                  />
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    <FaPen className={style.icon} />
+                    Edytuj
+                  </button>
                 </div>
               </form>
             )}

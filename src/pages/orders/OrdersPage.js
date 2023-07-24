@@ -9,6 +9,8 @@ import style from "./OrdersPage.module.css";
 import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const OrdersPage = () => {
   const location = useLocation();
@@ -16,9 +18,16 @@ const OrdersPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_ORDERS);
-  const [deleteOrder] = useMutation(DELETE_ORDER);
-  const [getOrder] = useMutation(GET_ORDER);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_ORDERS, {
+    onError: (error) => setError(error),
+  });
+  const [deleteOrder] = useMutation(DELETE_ORDER, {
+    onError: (error) => setError(error),
+  });
+  const [getOrder] = useMutation(GET_ORDER, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -103,6 +112,7 @@ const OrdersPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Zamówienie usunięte pomyślnie</p>
@@ -121,7 +131,14 @@ const OrdersPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.orders && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}

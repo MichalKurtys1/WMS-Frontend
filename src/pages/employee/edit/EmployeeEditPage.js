@@ -18,6 +18,7 @@ import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import Input from "../../../components/Input";
 import { FaAngleLeft, FaPen } from "react-icons/fa";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -40,9 +41,14 @@ const positonList = [
 const EmployeeEditPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [getEmployee, { loading }] = useMutation(GET_EMPLOYEE);
-  const [updateEmployee, { error }] = useMutation(UPDATE_EMPLOYEE);
+  const [error, setError] = useState();
   const [data, setData] = useState();
+  const [getEmployee, { loading }] = useMutation(GET_EMPLOYEE, {
+    onError: (error) => setError(error),
+  });
+  const [updateEmployee, { updateLoading }] = useMutation(UPDATE_EMPLOYEE, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     getEmployee({
@@ -99,11 +105,16 @@ const EmployeeEditPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {data && !loading && (
+      <ErrorHandler error={error} />
+      {(loading || updateLoading) && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {data && (
         <main>
-          {error && error.message === "USER DONT EXISTS" && (
-            <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-          )}
           <Form
             onSubmit={onSubmit}
             render={({ handleSubmit, invalid }) => (
@@ -113,83 +124,73 @@ const EmployeeEditPage = () => {
                   Edytuj wybrane dane. Pamiętaj, że wszystkie pola są wymagane.
                 </p>
                 <div className={style.inputBox}>
-                  {loading ? (
-                    <div className={style.spinnerBox}>
-                      <div className={style.spinner}>
-                        <Spinner />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <Input
-                        name="Imię"
-                        type="text"
-                        fieldName="name"
-                        validator={textValidator}
-                        initVal={data.firstname}
-                        width="47%"
-                      />
-                      <Input
-                        name="Nazwisko"
-                        type="text"
-                        fieldName="surname"
-                        validator={textValidator}
-                        initVal={data.lastname}
-                        width="47%"
-                      />
+                  <Input
+                    name="Imię"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    initVal={data.firstname}
+                    width="47%"
+                  />
+                  <Input
+                    name="Nazwisko"
+                    type="text"
+                    fieldName="surname"
+                    validator={textValidator}
+                    initVal={data.lastname}
+                    width="47%"
+                  />
 
-                      <Input
-                        name="Adres e-mail"
-                        type="email"
-                        fieldName="email"
-                        validator={emailValidator}
-                        initVal={data.email}
-                        width="100%"
-                      />
-                      <Input
-                        name="Numer telefonu"
-                        type="number"
-                        fieldName="phone"
-                        validator={phoneValidator}
-                        initVal={data.phone}
-                        width="47%"
-                      />
-                      <Input
-                        name="Adres zamieszkania"
-                        type="text"
-                        fieldName="adress"
-                        validator={textValidator}
-                        initVal={data.adres}
-                        width="47%"
-                      />
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="magazine"
-                          validator={selectValidator}
-                          initVal={data.magazine}
-                          options={warehouseList}
-                          title="Magazny"
-                        />
-                      </div>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="position"
-                          validator={selectValidator}
-                          initVal={data.position}
-                          options={positonList}
-                          title="Stanowisko"
-                        />
-                      </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                      >
-                        <FaPen className={style.icon} />
-                        Edytuj
-                      </button>
-                    </>
-                  )}
+                  <Input
+                    name="Adres e-mail"
+                    type="email"
+                    fieldName="email"
+                    validator={emailValidator}
+                    initVal={data.email}
+                    width="100%"
+                  />
+                  <Input
+                    name="Numer telefonu"
+                    type="number"
+                    fieldName="phone"
+                    validator={phoneValidator}
+                    initVal={data.phone}
+                    width="47%"
+                  />
+                  <Input
+                    name="Adres zamieszkania"
+                    type="text"
+                    fieldName="adress"
+                    validator={textValidator}
+                    initVal={data.adres}
+                    width="47%"
+                  />
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="magazine"
+                      validator={selectValidator}
+                      initVal={data.magazine}
+                      options={warehouseList}
+                      title="Magazny"
+                    />
+                  </div>
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="position"
+                      validator={selectValidator}
+                      initVal={data.position}
+                      options={positonList}
+                      title="Stanowisko"
+                    />
+                  </div>
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    <FaPen className={style.icon} />
+                    Edytuj
+                  </button>
                 </div>
               </form>
             )}

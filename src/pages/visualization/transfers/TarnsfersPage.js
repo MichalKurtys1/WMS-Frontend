@@ -3,7 +3,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_TRANSFERS } from "../../../utils/apollo/apolloQueries";
 import {
-  DELETE_DELIVERY,
   DELETE_TRANSFER,
   GET_DELIVERY,
 } from "../../../utils/apollo/apolloMutations";
@@ -13,6 +12,8 @@ import Table from "../../../components/Table";
 import PopUp from "../../../components/PopUp";
 import { FaAngleLeft } from "react-icons/fa";
 import { dateToPolish } from "../../../utils/dateFormatters";
+import ErrorHandler from "../../../components/ErrorHandler";
+import Spinner from "../../../components/Spiner";
 
 const TransfersPage = () => {
   const navigate = useNavigate();
@@ -20,9 +21,16 @@ const TransfersPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_TRANSFERS);
-  const [deleteTransfer] = useMutation(DELETE_TRANSFER);
-  const [getDelivery] = useMutation(GET_DELIVERY);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_TRANSFERS, {
+    onError: (error) => setError(error),
+  });
+  const [deleteTransfer] = useMutation(DELETE_TRANSFER, {
+    onError: (error) => setError(error),
+  });
+  const [getDelivery] = useMutation(GET_DELIVERY, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -40,7 +48,6 @@ const TransfersPage = () => {
 
   const confirmedDeleteHandler = () => {
     setPopupIsOpen(false);
-    console.log(selectedRow);
     deleteTransfer({
       variables: {
         deleteTransferId: selectedRow,
@@ -103,11 +110,15 @@ const TransfersPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div
+          className={style.returnBox}
+          onClick={() => navigate("/main/visualisation")}
+        >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Transfer usunięty pomyślnie</p>
@@ -118,7 +129,14 @@ const TransfersPage = () => {
           <h1>Transfery</h1>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.transfers && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}

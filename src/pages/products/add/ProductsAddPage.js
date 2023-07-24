@@ -11,6 +11,7 @@ import Input from "../../../components/Input";
 import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import { FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const unitItemsList = [
   { name: "Wybierz jednostkę" },
@@ -25,9 +26,14 @@ const unitItemsList = [
 
 const ProductsAddPage = () => {
   const navigate = useNavigate();
-  const [addProduct, { loading, error }] = useMutation(ADD_PRODUCT);
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS);
+  const [error, setError] = useState();
   const [options, setOptions] = useState([]);
+  const [addProduct, { loading }] = useMutation(ADD_PRODUCT, {
+    onError: (error) => setError(error),
+  });
+  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -81,87 +87,81 @@ const ProductsAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      <main>
-        {error && error.message === "EMAIL TAKEN" && (
-          <p className={style.errorText}>Podany email jest już zajęty</p>
-        )}
-        {error && error.message === "SERVER_ERROR" && (
-          <p>Wystapił nieoczekiwany problem. Spróbuj ponownie za chwilę</p>
-        )}
-        <Form
-          onSubmit={onSubmit}
-          render={({ handleSubmit, invalid }) => (
-            <form className={style.form} onSubmit={handleSubmit}>
-              <h1>Dodawanie produktu</h1>
-              <p>
-                Uzupełnij dane żeby dodać nowy produkt do systemu. Pamiętaj, że
-                wszystke pola są obowiązkowe.
-              </p>
-              <div className={style.inputBox}>
-                {loading ? (
-                  <div className={style.spinnerBox}>
-                    <div className={style.spinner}>
-                      <Spinner />
-                    </div>
+      <ErrorHandler error={error} />
+      {(loading || loadingSuppliers) && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {(!loading || !loadingSuppliers) && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                <h1>Dodawanie produktu</h1>
+                <p>
+                  Uzupełnij dane żeby dodać nowy produkt do systemu. Pamiętaj,
+                  że wszystke pola są obowiązkowe.
+                </p>
+                <div className={style.inputBox}>
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="supplier"
+                      validator={selectValidator}
+                      options={options}
+                    />
                   </div>
-                ) : (
-                  <>
-                    <div className={style.selectBox}>
-                      <Select
-                        fieldName="supplier"
-                        validator={selectValidator}
-                        options={options}
-                      />
-                    </div>
-                    <Input
-                      name="Nazwa"
-                      type="text"
-                      fieldName="name"
-                      validator={textValidator}
-                      width="47%"
+                  <Input
+                    name="Nazwa"
+                    type="text"
+                    fieldName="name"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Typ"
+                    type="text"
+                    fieldName="type"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <Input
+                    name="Pojemoność"
+                    type="text"
+                    fieldName="capacity"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <div className={style.selectBox}>
+                    <Select
+                      fieldName="unit"
+                      validator={selectValidator}
+                      options={unitItemsList}
                     />
-                    <Input
-                      name="Typ"
-                      type="text"
-                      fieldName="type"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <Input
-                      name="Pojemoność"
-                      type="text"
-                      fieldName="capacity"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <div className={style.selectBox}>
-                      <Select
-                        fieldName="unit"
-                        validator={selectValidator}
-                        options={unitItemsList}
-                      />
-                    </div>
-                    <Input
-                      name="Cena za jednostkę"
-                      type="number"
-                      fieldName="pricePerUnit"
-                      validator={textValidator}
-                      width="47%"
-                    />
-                    <button
-                      disabled={invalid}
-                      type="submit"
-                      style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                    >
-                      Dodaj
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
-          )}
-        />
-      </main>
+                  </div>
+                  <Input
+                    name="Cena za jednostkę"
+                    type="number"
+                    fieldName="pricePerUnit"
+                    validator={textValidator}
+                    width="47%"
+                  />
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

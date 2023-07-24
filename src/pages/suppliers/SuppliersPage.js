@@ -8,6 +8,8 @@ import style from "./SuppliersPage.module.css";
 import Table from "../../components/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const SuppliersPage = () => {
   const navigate = useNavigate();
@@ -15,8 +17,13 @@ const SuppliersPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const { data, refetch } = useQuery(GET_SUPPLIERS);
-  const [deleteSupplier] = useMutation(DELETE_SUPPLIER);
+  const [error, setError] = useState();
+  const { data, refetch, loading } = useQuery(GET_SUPPLIERS, {
+    onError: (error) => setError(error),
+  });
+  const [deleteSupplier] = useMutation(DELETE_SUPPLIER, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -90,6 +97,7 @@ const SuppliersPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
           <p>Dostawca usunięty pomyślnie</p>
@@ -108,7 +116,14 @@ const SuppliersPage = () => {
           </div>
         </div>
         <div className={style.tableBox}>
-          {data && data !== null && (
+          {loading && (
+            <div className={style.spinnerBox}>
+              <div className={style.spinner}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+          {data && data.suppliers && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}

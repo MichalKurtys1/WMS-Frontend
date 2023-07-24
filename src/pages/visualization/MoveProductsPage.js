@@ -9,12 +9,19 @@ import { useMutation, useQuery } from "@apollo/client";
 import { MdLocationOn } from "react-icons/md";
 import { ADD_TRANSFER } from "../../utils/apollo/apolloMutations";
 import { textValidator } from "../../utils/inputValidators";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
 const MoveProductsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: locations } = useQuery(GET_LOCATIONS);
-  const [addTransfer] = useMutation(ADD_TRANSFER);
+  const [error, setError] = useState();
+  const { data: locations, loading } = useQuery(GET_LOCATIONS, {
+    onError: (error) => setError(error),
+  });
+  const [addTransfer] = useMutation(ADD_TRANSFER, {
+    onError: (error) => setError(error),
+  });
   const [imageIsOpen, setImageIsOpen] = useState(false);
   const [data, setData] = useState();
   const [submitError, setSubmitError] = useState(false);
@@ -58,7 +65,11 @@ const MoveProductsPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/visualisation");
+        navigate("/main/visualisation", {
+          state: {
+            update: true,
+          },
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -126,6 +137,7 @@ const MoveProductsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       {imageIsOpen && (
         <div className={style.imageBox}>
           <button onClick={() => setImageIsOpen(false)}>
@@ -153,28 +165,35 @@ const MoveProductsPage = () => {
           </div>
         </div>
       )}
-      <main>
-        <Form
-          onSubmit={onSubmit}
-          render={({ handleSubmit, invalid }) => (
-            <form className={style.form} onSubmit={handleSubmit}>
-              {submitError && <p>Nie uzupełniono wszystkich pól.</p>}
-              <h1>Transfer asortymentu</h1>
-              <p>
-                Uzupełnij dane żeby dodać nowego pracownika do systemu.
-                Tymczasowe hasło zostanie mu wysłane na jego email.
-              </p>
-              <div className={style.inputBox}>
-                <Input
-                  name="date"
-                  type="datetime-local"
-                  fieldName="date"
-                  min={getCurrentDateTime()}
-                  width="80%"
-                  validator={textValidator}
-                />
-                {data &&
-                  data.map((item) => (
+      {loading && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {data && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                {submitError && <p>Nie uzupełniono wszystkich pól.</p>}
+                <h1>Transfer asortymentu</h1>
+                <p>
+                  Uzupełnij dane żeby dodać nowego pracownika do systemu.
+                  Tymczasowe hasło zostanie mu wysłane na jego email.
+                </p>
+                <div className={style.inputBox}>
+                  <Input
+                    name="date"
+                    type="datetime-local"
+                    fieldName="date"
+                    min={getCurrentDateTime()}
+                    width="80%"
+                    validator={textValidator}
+                  />
+                  {data.map((item) => (
                     <>
                       <div className={style.locationItem}>
                         <p>
@@ -194,18 +213,19 @@ const MoveProductsPage = () => {
                       </div>
                     </>
                   ))}
-                <button
-                  disabled={invalid}
-                  type="submit"
-                  style={{ backgroundColor: invalid ? "#B6BABF" : null }}
-                >
-                  Dodaj
-                </button>
-              </div>
-            </form>
-          )}
-        />
-      </main>
+                  <button
+                    disabled={invalid}
+                    type="submit"
+                    style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

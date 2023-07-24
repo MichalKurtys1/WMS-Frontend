@@ -119,3 +119,17 @@ main .optionPanel .addOption:hover {
   max-height: 78vh;
   /* overflow-y: auto; */
 }
+
+.spinner {
+  position: absolute;
+  z-index: 11;
+  top: 30vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.selectBox {
+  width: 47%;
+  height: 50px;
+  margin-bottom: 40px;
+}
