@@ -7,6 +7,7 @@ import { GET_LOCATIONS } from "../../utils/apollo/apolloQueries";
 import { useEffect, useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { MdLocationOn } from "react-icons/md";
 
 const VisualizationPage = () => {
   const navigate = useNavigate();
@@ -78,6 +79,46 @@ const VisualizationPage = () => {
               alt="layout"
             />
           )}
+          <div className={style.locationBox}>
+            <MdLocationOn
+              style={{
+                top: "5px",
+                right: "40px",
+              }}
+              className={style.icon}
+            />
+            <h4
+              className={style.description}
+              style={{
+                top: "0",
+                right: "5px",
+                display: "block",
+                fontWeight: "normal",
+              }}
+            >
+              Skąd
+            </h4>
+          </div>
+          <div className={style.locationBox}>
+            <MdLocationOn
+              style={{
+                top: "30px",
+                right: "40px",
+              }}
+              className={style.iconDestination}
+            />
+            <h4
+              className={style.description}
+              style={{
+                top: "25px",
+                right: "-6px",
+                display: "block",
+                fontWeight: "normal",
+              }}
+            >
+              Dokąd
+            </h4>
+          </div>
           {locations &&
             locations.locations.map((item) => (
               <LocationItem

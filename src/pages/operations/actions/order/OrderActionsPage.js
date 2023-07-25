@@ -42,6 +42,7 @@ const OrderActionsPage = () => {
           };
         })
       );
+      return;
     }
 
     if (location.state.operation.length > 0) {

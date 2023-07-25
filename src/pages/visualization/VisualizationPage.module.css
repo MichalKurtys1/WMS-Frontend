@@ -129,3 +129,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.imageBox .iconDestination {
+  position: absolute;
+  z-index: 20;
+  color: #22e650;
+}

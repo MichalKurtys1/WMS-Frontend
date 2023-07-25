@@ -37,7 +37,6 @@ const OperationsPage = () => {
         ...orders.orders,
         ...transfers.transfers,
       ];
-      console.log(dataArray);
       if (currentPage === 2) {
         setCurrentData(dataArray.filter((item) => item.state === "Zlecone"));
       } else if (currentPage === 1) {

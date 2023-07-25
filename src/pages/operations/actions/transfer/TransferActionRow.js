@@ -35,6 +35,46 @@ const TransferActionRow = (props) => {
                 <div className={style.locationBox}>
                   <MdLocationOn
                     style={{
+                      top: "5px",
+                      left: "5px",
+                    }}
+                    className={style.icon}
+                  />
+                  <h4
+                    className={style.description}
+                    style={{
+                      top: "0",
+                      left: "30px",
+                      display: "block",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    Skąd
+                  </h4>
+                </div>
+                <div className={style.locationBox}>
+                  <MdLocationOn
+                    style={{
+                      top: "30px",
+                      left: "5px",
+                    }}
+                    className={style.iconDestination}
+                  />
+                  <h4
+                    className={style.description}
+                    style={{
+                      top: "25px",
+                      left: "30px",
+                      display: "block",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    Dokąd
+                  </h4>
+                </div>
+                <div className={style.locationBox}>
+                  <MdLocationOn
+                    style={{
                       top: `${props.product.posY}px`,
                       left: `${props.product.posX}px`,
                     }}

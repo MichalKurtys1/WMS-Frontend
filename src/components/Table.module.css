@@ -11,12 +11,18 @@
   border: 2px solid black;
 }
 
-thead th {
+.table thead th {
   color: #646e78;
   padding: 15px;
   font-weight: normal;
   font-size: 18px;
   border-bottom: 2px solid #ced3d9;
+}
+
+.table thead th div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .table tbody td {

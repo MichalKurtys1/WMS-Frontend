@@ -131,8 +131,21 @@ const DeliveryActionsPage = () => {
       }
     });
   };
-
+  console.log(products);
   const nextPageHandler = () => {
+    if (activeStep === 1) {
+      let missingPositions = false;
+      products.map((item) =>
+        (!item.posX || !item.posY) && item.state === true
+          ? (missingPositions = true)
+          : null
+      );
+
+      if (missingPositions) {
+        return;
+      }
+    }
+
     const operationId = location.state.operation
       ? location.state.operation[0].id
       : location.state.id;

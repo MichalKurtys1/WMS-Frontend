@@ -82,6 +82,17 @@ const TransferActionsPage = () => {
   };
 
   const nextPageHandler = () => {
+    // if (activeStep === 1) {
+    //   setLocations(
+    //     locations.filter((item) => {
+    //       if (!item.state) {
+    //         return false;
+    //       }
+    //       return true;
+    //     })
+    //   );
+    // }
+
     const operationId = location.state.operation
       ? location.state.operation[0].id
       : location.state.id;

@@ -107,7 +107,6 @@ const OperationsList = (props) => {
       }
     }
   };
-  console.log(props.data);
   return (
     <div className={style.container}>
       {props.data &&
