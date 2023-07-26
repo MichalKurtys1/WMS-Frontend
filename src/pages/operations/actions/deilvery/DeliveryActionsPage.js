@@ -131,7 +131,7 @@ const DeliveryActionsPage = () => {
       }
     });
   };
-  console.log(products);
+
   const nextPageHandler = () => {
     if (activeStep === 1) {
       let missingPositions = false;
@@ -247,20 +247,28 @@ const DeliveryActionsPage = () => {
               <p>Produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    product={item}
-                    step={0}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        product={item}
+                        step={0}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -270,21 +278,28 @@ const DeliveryActionsPage = () => {
               <p>Produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    modifyProductPosition={modifyProductPosition}
-                    product={item}
-                    step={1}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        modifyProductPosition={modifyProductPosition}
+                        product={item}
+                        step={1}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -294,32 +309,52 @@ const DeliveryActionsPage = () => {
               <p>Przyjęte produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    modifyProductPosition={modifyProductPosition}
-                    product={item}
-                    step={2}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        modifyProductPosition={modifyProductPosition}
+                        product={item}
+                        step={2}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
             <div className={style.basicData}>
               <p>Notatki do produktów</p>
             </div>
-            {products.map((item) => (
-              <div className={style.notesBox}>
-                <h3>{item.product}</h3>
-                <p>{item.commentState || "-"}</p>
-                <p>{item.commentLocation || "-"}</p>
-              </div>
-            ))}
+            <div className={style.productBox}>
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((item) => (
+                    <tr>
+                      <td>{item.product}</td>
+                      <td>{item.commentState || "-"}</td>
+                      <td>{item.commentLocation || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

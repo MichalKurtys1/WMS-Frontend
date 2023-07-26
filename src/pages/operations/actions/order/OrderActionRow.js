@@ -37,135 +37,137 @@ const OrderActionRow = (props) => {
   return (
     <>
       {props.step === 0 && (
-        <div className={style.product}>
+        <tr className={style.tr} key={props.id}>
           {imageIsOpen && (
-            <div className={style.imageBox}>
+            <div className={style.innerBox}>
               <button onClick={() => setImageIsOpen(false)}>
                 <FaTimes />
               </button>
-              <div className={style.innerBox}>
-                <img
-                  src={require("../../../../assets/Warehouse layout.png")}
-                  alt="layout"
-                />
-                {productLocations.map((item) => (
-                  <div className={style.locationBox}>
-                    <MdLocationOn
-                      style={{ top: `${item.posY}px`, left: `${item.posX}px` }}
-                      className={style.icon}
-                    />
-                    <h4
-                      className={style.description}
-                      style={{
-                        top: `${+item.posY - 5}px`,
-                        left: `${+item.posX + 15}px`,
-                      }}
-                    >
-                      {item.numberOfProducts}x {item.product.name}{" "}
-                      {item.product.type} {item.product.capacity}
-                    </h4>
-                  </div>
-                ))}
-              </div>
+              <img
+                src={require("../../../../assets/Warehouse layout.png")}
+                alt="layout"
+              />
+              {productLocations.map((item) => (
+                <div
+                  className={style.locationBox}
+                  style={{
+                    top: `${item.posY}px`,
+                    left: `${item.posX}px`,
+                  }}
+                >
+                  <MdLocationOn className={style.icon} />
+                  <p className={style.description}>
+                    {item.numberOfProducts}x {item.product.name}{" "}
+                    {item.product.type} {item.product.capacity}
+                  </p>
+                </div>
+              ))}
             </div>
           )}
-          <p>{props.product.product}</p>
-          <p>
+          <td>{props.product.product}</td>
+          <td>
             {props.product.quantity}x {props.product.unit}
-          </p>
-          <div className={style.iconsBox}>
-            <FaSearch
-              className={style.icon}
-              style={{ color: "#646E78" }}
+          </td>
+          <td>
+            <div
+              className={style.iconsBox}
               onClick={() => setImageIsOpen(true)}
-            />
-          </div>
-        </div>
+            >
+              <FaSearch className={style.icon} style={{ color: "#646E78" }} />
+            </div>
+          </td>
+        </tr>
       )}
       {props.step === 1 && (
-        <div className={style.product}>
-          {state === true && (
-            <FaCheck className={style.icon} style={{ color: "#22E650" }} />
-          )}
-          {state === false && (
-            <FaTimes className={style.icon} style={{ color: "#F03A30" }} />
-          )}
-          {state === null && (
-            <FaMinus className={style.icon} style={{ color: "#646e78" }} />
-          )}
+        <tr className={style.tr} key={props.id}>
+          <td>
+            {state === true && (
+              <FaCheck className={style.icon} style={{ color: "#22E650" }} />
+            )}
+            {state === false && (
+              <FaTimes className={style.icon} style={{ color: "#F03A30" }} />
+            )}
+            {state === null && (
+              <FaMinus className={style.icon} style={{ color: "#646e78" }} />
+            )}
+          </td>
 
-          <p>{props.product.product}</p>
-          <p>
+          <td>{props.product.product}</td>
+          <td>
             {props.product.quantity}x {props.product.unit}
-          </p>
-          {!commentsOpen && (
-            <div className={style.iconsBox}>
-              <FaCheck
-                className={style.icon}
-                style={{ color: "#22E650" }}
-                onClick={() => {
-                  props.modifyState(props.product.id, true);
-                  setState(true);
-                }}
-              />
-              <FaTimes
-                className={style.icon}
-                style={{ color: "#F03A30" }}
-                onClick={() => {
-                  props.modifyState(props.product.id, false);
-                  setState(false);
-                }}
-              />
-              <FaFileSignature
-                className={style.icon}
-                style={{ color: "#646E78" }}
-                onClick={() => setCommentsOpen(true)}
-              />
-            </div>
-          )}
-          {commentsOpen && (
-            <div className={style.comment}>
-              <input
-                placeholder="Napisz notatkę do tego produktu"
-                value={commentLocationValue}
-                onChange={(e) => setCommentLocationValue(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  props.modifyCommentLocation(
-                    props.product.id,
-                    commentLocationValue
-                  );
-                  setCommentsOpen(false);
-                }}
-              >
-                <BsFillSendFill />
-              </button>
-            </div>
-          )}
-        </div>
+          </td>
+          <td className={style.options}>
+            {!commentsOpen && (
+              <div className={style.iconsBox}>
+                <FaCheck
+                  className={style.icon}
+                  style={{ color: "#22E650" }}
+                  onClick={() => {
+                    props.modifyState(props.product.id, true);
+                    setState(true);
+                  }}
+                />
+                <FaTimes
+                  className={style.icon}
+                  style={{ color: "#F03A30" }}
+                  onClick={() => {
+                    props.modifyState(props.product.id, false);
+                    setState(false);
+                  }}
+                />
+                <FaFileSignature
+                  className={style.icon}
+                  style={{ color: "#646E78" }}
+                  onClick={() => setCommentsOpen(true)}
+                />
+              </div>
+            )}
+            {commentsOpen && (
+              <div className={style.comment}>
+                <input
+                  placeholder="Napisz notatkę.."
+                  value={commentLocationValue}
+                  onChange={(e) => setCommentLocationValue(e.target.value)}
+                />
+                <button
+                  onClick={() => {
+                    props.modifyCommentState(
+                      props.product.id,
+                      commentLocationValue
+                    );
+                    setCommentsOpen(false);
+                  }}
+                >
+                  <BsFillSendFill />
+                </button>
+              </div>
+            )}
+          </td>
+        </tr>
       )}
       {props.step === 2 && (
-        <div className={style.product}>
-          <p>{props.product.product}</p>
-          <p>
+        <tr className={style.tr} key={props.id}>
+          <td>{props.product.product}</td>
+          <td>
             {props.product.quantity}x {props.product.unit}
-          </p>
-          <div className={style.iconsBox}>
-            {props.product.state && (
-              <FaCheck
-                className={style.locationIcon}
-                style={{ color: "#22E650" }}
-              />
-            )}
-            {!props.product.state && (
-              <FaTimes
-                className={style.locationIcon}
-                style={{ color: "#F03A30" }}
-              />
-            )}
-          </div>
-        </div>
+          </td>
+          <td>
+            <div className={style.iconsBox}>
+              {props.product.state && (
+                <FaCheck
+                  className={style.locationIcon}
+                  style={{ color: "#22E650" }}
+                />
+              )}
+              {!props.product.state && (
+                <FaTimes
+                  className={style.locationIcon}
+                  style={{ color: "#F03A30" }}
+                />
+              )}
+            </div>
+          </td>
+        </tr>
       )}
     </>
   );

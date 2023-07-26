@@ -249,20 +249,27 @@ const OrderActionsPage = () => {
               <p>Produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    product={item}
-                    step={0}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        product={item}
+                        step={0}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -272,22 +279,28 @@ const OrderActionsPage = () => {
               <p>Produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    modifyProductPosition={modifyProductPosition}
-                    product={item}
-                    palletInfo={palletInfo}
-                    step={1}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        product={item}
+                        step={1}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
             <div className={style.basicData}>
               <p>Dodatkowe informacje</p>
@@ -348,40 +361,71 @@ const OrderActionsPage = () => {
               <p>Produkty</p>
             </div>
             <div className={style.productBox}>
-              <div className={style.titlesBox}>
-                <p>Produkt</p>
-                <p>Ilość</p>
-              </div>
-              {products !== [] &&
-                products.map((item) => (
-                  <ActionRow
-                    modifyState={modifyPoductState}
-                    modifyCommentState={modifyCommentState}
-                    modifyCommentLocation={modifyCommentLocation}
-                    modifyProductPosition={modifyProductPosition}
-                    product={item}
-                    step={2}
-                  />
-                ))}
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th>Ilość</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products !== [] &&
+                    products.map((item) => (
+                      <ActionRow
+                        modifyState={modifyPoductState}
+                        modifyCommentState={modifyCommentState}
+                        modifyCommentLocation={modifyCommentLocation}
+                        modifyProductPosition={modifyProductPosition}
+                        product={item}
+                        step={2}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
             <div className={style.basicData}>
               <p>Notatki do produktów</p>
             </div>
-            {products.map((item) => (
-              <div className={style.notesBox}>
-                <h3>{item.product}</h3>
-                <p>{item.comment || "-"}</p>
-              </div>
-            ))}
+            <div className={style.productBox}>
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Produkt</th>
+                    <th>Komentarz</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((item) => (
+                    <tr className={style.tr}>
+                      <td>{item.product}</td>
+                      <td>{item.comment || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <div className={style.basicData}>
               <p>Dane dotyczące palet</p>
             </div>
-            {palletInfo.map((item) => (
-              <div className={style.notesBox}>
-                <h3>{item.palletType || "-"}</h3>
-                <p>{item.palletWeight || "-"}</p>
-              </div>
-            ))}
+            <div className={style.productBox}>
+              <table className={style.table}>
+                <thead>
+                  <tr>
+                    <th>Rozmiar palety</th>
+                    <th>Waga</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {palletInfo.map((item) => (
+                    <tr className={style.tr}>
+                      <td>{item.palletType || "-"}</td>
+                      <td>{item.palletWeight || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

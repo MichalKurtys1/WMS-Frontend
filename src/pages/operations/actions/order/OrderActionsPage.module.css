@@ -296,3 +296,54 @@
   border-radius: 5px;
   font-size: 22px;
 }
+
+/* sss */
+
+.table {
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  border-spacing: 0;
+  border-radius: 10px;
+  border: 2px solid #ced3d9;
+}
+
+.table thead {
+  background-color: rgba(230, 230, 230, 0.3);
+  border: 2px solid black;
+}
+
+.table thead th {
+  color: #646e78;
+  padding: 15px;
+  font-weight: normal;
+  font-size: 18px;
+  border-bottom: 2px solid #ced3d9;
+}
+
+.table thead th div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table tbody td {
+  text-align: center;
+  color: #424d58;
+  padding: 10px 0;
+  font-size: 16px;
+  border-bottom: 2px solid #ced3d9;
+}
+
+.emptyData {
+  text-align: center;
+  width: 100%;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+  border: none;
+}
+
+.trComments td {
+  width: 20%;
+}

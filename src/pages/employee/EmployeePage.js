@@ -149,6 +149,7 @@ const EmployeePage = () => {
                 "Magazyn",
                 "Stanowisko",
               ]}
+              details={false}
             />
           )}
         </div>

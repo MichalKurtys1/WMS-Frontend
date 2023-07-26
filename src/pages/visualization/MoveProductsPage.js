@@ -139,30 +139,30 @@ const MoveProductsPage = () => {
       </div>
       <ErrorHandler error={error} />
       {imageIsOpen && (
-        <div className={style.imageBox}>
+        <div className={style.innerBox}>
           <button onClick={() => setImageIsOpen(false)}>
             <FaTimes />
           </button>
-          <div className={style.innerBox}>
-            <img
-              src={require("../../assets/Warehouse layout.png")}
-              alt="layout"
-              onClick={handleImageClick}
-            />
+          <img
+            src={require("../../assets/Warehouse layout.png")}
+            alt="layout"
+            onClick={handleImageClick}
+          />
+          <MdLocationOn
+            style={{ top: currentLocation.posY, left: currentLocation.posX }}
+            className={style.icon}
+          />
+          {currentLocation.newPosX && currentLocation.newPosY && (
             <MdLocationOn
-              style={{ top: currentLocation.posY, left: currentLocation.posX }}
-              className={style.icon}
+              style={{
+                top: currentLocation.newPosY,
+                left: currentLocation.newPosX,
+                color: "#B2FFC4",
+                backgroundColor: "#22E650",
+              }}
+              className={style.iconNew}
             />
-            {currentLocation.newPosX && currentLocation.newPosY && (
-              <MdLocationOn
-                style={{
-                  top: currentLocation.newPosY,
-                  left: currentLocation.newPosX,
-                }}
-                className={style.iconNew}
-              />
-            )}
-          </div>
+          )}
         </div>
       )}
       {loading && (
@@ -190,7 +190,7 @@ const MoveProductsPage = () => {
                     type="datetime-local"
                     fieldName="date"
                     min={getCurrentDateTime()}
-                    width="80%"
+                    width="100%"
                     validator={textValidator}
                   />
                   {data.map((item) => (

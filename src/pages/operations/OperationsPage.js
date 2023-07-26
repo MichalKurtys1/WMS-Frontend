@@ -38,11 +38,23 @@ const OperationsPage = () => {
         ...transfers.transfers,
       ];
       if (currentPage === 2) {
-        setCurrentData(dataArray.filter((item) => item.state === "Zlecone"));
+        setCurrentData(
+          dataArray
+            .filter((item) => item.state === "Zlecone")
+            .sort((a, b) => a.date - b.date)
+        );
       } else if (currentPage === 1) {
-        setCurrentData(dataArray.filter((item) => item.state === "W trakcie"));
+        setCurrentData(
+          dataArray
+            .filter((item) => item.state === "W trakcie")
+            .sort((a, b) => a.date - b.date)
+        );
       } else if (currentPage === 3) {
-        setCurrentData(dataArray.filter((item) => item.state === "Zakończone"));
+        setCurrentData(
+          dataArray
+            .filter((item) => item.state === "Zakończone")
+            .sort((a, b) => a.date - b.date)
+        );
       }
     }
   }, [currentPage, data, orders, transfers]);

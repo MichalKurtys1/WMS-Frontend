@@ -58,76 +58,95 @@ const VisualizationPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      <div className={style.imageBox}>
-        <div className={style.innerBox}>
-          <button onClick={() => navigate("/main/visualisation/transfers")}>
-            Transfery
-          </button>
-          {selectedLocations.length > 0 && (
-            <button onClick={moveProductsHandler}>Prenieś asortyment</button>
-          )}
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
+      <div className={style.innerBox}>
+        <button onClick={() => navigate("/main/visualisation/transfers")}>
+          Transfery
+        </button>
+        {selectedLocations.length > 0 && (
+          <button onClick={moveProductsHandler}>Prenieś</button>
+        )}
+        {loading && (
+          <div className={style.spinnerBox}>
+            <div className={style.spinner}>
+              <Spinner />
             </div>
-          )}
-          {locations && (
-            <img
-              src={require("../../assets/Warehouse layout.png")}
-              alt="layout"
-            />
-          )}
-          <div className={style.locationBox}>
-            <MdLocationOn
-              style={{
-                top: "5px",
-                right: "40px",
-              }}
-              className={style.icon}
-            />
-            <h4
-              className={style.description}
-              style={{
-                top: "0",
-                right: "5px",
-                display: "block",
-                fontWeight: "normal",
-              }}
-            >
-              Skąd
-            </h4>
           </div>
-          <div className={style.locationBox}>
-            <MdLocationOn
-              style={{
-                top: "30px",
-                right: "40px",
-              }}
-              className={style.iconDestination}
-            />
-            <h4
-              className={style.description}
-              style={{
-                top: "25px",
-                right: "-6px",
-                display: "block",
-                fontWeight: "normal",
-              }}
-            >
-              Dokąd
-            </h4>
-          </div>
-          {locations &&
-            locations.locations.map((item) => (
-              <LocationItem
-                item={item}
-                addSelectedLocation={addSelectedLocation}
-                deleteSelectedLocation={deleteSelectedLocation}
-              ></LocationItem>
-            ))}
+        )}
+        {locations && (
+          <img
+            src={require("../../assets/Warehouse layout.png")}
+            alt="layout"
+          />
+        )}
+        <div className={style.locationBox} style={{ userSelect: "none" }}>
+          <MdLocationOn
+            style={{
+              bottom: "55px",
+              left: "10px",
+              color: "#F2A530",
+            }}
+            className={style.icon}
+          />
+          <h4
+            className={style.description}
+            style={{
+              bottom: "54px",
+              left: "30px",
+              display: "block",
+              fontWeight: "normal",
+            }}
+          >
+            Przenoszone
+          </h4>
         </div>
+        <div className={style.locationBox} style={{ userSelect: "none" }}>
+          <MdLocationOn
+            style={{
+              bottom: "5px",
+              left: "10px",
+            }}
+            className={style.iconDestination}
+          />
+          <h4
+            className={style.description}
+            style={{
+              bottom: "4px",
+              left: "30px",
+              display: "block",
+              fontWeight: "normal",
+            }}
+          >
+            Zaznaczone
+          </h4>
+        </div>
+        <div className={style.locationBox} style={{ userSelect: "none" }}>
+          <MdLocationOn
+            style={{
+              bottom: "30px",
+              left: "10px",
+            }}
+            className={style.icon}
+          />
+          <h4
+            className={style.description}
+            style={{
+              bottom: "29px",
+              left: "30px",
+              display: "block",
+              fontWeight: "normal",
+            }}
+          >
+            Nie zaznaczone
+          </h4>
+        </div>
+        {locations &&
+          locations.locations.map((item) => (
+            <LocationItem
+              item={item}
+              addSelectedLocation={addSelectedLocation}
+              deleteSelectedLocation={deleteSelectedLocation}
+            ></LocationItem>
+          ))}
       </div>
     </div>
   );

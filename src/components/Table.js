@@ -83,6 +83,7 @@ const Table = (props) => {
                     key={id}
                     id={id}
                     keys={keys}
+                    details={props.details}
                     record={formattedData}
                     selectedRow={props.selectedRow}
                     editHandler={props.editHandler}

@@ -138,22 +138,9 @@ const SuppliersPage = () => {
                     "ul. " + item.street + " " + item.number + " " + item.city,
                 };
               })}
-              format={[
-                "name",
-                "phone",
-                "email",
-                "address",
-                "bank",
-                "accountNumber",
-              ]}
-              titles={[
-                "Nazwa",
-                "Telefon",
-                "E-mail",
-                "Adres",
-                "Bank",
-                "Numer konta",
-              ]}
+              details={true}
+              format={["name", "phone", "email", "address", "bank"]}
+              titles={["Nazwa", "Telefon", "E-mail", "Adres", "Bank"]}
             />
           )}
         </div>

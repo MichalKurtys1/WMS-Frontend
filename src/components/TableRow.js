@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { BsThreeDotsVertical, BsTrashFill, BsGearFill } from "react-icons/bs";
+import {
+  BsThreeDotsVertical,
+  BsTrashFill,
+  BsGearFill,
+  BsFillTriangleFill,
+} from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import style from "./TableRow.module.css";
 
@@ -33,6 +38,7 @@ const TableRow = (props) => {
         <BsThreeDotsVertical />
         {isClicked && (
           <div className={style.options}>
+            <BsFillTriangleFill className={style.triangleIcon} />
             <div
               className={style.option}
               onClick={() => props.editHandler(props.id)}
@@ -47,20 +53,15 @@ const TableRow = (props) => {
               <BsTrashFill className={style.icon} />
               <p>Usuń</p>
             </div>
-            {/* <div
-              className={style.option}
-              onClick={() => props.messageHandler(props.id)}
-            >
-              <FaEnvelope className={style.icon} />
-              <p>Wiadomość</p>
-            </div> */}
-            <div
-              className={style.option}
-              onClick={() => props.detailsHandler(props.id)}
-            >
-              <BsGearFill className={style.icon} />
-              <p>Szczegóły</p>
-            </div>
+            {props.details && (
+              <div
+                className={style.option}
+                onClick={() => props.detailsHandler(props.id)}
+              >
+                <BsGearFill className={style.icon} />
+                <p>Szczegóły</p>
+              </div>
+            )}
           </div>
         )}
       </td>

@@ -69,14 +69,20 @@ const ProductList = ({
         {item.product !== null && item.product !== "Wybierz produkt" && (
           <>
             <div className={style.availableStockBox}>
-              Dostępne:
-              {
-                products.products.filter(
-                  (option) =>
-                    option.name + " " + option.type + " " + option.capacity ===
-                    item.product
-                )[0].availableStock
-              }
+              Dostępne:{" "}
+              <strong>
+                {
+                  products.products.filter(
+                    (option) =>
+                      option.name +
+                        " " +
+                        option.type +
+                        " " +
+                        option.capacity ===
+                      item.product
+                  )[0].availableStock
+                }
+              </strong>
             </div>
             <div className={style.selectBox}>
               <div className={style.selectBox}>

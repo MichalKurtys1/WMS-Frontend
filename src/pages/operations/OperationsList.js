@@ -107,6 +107,7 @@ const OperationsList = (props) => {
       }
     }
   };
+
   return (
     <div className={style.container}>
       {props.data &&
@@ -116,7 +117,10 @@ const OperationsList = (props) => {
               className={style.operationBox}
               onClick={() => clickHandler(item)}
             >
-              <h1>{formattedName(item.__typename)}</h1>
+              <h1>
+                {formattedName(item.__typename)}
+                {item.stage}
+              </h1>
               <p className={style.name}>
                 {item.supplier !== undefined
                   ? item.supplier.name

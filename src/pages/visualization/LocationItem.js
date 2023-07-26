@@ -24,27 +24,36 @@ const LocationItem = (props) => {
   };
 
   return (
-    <div className={style.locationBox} key={props.item.id}>
+    <div
+      className={style.locationBox}
+      key={props.item.id}
+      onClick={props.item.state === "Transferring" ? null : clickHandler}
+      style={{
+        top: `${+props.item.posY - 5}px`,
+        left: `${+props.item.posX + 15}px`,
+        backgroundColor: isClicked
+          ? "#B2FFC4"
+          : props.item.state === "Transferring"
+          ? "#FFE1B2"
+          : "#ffb6b2",
+      }}
+    >
       <MdLocationOn
         className={style.icon}
-        onClick={props.item.state === "Transferring" ? null : clickHandler}
         style={{
-          top: `${props.item.posY}px`,
-          left: `${props.item.posX}px`,
           color: isClicked
+            ? "#B2FFC4"
+            : props.item.state === "Transferring"
+            ? "#FFE1B2"
+            : "#FFB6B2",
+          backgroundColor: isClicked
             ? "#22E650"
             : props.item.state === "Transferring"
-            ? "yellow"
+            ? "#F2A530"
             : "#f03a30",
         }}
       />
-      <p
-        className={style.description}
-        style={{
-          top: `${+props.item.posY - 5}px`,
-          left: `${+props.item.posX + 15}px`,
-        }}
-      >
+      <p className={style.description}>
         {props.item.numberOfProducts}x {props.item.product.name}{" "}
         {props.item.product.type} {props.item.product.capacity}
       </p>
