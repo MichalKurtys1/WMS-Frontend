@@ -14,6 +14,10 @@ const Table = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn, sortDirection]);
 
+  useEffect(() => {
+    setData(props.data);
+  }, [props.data]);
+
   const handleSort = (columnName) => {
     if (sortedColumn === columnName) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -76,6 +80,7 @@ const Table = (props) => {
             {data.length !== 0 &&
               data.map((record) => {
                 const id = record.id;
+                const products = record.products || null;
                 const formattedData = pickProperties(record, props.format);
                 let keys = Object.keys(formattedData);
                 return (
@@ -83,6 +88,7 @@ const Table = (props) => {
                     key={id}
                     id={id}
                     keys={keys}
+                    products={products}
                     details={props.details}
                     record={formattedData}
                     selectedRow={props.selectedRow}
@@ -91,6 +97,8 @@ const Table = (props) => {
                     messageHandler={props.messageHandler}
                     deleteHandler={props.deleteHandler}
                     selectedRowHandler={props.selectedRowHandler}
+                    allowExpand={props.allowExpand}
+                    updateStateHandler={props.updateStateHandler}
                   />
                 );
               })}

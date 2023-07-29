@@ -5,7 +5,6 @@ import {
   UPDATE_AVAILABLE_STOCK,
 } from "../../../utils/apollo/apolloMutations";
 import { GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
-import { dateToPolish } from "../../../utils/dateFormatters";
 
 import style from "./OrdersDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
@@ -21,9 +20,8 @@ const OrdersDetailsPage = () => {
     addOrder({
       variables: {
         clientId: location.state.clientId,
-        date: location.state.date,
+        expectedDate: location.state.date,
         warehouse: location.state.warehouse,
-        comments: location.state.comments,
         products: location.state.products,
       },
     })

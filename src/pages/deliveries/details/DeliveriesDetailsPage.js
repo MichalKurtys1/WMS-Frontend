@@ -1,27 +1,23 @@
 import { useLocation, useNavigate } from "react-router";
 import { useMutation, useQuery } from "@apollo/client";
-import {
-  ADD_DELIVERY,
-  UPDATE_AVAILABLE_STOCK,
-} from "../../../utils/apollo/apolloMutations";
+import { ADD_DELIVERY, ADD_STOCK } from "../../../utils/apollo/apolloMutations";
 import { GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
 
 import style from "./DeliveriesDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
-import { dateToPolish } from "../../../utils/dateFormatters";
 
 const DeliveriesDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [addDelivery] = useMutation(ADD_DELIVERY);
-  const [updateProduct] = useMutation(UPDATE_AVAILABLE_STOCK);
+  const [addStock] = useMutation(ADD_STOCK);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
   console.log(products);
   const submitHandler = () => {
     addDelivery({
       variables: {
         supplierId: location.state.supplierId,
-        date: location.state.date,
+        expectedDate: location.state.date,
         warehouse: location.state.warehouse,
         comments: location.state.comments,
         products: location.state.products,
@@ -35,10 +31,10 @@ const DeliveriesDetailsPage = () => {
               item.product.includes(product.type) &&
               item.product.includes(product.capacity)
           );
-          updateProduct({
+          addStock({
             variables: {
-              updateAvailableStockId: product[0].id,
-              availableStock: parseInt(item.quantity),
+              productId: product[0].id,
+              ordered: parseInt(item.quantity),
             },
           }).catch((err) => console.log(err));
         });
@@ -78,8 +74,6 @@ const DeliveriesDetailsPage = () => {
     });
     return totalPrice.toFixed(2);
   };
-
-  console.log(location.state);
 
   return (
     <div className={style.container}>

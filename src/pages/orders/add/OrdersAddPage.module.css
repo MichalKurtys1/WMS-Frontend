@@ -57,7 +57,6 @@
 .form .basicInfoBox {
   margin: 20px auto 0;
   width: 55%;
-  padding-bottom: 20px;
   border-radius: 10px;
 }
 
@@ -82,10 +81,9 @@
 .form button {
   border: none;
   background-color: #8097ff;
-  width: 100%;
+  width: 90%;
   height: 50px;
-  margin-top: 20px;
-  margin-bottom: 5px;
+  margin-bottom: 40px;
   padding: 10px;
   border-radius: 5px;
   color: white;

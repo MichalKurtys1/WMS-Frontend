@@ -149,12 +149,18 @@ const OrdersPage = () => {
               data={data.orders.map((item) => {
                 return {
                   ...item,
-                  date: dateToPolish(item.date),
+                  expectedDate: dateToPolish(item.expectedDate),
                   client: item.client.name,
                 };
               })}
-              format={["client", "date", "warehouse", "comments", "state"]}
-              titles={["Klient", "Termin", "Magazyn", "Uwagi", "Stan"]}
+              format={["client", "warehouse", "expectedDate", "date", "state"]}
+              titles={[
+                "Klient",
+                "Magazyn",
+                "Przewidywany termin",
+                "Termin",
+                "Stan",
+              ]}
             />
           )}
         </div>

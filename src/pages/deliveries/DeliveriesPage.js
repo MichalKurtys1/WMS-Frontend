@@ -5,6 +5,8 @@ import { GET_DELIVERIES } from "../../utils/apollo/apolloQueries";
 import {
   DELETE_DELIVERY,
   GET_DELIVERY,
+  UPDATE_DELIVERY_STATE,
+  UPDATE_DELIVERY_VALUES,
 } from "../../utils/apollo/apolloMutations";
 
 import style from "./DeliveriesPage.module.css";
@@ -19,7 +21,12 @@ const DeliveriesPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
-  const [popupIsOpen, setPopupIsOpen] = useState(false);
+  const [id, setId] = useState();
+  const [action, setAction] = useState();
+  const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
+  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
+    useState(false);
+  const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
   const { data, refetch, loading } = useQuery(GET_DELIVERIES, {
@@ -31,6 +38,12 @@ const DeliveriesPage = () => {
   const [getDelivery] = useMutation(GET_DELIVERY, {
     onError: (error) => setError(error),
   });
+  const [updateDeliveryState] = useMutation(UPDATE_DELIVERY_STATE, {
+    onError: (error) => setError(error),
+  });
+  const [updateDeliveryValues] = useMutation(UPDATE_DELIVERY_VALUES, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -38,17 +51,89 @@ const DeliveriesPage = () => {
     }
   }, [location.state, refetch]);
 
+  useEffect(() => {
+    if (shouldUpdateDeliveryState) {
+      updateDeliveryState({
+        variables: {
+          updateStateId: id,
+          state: action,
+        },
+      })
+        .then((data) => {
+          refetch();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setShouldUpdateDeliveryState(false);
+    }
+  }, [action, id, refetch, shouldUpdateDeliveryState, updateDeliveryState]);
+
+  useEffect(() => {
+    if (location.state && location.state.products) {
+      updateDeliveryValues({
+        variables: {
+          updateValuesId: location.state.deliveryId,
+          products: JSON.stringify(location.state.products),
+        },
+      })
+        .then((data) => {
+          updateDeliveryState({
+            variables: {
+              updateStateId: location.state.deliveryId,
+              state: "Posortowano",
+            },
+          })
+            .then((data) => {
+              refetch();
+              navigate(location.pathname, {});
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [
+    updateDeliveryValues,
+    location.state,
+    updateDeliveryState,
+    location.pathname,
+    navigate,
+    refetch,
+  ]);
+
   const selectedRowHandler = (id) => {
     setSelectedRow(id);
   };
 
+  const updateStateHandler = (id, action) => {
+    if (action === "Posortowano") {
+      navigate("/main/deliveries/sorting", {
+        state: {
+          deliveryId: id,
+        },
+      });
+    } else {
+      setStatePopupIsOpen(true);
+      setId(id);
+      setAction(action);
+    }
+  };
+
+  const button2ActionHandler = () => {
+    setStatePopupIsOpen(false);
+    setShouldUpdateDeliveryState(true);
+  };
+
   const deleteHandler = (id) => {
-    setPopupIsOpen(true);
+    setdeletePopupIsOpen(true);
   };
 
   const confirmedDeleteHandler = () => {
-    setPopupIsOpen(false);
-
+    setdeletePopupIsOpen(false);
     deleteDeliveries({
       variables: {
         deleteDeliveryId: selectedRow,
@@ -64,10 +149,6 @@ const DeliveriesPage = () => {
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
   };
 
   const editHandler = (id) => {
@@ -150,28 +231,57 @@ const DeliveriesPage = () => {
               messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
+              updateStateHandler={updateStateHandler}
               data={data.deliveries.map((item) => {
                 return {
                   ...item,
-                  date: dateToPolish(item.date),
+                  expectedDate: dateToPolish(item.expectedDate),
                   supplier: item.supplier.name,
                 };
               })}
-              format={["supplier", "date", "warehouse", "comments", "state"]}
-              titles={["Dostawca", "Termin", "Magazyn", "Uwagi", "Stan"]}
+              format={[
+                "supplier",
+                "warehouse",
+                "expectedDate",
+                "date",
+                "state",
+              ]}
+              titles={[
+                "Dostawca",
+                "Magazyn",
+                "Przewidywany termin",
+                "Termin",
+                "Stan",
+              ]}
+              allowExpand={true}
             />
           )}
         </div>
       </main>
-      {popupIsOpen && (
+      {deletePopupIsOpen && (
         <PopUp
           message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
+            "Czy jesteś pewien, że tego chcesz? Tego procesu nie da się odwrócić."
           }
           button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
+          button1Action={() => {
+            setdeletePopupIsOpen(false);
+          }}
           button2Action={confirmedDeleteHandler}
+        />
+      )}
+      {statePopupIsOpen && (
+        <PopUp
+          message={
+            "Czy jesteś pewien, że tego chcesz? Tego procesu nie da się odwrócić."
+          }
+          button2={"Potwierdź"}
+          button1={"Anuluj"}
+          button1Action={() => {
+            setStatePopupIsOpen(false);
+          }}
+          button2Action={button2ActionHandler}
         />
       )}
     </div>

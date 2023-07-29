@@ -1,0 +1,108 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 17%;
+  width: 83%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.logoImg {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  width: 120px;
+  height: 45px;
+  object-fit: cover;
+}
+
+.titileBox {
+  width: 95%;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #646e78;
+}
+
+.returnBox {
+  display: flex;
+  align-items: center;
+  color: #2d3640;
+}
+
+.returnBox .icon {
+  margin: 20px 0 10px;
+  font-size: 20px;
+}
+.returnBox p {
+  font-weight: bold;
+  font-family: "Roboto";
+  font-size: 20px;
+  margin: 20px 0 10px;
+}
+
+/* ssss */
+
+.detailsBox {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.detailsBox h1 {
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  font-size: 38px;
+  margin: 10px 0;
+}
+
+.detailsBox .productBox {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  padding: 0 10px;
+  margin: 20px 0;
+}
+
+.detailsBox .productBox p {
+  display: block;
+  width: 40%;
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
+}
+
+.detailsBox .productBox input {
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+  background-color: #f5f5f5;
+  border: 2px solid #ced3d9;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 5px;
+}
+
+.detailsBox .productBox input:focus {
+  outline: none;
+}
+
+.detailsBox .sendBtn {
+  display: block;
+  margin: 0 auto;
+  width: 30%;
+  background-color: #8097ff;
+  border: none;
+  padding: 10px;
+  font-size: 26px;
+  color: white;
+  border-radius: 10px;
+  font-family: "Roboto", sans-serif;
+  transition: 0.5s;
+}
+
+.detailsBox .sendBtn:hover {
+  background-color: #3054f2;
+}

@@ -1,36 +1,33 @@
 import { useLocation, useNavigate } from "react-router";
-import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { GET_TRANSFERS } from "../../../utils/apollo/apolloQueries";
-import {
-  DELETE_TRANSFER,
-  GET_DELIVERY,
-} from "../../../utils/apollo/apolloMutations";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
+import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
 
-import style from "./TransfersPage.module.css";
-import Table from "../../../components/Table";
-import PopUp from "../../../components/PopUp";
-import { FaAngleLeft } from "react-icons/fa";
-import { dateToPolish } from "../../../utils/dateFormatters";
-import ErrorHandler from "../../../components/ErrorHandler";
-import Spinner from "../../../components/Spiner";
+import style from "./StockPage.module.css";
+import Table from "../../components/Table";
+import PopUp from "../../components/PopUp";
+import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import ErrorHandler from "../../components/ErrorHandler";
+import Spinner from "../../components/Spiner";
 
-const TransfersPage = () => {
+const StockPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
-  const { data, refetch, loading } = useQuery(GET_TRANSFERS, {
+  const { data, refetch, loading } = useQuery(GET_STOCKS, {
     onError: (error) => setError(error),
   });
-  const [deleteTransfer] = useMutation(DELETE_TRANSFER, {
+  const [deleteEmployye] = useMutation(DELETE_EMPLOYYE, {
     onError: (error) => setError(error),
   });
-  const [getDelivery] = useMutation(GET_DELIVERY, {
-    onError: (error) => setError(error),
-  });
+
+  useEffect(() => {
+    refetch();
+  }, [location.pathname, refetch]);
 
   useEffect(() => {
     if (location.state) {
@@ -48,12 +45,13 @@ const TransfersPage = () => {
 
   const confirmedDeleteHandler = () => {
     setPopupIsOpen(false);
-    deleteTransfer({
+
+    deleteEmployye({
       variables: {
-        deleteTransferId: selectedRow,
+        deleteUserId: selectedRow,
       },
     })
-      .then((data) => {
+      .then(() => {
         setSuccessMsg(true);
         setTimeout(() => {
           setSuccessMsg(false);
@@ -70,50 +68,29 @@ const TransfersPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/deliveries/edit`, {
+    navigate(`/main/employees/edit`, {
       state: {
-        deliveryId: id,
+        userId: id,
       },
     });
   };
 
-  const messageHandler = () => {
-    navigate("/main/messages");
-  };
-
   const detailsHandler = (id) => {
-    getDelivery({ variables: { getDeliveryId: id } })
-      .then((data) => {
-        console.log(data.data.getDelivery.date);
-        navigate("/main/deliveries/details", {
-          state: {
-            details: true,
-            supplier: data.data.getDelivery.supplier,
-            supplierId: data.data.getDelivery.supplier.name,
-            dateNumber: data.data.getDelivery.date,
-            warehouse: data.data.getDelivery.warehouse,
-            comments: data.data.getDelivery.comments,
-            products: JSON.parse(data.data.getDelivery.products),
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    navigate(`/main/employees/details`, {
+      state: {
+        userId: id,
+      },
+    });
   };
-
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
         <img
           className={style.logoImg}
-          src={require("../../../assets/logo.png")}
+          src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/visualisation")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/main")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -121,12 +98,19 @@ const TransfersPage = () => {
       <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
-          <p>Transfer usunięty pomyślnie</p>
+          <p>Pracownik usunięty pomyślnie</p>
         </div>
       )}
       <main>
         <div className={style.optionPanel}>
-          <h1>Transfery</h1>
+          <h1>Spis towarów</h1>
+          <div
+            className={style.addOption}
+            onClick={() => navigate(`/main/employees/add`)}
+          >
+            <FaUserPlus className={style.icon} />
+            <p>Dodawanie towaru</p>
+          </div>
         </div>
         <div className={style.tableBox}>
           {loading && (
@@ -136,30 +120,44 @@ const TransfersPage = () => {
               </div>
             </div>
           )}
-          {data && data.transfers && (
+          {data && data.stocks && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
               detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
-              data={data.transfers.map((item) => {
+              data={data.stocks.map((item) => {
+                console.log(item.product);
                 return {
                   ...item,
-                  date: dateToPolish(item.date),
+                  supplier: item.product.supplier.name,
+                  product:
+                    item.product.name +
+                    " " +
+                    item.product.type +
+                    " " +
+                    item.product.capacity,
                 };
               })}
-              format={["employee", "date", "state"]}
-              titles={["Zlecone", "Termin", "Stan"]}
+              format={[
+                "supplier",
+                "product",
+                "totalQuantity",
+                "availableStock",
+                "ordered",
+              ]}
+              titles={["Dostawca", "Produkt", "Razem", "Dostępne", "Zamówiono"]}
+              details={false}
             />
           )}
         </div>
       </main>
+
       {popupIsOpen && (
         <PopUp
           message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
+            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego pracownika z systemu?"
           }
           button2={"Usuń"}
           button1={"Anuluj"}
@@ -171,4 +169,4 @@ const TransfersPage = () => {
   );
 };
 
-export default TransfersPage;
+export default StockPage;

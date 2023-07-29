@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import {
   GET_DELIVERY,
   UPDATE_DELIVERY,
-  UPDATE_PRODUCT,
+  UPDATE_STOCK,
 } from "../../../utils/apollo/apolloMutations";
 import {
   GET_PRODUCTS,
+  GET_STOCKS,
   GET_SUPPLIERS,
 } from "../../../utils/apollo/apolloQueries";
 import { selectValidator } from "../../../utils/inputValidators";
@@ -17,7 +18,6 @@ import { dateToInput } from "../../../utils/dateFormatters";
 import style from "./DeliveriesEditPage.module.css";
 import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
-import TextArea from "../../../components/TextArea";
 import Input from "../../../components/Input";
 import ProductList from "../ProductsList";
 import { FaAngleLeft } from "react-icons/fa";
@@ -53,10 +53,13 @@ const DeliveriesEditPage = () => {
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
     onError: (error) => setError(error),
   });
+  const { data: stocks } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
+  });
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
     onError: (error) => setError(error),
   });
-  const [updateProduct] = useMutation(UPDATE_PRODUCT, {
+  const [updateStock] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
   });
   const [productList, setProductList] = useState(() => {
@@ -144,7 +147,7 @@ const DeliveriesEditPage = () => {
       variables: {
         updateDeliveryId: location.state.deliveryId,
         supplierId: values.supplier,
-        date: values.date,
+        expectedDate: values.date,
         warehouse: values.magazine,
         comments: values.comments,
         products: JSON.stringify(productList),
@@ -152,22 +155,31 @@ const DeliveriesEditPage = () => {
     })
       .then((data) => {
         productList.forEach((item) => {
-          const product = products.products.filter(
-            (product) =>
-              item.product.includes(product.name) &&
-              item.product.includes(product.type) &&
-              item.product.includes(product.capacity)
+          const stock = stocks.stocks.filter(
+            (stock) =>
+              item.product.includes(stock.product.name) &&
+              item.product.includes(stock.product.type) &&
+              item.product.includes(stock.product.capacity)
           );
-          updateProduct({
+
+          let newValue =
+            parseInt(stock[0].ordered) -
+            parseInt(item.maxValue) +
+            parseInt(item.quantity);
+          if (newValue < 0) {
+            setError("SERVER_ERROR");
+            return;
+          }
+          updateStock({
             variables: {
-              updateAvailableStockId: product[0].id,
-              availableStock: parseInt(item.quantity) - parseInt(item.maxValue),
+              updateStockId: stock[0].id,
+              ordered: newValue,
             },
           })
             .then((data) => {
-              navigate("/main/orders", {
+              navigate("/main/deliveries", {
                 state: {
-                  userData: data.data.createClient,
+                  userData: data.data,
                 },
               });
             })
@@ -175,7 +187,7 @@ const DeliveriesEditPage = () => {
         });
         navigate("/main/deliveries", {
           state: {
-            userData: data.data.createClient,
+            userData: data.data,
           },
         });
       })
@@ -249,8 +261,10 @@ const DeliveriesEditPage = () => {
                         type="datetime-local"
                         fieldName="date"
                         width="90%"
-                        initVal={dateToInput(deliveryData.date)}
+                        initVal={dateToInput(deliveryData.expectedDate)}
                       />
+                    </div>
+                    <div className={style.column}>
                       <div className={style.selectBox}>
                         <Select
                           fieldName="magazine"
@@ -259,15 +273,6 @@ const DeliveriesEditPage = () => {
                           options={warehouseList}
                         />
                       </div>
-                    </div>
-                    <div className={style.column}>
-                      <TextArea
-                        name="Dodatkowe informacje"
-                        type="text"
-                        fieldName="comments"
-                        width="100%"
-                        initVal={deliveryData.comments}
-                      />
                       <button
                         disabled={invalid}
                         type="submit"

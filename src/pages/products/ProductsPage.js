@@ -143,7 +143,6 @@ const ProductsPage = () => {
                 "capacity",
                 "unit",
                 "pricePerUnit",
-                "availableStock",
               ]}
               titles={[
                 "Dostawca",
@@ -152,7 +151,6 @@ const ProductsPage = () => {
                 "Pojemność",
                 "Jednostka",
                 "Cena za jednostkę",
-                "Stan magazynowy",
               ]}
             />
           )}

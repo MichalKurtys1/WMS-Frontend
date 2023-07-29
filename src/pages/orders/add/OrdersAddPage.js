@@ -8,7 +8,6 @@ import { selectValidator } from "../../../utils/inputValidators";
 import style from "./OrdersAddPage.module.css";
 import Input from "../../../components/Input";
 import Select from "../../../components/Select";
-import TextArea from "../../../components/TextArea";
 import ProductList from "../ProductsList";
 import { FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../../components/ErrorHandler";
@@ -200,6 +199,8 @@ const OrdersAddPage = () => {
                             : null
                         }
                       />
+                    </div>
+                    <div className={style.column}>
                       <div className={style.selectBox}>
                         <Select
                           fieldName="magazine"
@@ -212,19 +213,6 @@ const OrdersAddPage = () => {
                           options={warehouseList}
                         />
                       </div>
-                    </div>
-                    <div className={style.column}>
-                      <TextArea
-                        name="Dodatkowe informacje"
-                        type="text"
-                        fieldName="comments"
-                        width="100%"
-                        initVal={
-                          location.state !== null
-                            ? location.state.savedData.comments
-                            : null
-                        }
-                      />
                       <button
                         disabled={invalid}
                         type="submit"

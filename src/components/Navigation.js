@@ -7,7 +7,6 @@ import {
   BsBarChartLineFill,
   BsFillFileEarmarkArrowDownFill,
   BsFillFileEarmarkArrowUpFill,
-  BsGearFill,
 } from "react-icons/bs";
 import { FaCalendarAlt, FaEnvelope, FaUser, FaBoxes } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -150,7 +149,7 @@ const Navigation = () => {
               style={{
                 color: `${
                   location.pathname === "/main/products" ||
-                  location.pathname === "/main/visualisation"
+                  location.pathname === "/main/stock"
                     ? "#3054F2"
                     : "#646e78"
                 }`,
@@ -180,17 +179,17 @@ const Navigation = () => {
               <div className={style.link}>
                 <h3>
                   <Link
-                    to={"/main/visualisation"}
+                    to={"/main/stock"}
                     style={{
                       textDecoration: "none",
                       color: `${
-                        location.pathname === "/main/visualisation"
+                        location.pathname === "/main/stock"
                           ? "#3054F2"
                           : "#646e78"
                       }`,
                     }}
                   >
-                    Wizualizacja
+                    Spis towarów
                   </Link>
                 </h3>
               </div>
@@ -221,21 +220,6 @@ const Navigation = () => {
               >
                 <BsFillFileEarmarkArrowDownFill className={style.iconS} />
                 <h2>Zamówienia</h2>
-              </div>
-            </Link>
-            <Link to={"/main/operations"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/operations"
-                      ? "#3054F2"
-                      : "#646e78"
-                  }`,
-                }}
-              >
-                <BsGearFill className={style.iconS} />
-                <h2>Operacje</h2>
               </div>
             </Link>
             <Link to={"/main/files"} style={{ textDecoration: "none" }}>

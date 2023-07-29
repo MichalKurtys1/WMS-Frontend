@@ -176,24 +176,23 @@ export const ADD_PRODUCT = gql`
 export const ADD_DELIVERY = gql`
   mutation Mutation(
     $supplierId: ID!
-    $date: String!
+    $expectedDate: String!
     $warehouse: String!
-    $comments: String!
     $products: JSON!
   ) {
     createDelivery(
       supplierId: $supplierId
-      date: $date
+      expectedDate: $expectedDate
       warehouse: $warehouse
-      comments: $comments
       products: $products
     ) {
       id
       supplierId
       date
+      expectedDate
       warehouse
-      comments
       products
+      state
     }
   }
 `;
@@ -201,23 +200,21 @@ export const ADD_DELIVERY = gql`
 export const ADD_ORDER = gql`
   mutation Mutation(
     $clientId: ID!
-    $date: String!
+    $expectedDate: String!
     $warehouse: String!
-    $comments: String!
     $products: JSON!
   ) {
     createOrder(
       clientId: $clientId
-      date: $date
+      expectedDate: $expectedDate
       warehouse: $warehouse
-      comments: $comments
       products: $products
     ) {
       id
       clientId
       date
+      expectedDate
       warehouse
-      comments
       products
       state
     }
@@ -283,6 +280,18 @@ export const ADD_TRANSFER = gql`
       date
       data
       state
+    }
+  }
+`;
+
+export const ADD_STOCK = gql`
+  mutation Mutation($productId: ID!, $ordered: Float) {
+    createStock(productId: $productId, ordered: $ordered) {
+      id
+      productId
+      totalQuantity
+      availableStock
+      ordered
     }
   }
 `;
@@ -368,8 +377,8 @@ export const GET_DELIVERY = gql`
         nip
       }
       date
+      expectedDate
       warehouse
-      comments
       products
       state
     }
@@ -541,25 +550,26 @@ export const UPDATE_DELIVERY = gql`
   mutation Mutation(
     $updateDeliveryId: ID!
     $supplierId: ID!
-    $date: String!
+    $expectedDate: String!
     $warehouse: String!
-    $comments: String!
     $products: JSON!
+    $date: String
   ) {
     updateDelivery(
       id: $updateDeliveryId
       supplierId: $supplierId
-      date: $date
+      expectedDate: $expectedDate
       warehouse: $warehouse
-      comments: $comments
       products: $products
+      date: $date
     ) {
       id
       supplierId
       date
+      expectedDate
       warehouse
-      comments
       products
+      state
     }
   }
 `;
@@ -608,6 +618,58 @@ export const UPDATE_OPERATION = gql`
       deliveriesId
       stage
       data
+    }
+  }
+`;
+
+export const UPDATE_DELIVERY_STATE = gql`
+  mutation Mutation($updateStateId: String!, $state: String!) {
+    updateState(id: $updateStateId, state: $state) {
+      id
+      supplierId
+      date
+      expectedDate
+      warehouse
+      products
+      state
+    }
+  }
+`;
+
+export const UPDATE_DELIVERY_VALUES = gql`
+  mutation Mutation($updateValuesId: String!, $products: JSON!) {
+    updateValues(id: $updateValuesId, products: $products) {
+      id
+      supplierId
+      date
+      expectedDate
+      warehouse
+      products
+      state
+    }
+  }
+`;
+
+export const UPDATE_STOCK = gql`
+  mutation Mutation(
+    $updateStockId: String!
+    $productId: ID
+    $totalQuantity: Float
+    $availableStock: Float
+    $ordered: Float
+  ) {
+    updateStock(
+      id: $updateStockId
+      productId: $productId
+      totalQuantity: $totalQuantity
+      availableStock: $availableStock
+      ordered: $ordered
+    ) {
+      id
+      productId
+      totalQuantity
+      availableStock
+      ordered
     }
   }
 `;

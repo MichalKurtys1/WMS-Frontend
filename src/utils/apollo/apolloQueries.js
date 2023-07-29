@@ -73,7 +73,6 @@ export const GET_PRODUCTS = gql`
         accountNumber
         nip
       }
-      availableStock
     }
   }
 `;
@@ -84,8 +83,8 @@ export const GET_DELIVERIES = gql`
       id
       supplierId
       date
+      expectedDate
       warehouse
-      comments
       products
       state
       supplier {
@@ -194,6 +193,30 @@ export const GET_TRANSFERS = gql`
       date
       data
       state
+    }
+  }
+`;
+
+export const GET_STOCKS = gql`
+  query Query {
+    stocks {
+      id
+      productId
+      totalQuantity
+      availableStock
+      ordered
+      product {
+        id
+        supplierId
+        name
+        type
+        capacity
+        unit
+        pricePerUnit
+        supplier {
+          name
+        }
+      }
     }
   }
 `;

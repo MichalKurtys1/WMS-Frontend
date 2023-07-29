@@ -25,17 +25,12 @@ import DeliveriesDetailsPage from "./pages/deliveries/details/DeliveriesDetailsP
 import ProductsPage from "./pages/products/ProductsPage";
 import ProductsAddPage from "./pages/products/add/ProductsAddPage";
 import ProductEditPage from "./pages/products/edit/ProductEditPage";
-import OperationsPage from "./pages/operations/OperationsPage";
-import DeliveryActionsPage from "./pages/operations/actions/deilvery/DeliveryActionsPage";
-import OrderActionsPage from "./pages/operations/actions/order/OrderActionsPage";
 import OrdersPage from "./pages/orders/OrdersPage";
 import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
 import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
 import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
-import VisualizationPage from "./pages/visualization/VisualizationPage";
-import MoveProductsPage from "./pages/visualization/MoveProductsPage";
-import TransferActionsPage from "./pages/operations/actions/transfer/TransferActionsPage";
-import TransfersPage from "./pages/visualization/transfers/TarnsfersPage";
+import StockPage from "./pages/stock/StockPage";
+import SortingPage from "./pages/deliveries/sorting/SortingPage";
 
 const router = createBrowserRouter([
   {
@@ -72,27 +67,8 @@ const router = createBrowserRouter([
             element: <ChangePasswordPage />,
           },
           {
-            path: "operations",
-            children: [
-              { index: true, element: <OperationsPage /> },
-              {
-                path: "action",
-                children: [
-                  {
-                    path: "delivery",
-                    element: <DeliveryActionsPage />,
-                  },
-                  {
-                    path: "order",
-                    element: <OrderActionsPage />,
-                  },
-                  {
-                    path: "transfers",
-                    element: <TransferActionsPage />,
-                  },
-                ],
-              },
-            ],
+            path: "stock",
+            children: [{ index: true, element: <StockPage /> }],
           },
           {
             path: "clients",
@@ -124,28 +100,15 @@ const router = createBrowserRouter([
                 path: "details",
                 element: <DeliveriesDetailsPage />,
               },
+              {
+                path: "sorting",
+                element: <SortingPage />,
+              },
             ],
           },
           {
             path: "profile",
             element: <ProfilePage />,
-          },
-          {
-            path: "visualisation",
-            children: [
-              {
-                index: true,
-                element: <VisualizationPage />,
-              },
-              {
-                path: "move-products",
-                element: <MoveProductsPage />,
-              },
-              {
-                path: "transfers",
-                element: <TransfersPage />,
-              },
-            ],
           },
           {
             path: "messages",

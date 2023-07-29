@@ -41,3 +41,113 @@
   top: 10px;
   left: -13px;
 }
+
+.detailsRow {
+  width: 100%;
+}
+
+.detailsRow tr {
+  width: 100%;
+  border-bottom: 2px solid #ced3d9;
+}
+
+.detailsRow .wrapper {
+  display: flex;
+  justify-content: space-between;
+  min-height: 50px;
+}
+
+.detailsRow td .details {
+  width: 75%;
+  height: 100%;
+}
+
+.detailsRow .productBox {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.detailsRow .productBox .numbersBox {
+  width: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.detailsRow td .optionsBox {
+  width: 25%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.detailsRow .optionsBox button {
+  position: relative;
+  background-color: #fff;
+  border: none;
+}
+
+.detailsRow .optionsBox button:disabled .icon {
+  color: #646e78;
+}
+
+.detailsRow .optionsBox button .tooltip {
+  position: absolute;
+  bottom: 0;
+  z-index: 5;
+  left: 50%;
+  transform: translate(-50%, 80%);
+  visibility: hidden;
+}
+
+.detailsRow .optionsBox button .tooltip p {
+  font-size: 14px;
+}
+
+.detailsRow .optionsBox button:hover .tooltip {
+  visibility: visible;
+}
+
+.detailsRow .optionsBox button p {
+  margin: 10px;
+  color: #2d3640;
+  font-size: 18px;
+}
+
+.detailsRow .optionsBox button .icon {
+  display: block;
+  width: 100%;
+  margin-right: 5px;
+  font-size: 22px;
+  color: #2d3640;
+  padding: 2px 5px 2px 0;
+  transition: 0.5s;
+}
+.detailsRow .optionsBox button .iconReverse {
+  transform: scale(-1, 1);
+  margin-right: 5px;
+  font-size: 22px;
+  color: #2d3640;
+  padding: 2px 5px 2px 0;
+  transition: 0.5s;
+}
+
+.detailsRow .optionsBox button:hover .icon,
+.detailsRow .optionsBox button:hover .iconReverse {
+  color: #3054f2;
+}
+
+.detailsRow .productBox h4 {
+  display: block;
+  text-align: left;
+  margin: 5px;
+  min-width: 30%;
+  padding-left: 20px;
+}
+
+.detailsRow .productBox p {
+  text-align: left;
+  margin: 5px;
+  width: 33%;
+}
