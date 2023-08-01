@@ -1,20 +1,25 @@
 import { useLocation, useNavigate } from "react-router";
 import { useMutation, useQuery } from "@apollo/client";
-import {
-  ADD_ORDER,
-  UPDATE_AVAILABLE_STOCK,
-} from "../../../utils/apollo/apolloMutations";
-import { GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
+import { ADD_ORDER, UPDATE_STOCK } from "../../../utils/apollo/apolloMutations";
+import { GET_PRODUCTS, GET_STOCKS } from "../../../utils/apollo/apolloQueries";
 
 import style from "./OrdersDetailsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
+import { useState } from "react";
+import ErrorHandler from "../../../components/ErrorHandler";
 
 const OrdersDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [addOrder] = useMutation(ADD_ORDER);
-  const [updateProduct] = useMutation(UPDATE_AVAILABLE_STOCK);
+  const [error, setError] = useState();
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
+  const [updateStock] = useMutation(UPDATE_STOCK, {
+    onError: (error) => setError(error),
+  });
+  const { data: stocks } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
+  });
 
   const submitHandler = () => {
     addOrder({
@@ -27,24 +32,35 @@ const OrdersDetailsPage = () => {
     })
       .then((data) => {
         JSON.parse(location.state.products).forEach((item) => {
-          const product = location.state.productsFromDB.products.filter(
-            (product) =>
-              item.product.includes(product.name) &&
-              item.product.includes(product.type) &&
-              item.product.includes(product.capacity)
+          const stock = stocks.stocks.filter(
+            (stock) =>
+              item.product.includes(stock.product.name) &&
+              item.product.includes(stock.product.type) &&
+              item.product.includes(stock.product.capacity)
           );
-          updateProduct({
-            variables: {
-              updateAvailableStockId: product[0].id,
-              availableStock: parseInt(item.quantity) * -1,
-            },
-          }).catch((err) => console.log(err));
-        });
+          let newValue =
+            parseInt(stock[0].availableStock) - parseInt(item.quantity);
 
-        navigate("/main/orders", {
-          state: {
-            userData: data.data.createClient,
-          },
+          if (newValue < 0) {
+            setError("SERVER_ERROR");
+            return;
+          }
+          console.log(stock[0].availableStock);
+          console.log(newValue);
+          updateStock({
+            variables: {
+              updateStockId: stock[0].id,
+              availableStock: newValue,
+            },
+          })
+            .then((data) => {
+              navigate("/main/orders", {
+                state: {
+                  userData: data.data,
+                },
+              });
+            })
+            .catch((err) => console.log(err));
         });
       })
       .catch((err) => {
@@ -89,9 +105,9 @@ const OrdersDetailsPage = () => {
           className={style.returnBox}
           onClick={() => {
             if (location.state !== null && location.state.details) {
-              navigate("/main/deliveries");
+              navigate("/main/orders");
             } else {
-              navigate("/main/deliveries/add", {
+              navigate("/main/orders/add", {
                 state: {
                   savedData: {
                     supplierId: location.state.supplierId,
@@ -109,6 +125,7 @@ const OrdersDetailsPage = () => {
           <p>Powrót</p>
         </div>
       </div>
+      <ErrorHandler error={error} />
       <div className={style.dataBox}>
         <div className={style.upperBox}>
           <div className={style.logoBox}>
@@ -158,24 +175,23 @@ const OrdersDetailsPage = () => {
           </div>
         </div>
         <h1>FAKTURA VAT 211/08/2023</h1>
-        <div className={style.tablesBox}>
-          <table className={style.invoiceTable}>
-            <thead>
-              <tr>
-                <th>Lp</th>
-                <th>Nazwa</th>
-                <th>Ilość</th>
-                <th>j.m.</th>
-                <th>Cena brutto</th>
-                <th>VAT [%]</th>
-                <th>VAT</th>
-                <th>Wartość brutto</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products &&
-                !loadingProducts &&
-                JSON.parse(location.state.products).map((item) => (
+        {products && !loadingProducts && (
+          <div className={style.tablesBox}>
+            <table className={style.invoiceTable}>
+              <thead>
+                <tr>
+                  <th>Lp</th>
+                  <th>Nazwa</th>
+                  <th>Ilość</th>
+                  <th>j.m.</th>
+                  <th>Cena brutto</th>
+                  <th>VAT [%]</th>
+                  <th>VAT</th>
+                  <th>Wartość brutto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {JSON.parse(location.state.products).map((item) => (
                   <tr>
                     <td>{item.id + 1}</td>
                     <td>{item.product}</td>
@@ -199,35 +215,37 @@ const OrdersDetailsPage = () => {
                     </td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
-          <div className={style.summaryTable}>
-            <table className={style.invoiceTable}>
-              <thead>
-                <tr>
-                  <th>według stawki VAT</th>
-                  <th>wartość netto</th>
-                  <th>kwota VAT</th>
-                  <th>wartość brutto</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Podstawowy podatek VAT 23%</td>
-                  <td>{priceSum()} zł</td>
-                  <td>{vatSum()} zł</td>
-                  <td>{+priceSum() + +vatSum()} zł</td>
-                </tr>
               </tbody>
             </table>
-          </div>
-          <div className={style.summaryBox}>
-            <div className={style.upperBox}>
-              <p>Razem do zapłaty:</p>
-              <p>{+priceSum() + +vatSum()} zł</p>
+            <div className={style.summaryTable}>
+              <table className={style.invoiceTable}>
+                <thead>
+                  <tr>
+                    <th>według stawki VAT</th>
+                    <th>wartość netto</th>
+                    <th>kwota VAT</th>
+                    <th>wartość brutto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Podstawowy podatek VAT 23%</td>
+                    <td>{priceSum()} zł</td>
+                    <td>{vatSum()} zł</td>
+                    <td>{+priceSum() + +vatSum()} zł</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className={style.summaryBox}>
+              <div className={style.upperBox}>
+                <p>Razem do zapłaty:</p>
+                <p>{+priceSum() + +vatSum()} zł</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div className={style.signatureBox}>
           <div className={style.signature}>
             <h4>Wystawił(a):</h4>

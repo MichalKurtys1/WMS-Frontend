@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { dateToPolish } from "../../utils/dateFormatters";
 import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
-import { DELETE_ORDER, GET_ORDER } from "../../utils/apollo/apolloMutations";
+import {
+  DELETE_ORDER,
+  GET_ORDER,
+  UPDATE_ORDER_STATE,
+} from "../../utils/apollo/apolloMutations";
 
 import style from "./OrdersPage.module.css";
 import Table from "../../components/Table";
@@ -19,6 +23,12 @@ const OrdersPage = () => {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
+  const [id, setId] = useState();
+  const [action, setAction] = useState();
+  // const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
+  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
+    useState(false);
+  const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const { data, refetch, loading } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
   });
@@ -26,6 +36,9 @@ const OrdersPage = () => {
     onError: (error) => setError(error),
   });
   const [getOrder] = useMutation(GET_ORDER, {
+    onError: (error) => setError(error),
+  });
+  const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
     onError: (error) => setError(error),
   });
 
@@ -99,6 +112,81 @@ const OrdersPage = () => {
       });
   };
 
+  // ssss
+
+  const updateStateHandler = (id, action) => {
+    if (action === "Do wysyłki") {
+      navigate("/main/orders/shipping", {
+        state: {
+          deliveryId: id,
+        },
+      });
+    } else {
+      setStatePopupIsOpen(true);
+      setId(id);
+      setAction(action);
+    }
+  };
+
+  const button2ActionHandler = () => {
+    setStatePopupIsOpen(false);
+    setShouldUpdateDeliveryState(true);
+  };
+
+  useEffect(() => {
+    if (shouldUpdateDeliveryState) {
+      updateOrdersState({
+        variables: {
+          updateOrderStateId: id,
+          state: action,
+        },
+      })
+        .then((data) => {
+          refetch();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setShouldUpdateDeliveryState(false);
+    }
+  }, [action, id, refetch, shouldUpdateDeliveryState, updateOrdersState]);
+
+  // useEffect(() => {
+  //   if (location.state && location.state.products) {
+  //     updateDeliveryValues({
+  //       variables: {
+  //         updateValuesId: location.state.deliveryId,
+  //         products: JSON.stringify(location.state.products),
+  //       },
+  //     })
+  //       .then((data) => {
+  //         updateDeliveryState({
+  //           variables: {
+  //             updateStateId: location.state.deliveryId,
+  //             state: "Posortowano",
+  //           },
+  //         })
+  //           .then((data) => {
+  //             refetch();
+  //             navigate(location.pathname, {});
+  //           })
+  //           .catch((err) => {
+  //             console.log(err);
+  //           });
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   }
+  // }, [
+  //   updateDeliveryValues,
+  //   location.state,
+  //   updateDeliveryState,
+  //   location.pathname,
+  //   navigate,
+  //   refetch,
+  // ]);
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -146,6 +234,7 @@ const OrdersPage = () => {
               messageHandler={messageHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
+              updateStateHandler={updateStateHandler}
               data={data.orders.map((item) => {
                 return {
                   ...item,
@@ -161,6 +250,8 @@ const OrdersPage = () => {
                 "Termin",
                 "Stan",
               ]}
+              allowExpand={true}
+              type="Orders"
             />
           )}
         </div>
@@ -174,6 +265,19 @@ const OrdersPage = () => {
           button1={"Anuluj"}
           button1Action={declinedDeleteHandler}
           button2Action={confirmedDeleteHandler}
+        />
+      )}
+      {statePopupIsOpen && (
+        <PopUp
+          message={
+            "Czy jesteś pewien, że tego chcesz? Tego procesu nie da się odwrócić."
+          }
+          button2={"Potwierdź"}
+          button1={"Anuluj"}
+          button1Action={() => {
+            setStatePopupIsOpen(false);
+          }}
+          button2Action={button2ActionHandler}
         />
       )}
     </div>

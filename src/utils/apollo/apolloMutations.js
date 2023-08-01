@@ -296,6 +296,56 @@ export const ADD_STOCK = gql`
   }
 `;
 
+export const ADD_SHIPPING = gql`
+  mutation Mutation(
+    $orderId: ID!
+    $totalWeight: String!
+    $palletSize: String!
+    $palletNumber: String!
+    $products: JSON!
+  ) {
+    createShipping(
+      orderId: $orderId
+      totalWeight: $totalWeight
+      palletSize: $palletSize
+      palletNumber: $palletNumber
+      products: $products
+    ) {
+      id
+      orderId
+      totalWeight
+      palletSize
+      palletNumber
+      products
+    }
+  }
+`;
+
+export const ADD_ORDERS_SHIPMENT = gql`
+  mutation Mutation(
+    $employee: String!
+    $registrationNumber: String!
+    $deliveryDate: String!
+    $warehouse: String!
+    $orders: JSON!
+  ) {
+    createOrderShipment(
+      employee: $employee
+      registrationNumber: $registrationNumber
+      deliveryDate: $deliveryDate
+      warehouse: $warehouse
+      orders: $orders
+    ) {
+      id
+      employee
+      registrationNumber
+      deliveryDate
+      warehouse
+      orders
+    }
+  }
+`;
+
 // get one
 
 export const GET_CLIENT = gql`
@@ -401,8 +451,8 @@ export const GET_ORDER = gql`
         nip
       }
       date
+      expectedDate
       warehouse
-      comments
       products
       state
     }
@@ -670,6 +720,34 @@ export const UPDATE_STOCK = gql`
       totalQuantity
       availableStock
       ordered
+    }
+  }
+`;
+
+export const UPDATE_ORDER_STATE = gql`
+  mutation Mutation($updateOrderStateId: String!, $state: String!) {
+    updateOrderState(id: $updateOrderStateId, state: $state) {
+      id
+      clientId
+      date
+      expectedDate
+      warehouse
+      products
+      state
+    }
+  }
+`;
+
+export const UPDATE_ORDER_PRODUCTS = gql`
+  mutation Mutation($updateOrderProductsId: String!, $products: JSON!) {
+    updateOrderProducts(id: $updateOrderProductsId, products: $products) {
+      id
+      clientId
+      date
+      expectedDate
+      warehouse
+      products
+      state
     }
   }
 `;

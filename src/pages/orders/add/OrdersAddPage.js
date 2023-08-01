@@ -2,7 +2,11 @@ import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
-import { GET_CLIENTS, GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
+import {
+  GET_CLIENTS,
+  GET_PRODUCTS,
+  GET_STOCKS,
+} from "../../../utils/apollo/apolloQueries";
 import { selectValidator } from "../../../utils/inputValidators";
 
 import style from "./OrdersAddPage.module.css";
@@ -34,6 +38,9 @@ const OrdersAddPage = () => {
     onError: (error) => setError(error),
   });
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+  });
+  const { data: stocks, loading: loadingStock } = useQuery(GET_STOCKS, {
     onError: (error) => setError(error),
   });
   const [productList, setProductList] = useState(
@@ -77,7 +84,12 @@ const OrdersAddPage = () => {
     );
   };
 
-  const quantityUnitHandler = (id, quantity) => {
+  const quantityUnitHandler = (id, quantity, max) => {
+    if (quantity > max) {
+      setSubmitError(true);
+      return;
+    }
+    setSubmitError(false);
     setProductList((prevList) =>
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
@@ -100,8 +112,9 @@ const OrdersAddPage = () => {
             item.product
         )[0].availableStock < parseInt(item.quantity)
     );
-
-    if (incompleteProducts.length > 0) {
+    console.log(incompleteProducts);
+    console.log(productList);
+    if (incompleteProducts.length > 0 || submitError) {
       setSubmitError(true);
       return;
     }
@@ -127,15 +140,15 @@ const OrdersAddPage = () => {
     const day = String(now.getDate()).padStart(2, "0");
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
-    console.log(`${year}-${month}-${day}T${hours}:${minutes}`);
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const getSupplierHandler = () => {
+    console.log(data.clients);
     const supplier = data.clients.filter(
-      (item) => item.name === location.state.savedData.clientId
+      (item) => item.name === location.state.savedData.supplierId
     );
-    return supplier[0].name;
+    return supplier ? supplier[0].name : null;
   };
 
   return (
@@ -155,14 +168,14 @@ const OrdersAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loadingClients || loadingProducts) && (
+      {(loadingClients || loadingProducts || loadingStock) && (
         <div className={style.spinnerBox}>
           <div className={style.spinner}>
             <Spinner />
           </div>
         </div>
       )}
-      {(!loadingClients || !loadingProducts) && (
+      {(!loadingClients || !loadingProducts || !loadingStock) && data && (
         <main>
           <Form
             onSubmit={onSubmit}
@@ -180,7 +193,8 @@ const OrdersAddPage = () => {
                           fieldName="client"
                           validator={selectValidator}
                           initVal={
-                            location.state !== null
+                            location.state &&
+                            location.state.savedData.supplierId
                               ? getSupplierHandler()
                               : null
                           }
@@ -237,6 +251,7 @@ const OrdersAddPage = () => {
                   <ProductList
                     productList={productList}
                     products={products}
+                    stocks={stocks}
                     loadingProducts={loadingProducts}
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}

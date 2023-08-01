@@ -31,6 +31,10 @@ import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
 import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
 import StockPage from "./pages/stock/StockPage";
 import SortingPage from "./pages/deliveries/sorting/SortingPage";
+import ShippingDetails from "./pages/orders/shipping/ShippingDetails";
+import ShippingPage from "./pages/shipping/ShippingPage";
+import ShippingAddPage from "./pages/shipping/add/ShippingAddPage";
+import ShippmentPDF from "./pages/PDFs/ShippmentPDF";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +64,10 @@ const router = createBrowserRouter([
                 path: "details",
                 element: <OrdersDetailsPage />,
               },
+              {
+                path: "shipping",
+                element: <ShippingDetails />,
+              },
             ],
           },
           {
@@ -69,6 +77,16 @@ const router = createBrowserRouter([
           {
             path: "stock",
             children: [{ index: true, element: <StockPage /> }],
+          },
+          {
+            path: "shipping",
+            children: [
+              { index: true, element: <ShippingPage /> },
+              {
+                path: "add",
+                element: <ShippingAddPage />,
+              },
+            ],
           },
           {
             path: "clients",
@@ -163,6 +181,16 @@ const router = createBrowserRouter([
                 element: <SuppliersDetailsPage />,
               },
             ],
+          },
+        ],
+      },
+      {
+        path: "/pdf",
+        loader: checkToken,
+        children: [
+          {
+            path: "shippment",
+            element: <ShippmentPDF />,
           },
         ],
       },

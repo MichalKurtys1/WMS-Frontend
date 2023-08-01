@@ -8,7 +8,13 @@ import {
   BsFillFileEarmarkArrowDownFill,
   BsFillFileEarmarkArrowUpFill,
 } from "react-icons/bs";
-import { FaCalendarAlt, FaEnvelope, FaUser, FaBoxes } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaEnvelope,
+  FaUser,
+  FaBoxes,
+  FaTruck,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Navigation = () => {
@@ -220,6 +226,21 @@ const Navigation = () => {
               >
                 <BsFillFileEarmarkArrowDownFill className={style.iconS} />
                 <h2>Zamówienia</h2>
+              </div>
+            </Link>
+            <Link to={"/main/shipping"} style={{ textDecoration: "none" }}>
+              <div
+                className={style.linkBox}
+                style={{
+                  color: `${
+                    location.pathname === "/main/shipping"
+                      ? "#3054F2"
+                      : "#646e78"
+                  }`,
+                }}
+              >
+                <FaTruck className={style.iconS} />
+                <h2>Wysyłki</h2>
               </div>
             </Link>
             <Link to={"/main/files"} style={{ textDecoration: "none" }}>

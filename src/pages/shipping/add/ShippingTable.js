@@ -1,22 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { pickProperties } from "../utils/objFormatting";
-import style from "./Table.module.css";
-import TableRow from "./TableRow";
+import { useEffect, useState } from "react";
+import style from "./ShippingTable.module.css";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { pickProperties } from "../../../utils/objFormatting";
+import { GET_ORDERS } from "../../../utils/apollo/apolloQueries";
+import { useQuery } from "@apollo/client";
+import ErrorHandler from "../../../components/ErrorHandler";
+import ShippingTableRow from "./ShippingTableRow";
+import { dateToPolish } from "../../../utils/dateFormatters";
 
-const Table = (props) => {
+const format = ["client", "warehouse", "expectedDate", "state"];
+const titles = ["Klient", "Magazyn", "Termin", "Stan"];
+
+const ShippingTable = (props) => {
   const [sortedColumn, setSortedColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  const [data, setData] = useState(props.data);
+  const [error, setError] = useState();
+  const [data, setData] = useState();
+  const { data: orders } = useQuery(GET_ORDERS, {
+    onError: (error) => setError(error),
+    onCompleted: (data) =>
+      setData(orders.orders.filter((item) => item.state === "Do wysyłki")),
+  });
 
   useEffect(() => {
-    sortHandler(data, sortedColumn, sortDirection);
+    if (data) {
+      sortHandler(data, sortedColumn, sortDirection);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn, sortDirection]);
-
-  useEffect(() => {
-    setData(props.data);
-  }, [props.data]);
 
   const handleSort = (columnName) => {
     if (sortedColumn === columnName) {
@@ -53,19 +65,17 @@ const Table = (props) => {
 
   return (
     <>
-      {props.data && (
+      {data && (
         <table className={style.table}>
+          <ErrorHandler error={error} />
           <thead>
             <tr>
-              {props.titles.map((name, i) => (
-                <th
-                  key={props.format[i]}
-                  onClick={() => handleSort(props.format[i])}
-                >
+              <th></th>
+              {titles.map((name, i) => (
+                <th key={format[i]} onClick={() => handleSort(format[i])}>
                   <div>
                     {name}
-                    {sortedColumn === props.format[i] &&
-                    sortDirection === "asc" ? (
+                    {sortedColumn === format[i] && sortDirection === "asc" ? (
                       <FaAngleUp className={style.sortIcon} />
                     ) : (
                       <FaAngleDown className={style.sortIcon} />
@@ -79,38 +89,33 @@ const Table = (props) => {
           <tbody>
             {data.length !== 0 &&
               data.map((record) => {
-                const id = record.id;
-                const products = record.products || null;
-                const formattedData = pickProperties(record, props.format);
+                const tempRecord = { ...record };
+                tempRecord.client = tempRecord.client.name;
+                tempRecord.expectedDate = dateToPolish(tempRecord.expectedDate);
+                const id = tempRecord.id;
+                const products = tempRecord.products || null;
+                const formattedData = pickProperties(tempRecord, format);
                 let keys = Object.keys(formattedData);
                 return (
-                  <TableRow
+                  <ShippingTableRow
+                    selectedRowsAdd={props.selectedRowsAdd}
+                    deleteHandler={props.deleteHandler}
                     key={id}
                     id={id}
                     keys={keys}
                     products={products}
-                    details={props.details}
                     record={formattedData}
-                    selectedRow={props.selectedRow}
-                    editHandler={props.editHandler}
-                    detailsHandler={props.detailsHandler}
-                    messageHandler={props.messageHandler}
-                    deleteHandler={props.deleteHandler}
-                    selectedRowHandler={props.selectedRowHandler}
-                    allowExpand={props.allowExpand}
-                    updateStateHandler={props.updateStateHandler}
-                    type={props.type}
                   />
                 );
               })}
           </tbody>
         </table>
       )}
-      {data.length === 0 && (
+      {data && data.length === 0 && (
         <p className={style.emptyData}>Nie znaleziono żadnych danych</p>
       )}
     </>
   );
 };
 
-export default Table;
+export default ShippingTable;

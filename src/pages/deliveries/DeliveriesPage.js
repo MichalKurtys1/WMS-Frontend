@@ -254,6 +254,7 @@ const DeliveriesPage = () => {
                 "Stan",
               ]}
               allowExpand={true}
+              type={"Delivery"}
             />
           )}
         </div>

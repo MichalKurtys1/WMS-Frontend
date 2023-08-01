@@ -33,6 +33,7 @@ const positonList = [
   { name: "Magazynier" },
   { name: "Księgowy" },
   { name: "Menadżer" },
+  { name: "Przewoźnik" },
 ];
 
 const EmployeeAddPage = () => {

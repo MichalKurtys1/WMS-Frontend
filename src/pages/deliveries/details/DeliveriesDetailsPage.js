@@ -19,7 +19,6 @@ const DeliveriesDetailsPage = () => {
         supplierId: location.state.supplierId,
         expectedDate: location.state.date,
         warehouse: location.state.warehouse,
-        comments: location.state.comments,
         products: location.state.products,
       },
     })

@@ -116,8 +116,8 @@ export const GET_ORDERS = gql`
         nip
       }
       date
+      expectedDate
       warehouse
-      comments
       products
       state
     }
@@ -217,6 +217,19 @@ export const GET_STOCKS = gql`
           name
         }
       }
+    }
+  }
+`;
+
+export const GET_SHIPPINGS = gql`
+  query Query {
+    shippings {
+      id
+      orderId
+      totalWeight
+      palletSize
+      palletNumber
+      products
     }
   }
 `;
