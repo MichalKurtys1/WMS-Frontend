@@ -62,6 +62,7 @@ const DeliveriesEditPage = () => {
   const [updateStock] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
   });
+  const [deletedProducts, setDeletedProducts] = useState([]);
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -101,14 +102,25 @@ const DeliveriesEditPage = () => {
       });
   }, [getDelivery, location.state.deliveryId]);
 
+  console.log(productList);
+
   const addProductInputCounter = () => {
     setProductList((prevList) => [
       ...prevList,
-      { id: prevList.length, product: null, unit: null, quantity: null },
+      {
+        id: deletedProducts.length + prevList.length,
+        product: null,
+        unit: null,
+        quantity: null,
+      },
     ]);
   };
 
   const deleteHandler = (id) => {
+    setDeletedProducts((prevList) => [
+      ...prevList,
+      productList.filter((item) => item.id === id),
+    ]);
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
@@ -142,7 +154,8 @@ const DeliveriesEditPage = () => {
       setSubmitError(true);
       return;
     }
-
+    console.log(productList);
+    console.log(deletedProducts);
     updateDelivery({
       variables: {
         updateDeliveryId: location.state.deliveryId,
@@ -161,11 +174,16 @@ const DeliveriesEditPage = () => {
               item.product.includes(stock.product.type) &&
               item.product.includes(stock.product.capacity)
           );
-
-          let newValue =
-            parseInt(stock[0].ordered) -
-            parseInt(item.maxValue) +
-            parseInt(item.quantity);
+          let newValue;
+          if (item.maxValue) {
+            newValue =
+              parseInt(stock[0].ordered) -
+              parseInt(item.maxValue) +
+              parseInt(item.quantity);
+          } else {
+            newValue = parseInt(stock[0].ordered) + parseInt(item.quantity);
+          }
+          console.log(newValue);
           if (newValue < 0) {
             setError("SERVER_ERROR");
             return;
@@ -175,35 +193,56 @@ const DeliveriesEditPage = () => {
               updateStockId: stock[0].id,
               ordered: newValue,
             },
-          })
-            .then((data) => {
-              navigate("/main/deliveries", {
-                state: {
-                  userData: data.data,
-                },
-              });
+          }).catch((err) => console.log(err));
+        });
+        if (deletedProducts[0]) {
+          // tu może być błąd
+          console.log(deletedProducts[0]);
+          deletedProducts[0].forEach((item) => {
+            const stock = stocks.stocks.filter(
+              (stock) =>
+                item.product.includes(stock.product.name) &&
+                item.product.includes(stock.product.type) &&
+                item.product.includes(stock.product.capacity)
+            );
+
+            const newValue =
+              parseInt(stock[0].ordered) - parseInt(item.quantity);
+            // tu może być błąd
+            console.log(stock[0].ordered);
+            console.log(newValue);
+            updateStock({
+              variables: {
+                updateStockId: stock[0].id,
+                ordered: newValue,
+              },
             })
-            .catch((err) => console.log(err));
-        });
-        navigate("/main/deliveries", {
-          state: {
-            userData: data.data,
-          },
-        });
+              .then((data) => {
+                navigate("/main/deliveries", {
+                  state: {
+                    userData: data.data,
+                  },
+                });
+              })
+              .catch((err) => console.log(err));
+          });
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-
+    navigate("/main/deliveries", {
+      state: {
+        userData: data.data,
+      },
+    });
     setSubmitError(false);
   };
 
   const getSupplierHandler = () => {
-    console.log(deliveryData);
     const supplier = data.suppliers.filter(
       (item) => item.id === deliveryData.supplierId
     );
-    console.log(supplier[0].name);
     return supplier[0].name;
   };
 

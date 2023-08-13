@@ -423,7 +423,9 @@ const TableRow = (props) => {
                     props.record["state"] === "Wysłano" ||
                     props.record["state"] === "Dostarczono" ||
                     props.record["state"] === "Do wysyłki" ||
-                    props.record["state"] === "Skompletowano"
+                    props.record["state"] === "Skompletowano" ||
+                    props.record["state"] === "Zamówiono" ||
+                    props.record["state"] === "Potwierdzono"
                       ? true
                       : false
                   }

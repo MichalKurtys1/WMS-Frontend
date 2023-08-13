@@ -128,7 +128,6 @@ const StockPage = () => {
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
               data={data.stocks.map((item) => {
-                console.log(item.product);
                 return {
                   ...item,
                   supplier: item.product.supplier.name,

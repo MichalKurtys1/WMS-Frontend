@@ -6,16 +6,19 @@ import { dateToInput } from "../../../utils/dateFormatters";
 import { selectValidator } from "../../../utils/inputValidators";
 import {
   GET_ORDER,
-  UPDATE_AVAILABLE_STOCK,
   UPDATE_ORDER,
+  UPDATE_STOCK,
 } from "../../../utils/apollo/apolloMutations";
-import { GET_CLIENTS, GET_PRODUCTS } from "../../../utils/apollo/apolloQueries";
+import {
+  GET_CLIENTS,
+  GET_PRODUCTS,
+  GET_STOCKS,
+} from "../../../utils/apollo/apolloQueries";
 
 import style from "./OrdersEditPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
 import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
-import TextArea from "../../../components/TextArea";
 import Input from "../../../components/Input";
 import ProductList from "../../orders/ProductsList";
 import ErrorHandler from "../../../components/ErrorHandler";
@@ -50,15 +53,18 @@ const OrdersEditPage = () => {
   const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
     onError: (error) => setError(error),
   });
-  const [updateAvailableStock] = useMutation(UPDATE_AVAILABLE_STOCK, {
-    onError: (error) => setError(error),
-  });
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
     } else {
       return [{ id: 0, product: null, unit: null, quantity: null }];
     }
+  });
+  const [updateStock] = useMutation(UPDATE_STOCK, {
+    onError: (error) => setError(error),
+  });
+  const { data: stocks, loading: loadingStocks } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
   });
 
   useEffect(() => {
@@ -145,31 +151,40 @@ const OrdersEditPage = () => {
       variables: {
         updateOrderId: location.state.orderId,
         clientId: values.client,
-        date: values.date,
+        expectedDate: values.date,
         warehouse: values.magazine,
-        comments: values.comments,
         products: JSON.stringify(productList),
       },
     })
       .then((data) => {
         productList.forEach((item) => {
-          const product = products.products.filter(
-            (product) =>
-              item.product.includes(product.name) &&
-              item.product.includes(product.type) &&
-              item.product.includes(product.capacity)
+          const stock = stocks.stocks.filter(
+            (stock) =>
+              item.product.includes(stock.product.name) &&
+              item.product.includes(stock.product.type) &&
+              item.product.includes(stock.product.capacity)
           );
-          updateAvailableStock({
+          console.log(stock[0].availableStock);
+          console.log(item.maxValue);
+          console.log(item.quantity);
+          let newValue =
+            parseInt(stock[0].availableStock) +
+            (parseInt(item.maxValue) - parseInt(item.quantity));
+
+          if (newValue < 0) {
+            setError("SERVER_ERROR");
+            return;
+          }
+          updateStock({
             variables: {
-              updateAvailableStockId: product[0].id,
-              availableStock:
-                (parseInt(item.quantity) - parseInt(item.maxValue)) * -1,
+              updateStockId: stock[0].id,
+              availableStock: newValue,
             },
           })
             .then((data) => {
               navigate("/main/orders", {
                 state: {
-                  userData: data.data.createClient,
+                  userData: data.data,
                 },
               });
             })
@@ -207,14 +222,18 @@ const OrdersEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loadingClients || loadingProducts || loading || updateLoading) && (
+      {(loadingClients ||
+        loadingProducts ||
+        loading ||
+        updateLoading ||
+        loadingStocks) && (
         <div className={style.spinnerBox}>
           <div className={style.spinner}>
             <Spinner />
           </div>
         </div>
       )}
-      {data && deliveryData && (
+      {data && deliveryData && stocks && (
         <main>
           <Form
             onSubmit={onSubmit}
@@ -244,8 +263,10 @@ const OrdersEditPage = () => {
                         type="datetime-local"
                         fieldName="date"
                         width="90%"
-                        initVal={dateToInput(deliveryData.date)}
+                        initVal={dateToInput(deliveryData.expectedDate)}
                       />
+                    </div>
+                    <div className={style.column}>
                       <div className={style.selectBox}>
                         <Select
                           fieldName="magazine"
@@ -254,15 +275,6 @@ const OrdersEditPage = () => {
                           options={warehouseList}
                         />
                       </div>
-                    </div>
-                    <div className={style.column}>
-                      <TextArea
-                        name="Dodatkowe informacje"
-                        type="text"
-                        fieldName="comments"
-                        width="100%"
-                        initVal={deliveryData.comments}
-                      />
                       <button
                         disabled={invalid}
                         type="submit"
@@ -294,6 +306,7 @@ const OrdersEditPage = () => {
                     changeUnitHandler={changeUnitHandler}
                     quantityUnitHandler={quantityUnitHandler}
                     addProductInputCounter={addProductInputCounter}
+                    stocks={stocks}
                   />
                 </div>
               </form>

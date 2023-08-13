@@ -233,3 +233,16 @@ export const GET_SHIPPINGS = gql`
     }
   }
 `;
+
+export const GET_ORDER_SHIPMENTS = gql`
+  query Query {
+    orderShipments {
+      id
+      employee
+      registrationNumber
+      deliveryDate
+      warehouse
+      orders
+    }
+  }
+`;

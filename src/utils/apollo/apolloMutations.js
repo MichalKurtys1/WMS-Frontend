@@ -628,24 +628,22 @@ export const UPDATE_ORDER = gql`
   mutation Mutation(
     $updateOrderId: ID!
     $clientId: ID!
-    $date: String!
+    $expectedDate: String!
     $warehouse: String!
-    $comments: String!
     $products: JSON!
   ) {
     updateOrder(
       id: $updateOrderId
       clientId: $clientId
-      date: $date
+      expectedDate: $expectedDate
       warehouse: $warehouse
-      comments: $comments
       products: $products
     ) {
       id
       clientId
       date
+      expectedDate
       warehouse
-      comments
       products
       state
     }

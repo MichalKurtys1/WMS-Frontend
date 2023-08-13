@@ -1,7 +1,10 @@
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
+import {
+  GET_ORDER_SHIPMENTS,
+  GET_STOCKS,
+} from "../../utils/apollo/apolloQueries";
 import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
 
 import style from "./ShippingPage.module.css";
@@ -18,7 +21,7 @@ const ShippingPage = () => {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
-  const { data, refetch, loading } = useQuery(GET_STOCKS, {
+  const { data, refetch, loading } = useQuery(GET_ORDER_SHIPMENTS, {
     onError: (error) => setError(error),
   });
   const [deleteEmployye] = useMutation(DELETE_EMPLOYYE, {
@@ -103,7 +106,7 @@ const ShippingPage = () => {
       )}
       <main>
         <div className={style.optionPanel}>
-          <h1>Zamówienia do wysyłki</h1>
+          <h1>Wysyłki</h1>
           <div
             className={style.addOption}
             onClick={() => navigate(`/main/shipping/add`)}
@@ -120,34 +123,26 @@ const ShippingPage = () => {
               </div>
             </div>
           )}
-          {data && data.stocks && (
+          {data && data.orderShipments && (
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
               detailsHandler={detailsHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
-              data={data.stocks.map((item) => {
-                console.log(item.product);
-                return {
-                  ...item,
-                  supplier: item.product.supplier.name,
-                  product:
-                    item.product.name +
-                    " " +
-                    item.product.type +
-                    " " +
-                    item.product.capacity,
-                };
-              })}
+              data={data.orderShipments}
               format={[
-                "supplier",
-                "product",
-                "totalQuantity",
-                "availableStock",
-                "ordered",
+                "employee",
+                "registrationNumber",
+                "deliveryDate",
+                "warehouse",
               ]}
-              titles={["Dostawca", "Produkt", "Razem", "Dostępne", "Zamówiono"]}
+              titles={[
+                "Przewoźnik",
+                "Nr. rejestracyjny",
+                "Data dostarczenia",
+                "Magazyn",
+              ]}
               details={false}
             />
           )}

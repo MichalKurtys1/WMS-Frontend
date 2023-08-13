@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router";
 import { GET_SUPPLIERS } from "../../../utils/apollo/apolloQueries";
-import { ADD_PRODUCT } from "../../../utils/apollo/apolloMutations";
+import { ADD_PRODUCT, ADD_STOCK } from "../../../utils/apollo/apolloMutations";
 import { selectValidator, textValidator } from "../../../utils/inputValidators";
 
 import style from "./ProductsAddPage.module.css";
@@ -28,6 +28,7 @@ const ProductsAddPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [options, setOptions] = useState([]);
+  const [addStock] = useMutation(ADD_STOCK);
   const [addProduct, { loading }] = useMutation(ADD_PRODUCT, {
     onError: (error) => setError(error),
   });
@@ -60,11 +61,19 @@ const ProductsAddPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/products", {
-          state: {
-            userData: data.data.createUser,
+        addStock({
+          variables: {
+            productId: data.data.createProduct.id,
           },
-        });
+        })
+          .then((data) => {
+            navigate("/main/products", {
+              state: {
+                userData: data.data.createProduct,
+              },
+            });
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => {
         console.log(err);
