@@ -1,12 +1,13 @@
 import {
   ApolloClient,
-  HttpLink,
+  // HttpLink,
   ApolloLink,
   InMemoryCache,
   concat,
 } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 
-const httpLink = new HttpLink({
+const httpLink = createUploadLink({
   uri: "http://localhost:3001/graphql",
 });
 

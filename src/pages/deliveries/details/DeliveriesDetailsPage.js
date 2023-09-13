@@ -12,7 +12,7 @@ const DeliveriesDetailsPage = () => {
   const [addDelivery] = useMutation(ADD_DELIVERY);
   const [addStock] = useMutation(ADD_STOCK);
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS);
-  console.log(products);
+
   const submitHandler = () => {
     addDelivery({
       variables: {

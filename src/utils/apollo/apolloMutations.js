@@ -749,3 +749,20 @@ export const UPDATE_ORDER_PRODUCTS = gql`
     }
   }
 `;
+
+export const ORDER_FILE_UPLOAD = gql`
+  mutation Mutation(
+    $file: Upload!
+    $name: String!
+    $fileUploadId: String!
+    $date: String!
+  ) {
+    fileUpload(file: $file, name: $name, id: $fileUploadId, date: $date)
+  }
+`;
+
+export const FILE_DOWNLOAD = gql`
+  mutation Mutation($filename: String!) {
+    fileDownload(filename: $filename)
+  }
+`;

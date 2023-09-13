@@ -35,6 +35,9 @@ import ShippingDetails from "./pages/orders/shipping/ShippingDetails";
 import ShippingPage from "./pages/shipping/ShippingPage";
 import ShippingAddPage from "./pages/shipping/add/ShippingAddPage";
 import ShippmentPDF from "./pages/PDFs/ShippmentPDF";
+import OrdersUploadPage from "./pages/orders/OrdersUploadPage";
+import DocumentsPage from "./pages/documents/DocumentsPage";
+import OrderRenderer from "./pages/PDFs/OrderRenderer";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,10 @@ const router = createBrowserRouter([
         loader: checkToken,
         children: [
           { index: true, element: <DashboardPage /> },
+          {
+            path: "documents",
+            element: <DocumentsPage />,
+          },
           {
             path: "orders",
             children: [
@@ -67,6 +74,10 @@ const router = createBrowserRouter([
               {
                 path: "shipping",
                 element: <ShippingDetails />,
+              },
+              {
+                path: "upload",
+                element: <OrdersUploadPage />,
               },
             ],
           },
@@ -191,6 +202,10 @@ const router = createBrowserRouter([
           {
             path: "shippment",
             element: <ShippmentPDF />,
+          },
+          {
+            path: "order",
+            element: <OrderRenderer />,
           },
         ],
       },

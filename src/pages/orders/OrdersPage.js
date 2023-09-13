@@ -121,6 +121,12 @@ const OrdersPage = () => {
           deliveryId: id,
         },
       });
+    } else if (action === "Dostarczono") {
+      navigate("/main/orders/upload", {
+        state: {
+          deliveryId: id,
+        },
+      });
     } else {
       setStatePopupIsOpen(true);
       setId(id);

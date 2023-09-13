@@ -246,3 +246,16 @@ export const GET_ORDER_SHIPMENTS = gql`
     }
   }
 `;
+
+export const GET_FILES = gql`
+  query Query {
+    files {
+      id
+      name
+      filename
+      date
+      category
+      subcategory
+    }
+  }
+`;

@@ -31,6 +31,9 @@ const ErrorHandler = ({ error }) => {
               ponownie za chwilę.
             </p>
           )}
+          {error.message !== "INPUT_ERROR" &&
+            error.message !== "EMAIL_TAKEN" &&
+            error.message !== "SERVER_ERROR" && <p>{error.message}</p>}
         </div>
       )}
     </>

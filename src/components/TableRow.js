@@ -15,7 +15,6 @@ import {
   FaClipboardList,
   FaFileInvoice,
   FaPen,
-  FaSave,
   FaTruckLoading,
   FaTruckMoving,
 } from "react-icons/fa";
@@ -233,9 +232,9 @@ const TableRow = (props) => {
                         : null,
                   }}
                 >
-                  <FaSave className={style.icon} />
+                  <FaFileInvoice className={style.icon} />
                   <div className={style.tooltip}>
-                    <p>Zapisz</p>
+                    <p>Dodaj fakturę</p>
                   </div>
                 </button>
                 <button
@@ -482,21 +481,6 @@ const TableRow = (props) => {
                   />
                   <div className={style.tooltip}>
                     <p>Dostarczono</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => props.detailsHandler(props.id)}
-                  disabled={
-                    props.record["state"] === "Potwierdzono" ? true : false
-                  }
-                  style={{
-                    pointerEvents:
-                      props.record["state"] === "Potwierdzono" ? "none" : null,
-                  }}
-                >
-                  <FaFileInvoice className={style.icon} />
-                  <div className={style.tooltip}>
-                    <p>Fatkura</p>
                   </div>
                 </button>
                 <button
