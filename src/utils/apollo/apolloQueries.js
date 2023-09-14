@@ -243,6 +243,7 @@ export const GET_ORDER_SHIPMENTS = gql`
       deliveryDate
       warehouse
       orders
+      state
     }
   }
 `;

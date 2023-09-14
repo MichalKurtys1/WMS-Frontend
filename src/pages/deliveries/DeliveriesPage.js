@@ -116,6 +116,13 @@ const DeliveriesPage = () => {
           deliveryId: id,
         },
       });
+    } else if (action === "Zakończono") {
+      console.log(id);
+      navigate("/main/deliveries/upload", {
+        state: {
+          deliveryId: id,
+        },
+      });
     } else {
       setStatePopupIsOpen(true);
       setId(id);

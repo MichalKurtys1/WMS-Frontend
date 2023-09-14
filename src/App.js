@@ -34,11 +34,12 @@ import SortingPage from "./pages/deliveries/sorting/SortingPage";
 import ShippingDetails from "./pages/orders/shipping/ShippingDetails";
 import ShippingPage from "./pages/shipping/ShippingPage";
 import ShippingAddPage from "./pages/shipping/add/ShippingAddPage";
-import ShippmentPDF from "./pages/PDFs/ShippmentPDF";
 import OrdersUploadPage from "./pages/orders/OrdersUploadPage";
 import DocumentsPage from "./pages/documents/DocumentsPage";
 import OrderRenderer from "./pages/PDFs/OrderRenderer";
-
+import ShipmentRenderer from "./pages/PDFs/ShipmentRenderer";
+import DeliveriesUploadPage from "./pages/deliveries/DeliveriesUploadPage";
+import ShipmentUploadPage from "./pages/shipping/ShipmentUploadPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
                 path: "add",
                 element: <ShippingAddPage />,
               },
+              {
+                path: "upload",
+                element: <ShipmentUploadPage />,
+              },
             ],
           },
           {
@@ -132,6 +137,10 @@ const router = createBrowserRouter([
               {
                 path: "sorting",
                 element: <SortingPage />,
+              },
+              {
+                path: "upload",
+                element: <DeliveriesUploadPage />,
               },
             ],
           },
@@ -201,7 +210,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "shippment",
-            element: <ShippmentPDF />,
+            element: <ShipmentRenderer />,
           },
           {
             path: "order",

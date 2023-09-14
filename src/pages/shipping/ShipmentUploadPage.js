@@ -1,18 +1,19 @@
 import { FaAngleLeft } from "react-icons/fa";
-import style from "./OrdersUploadPage.module.css";
+import style from "./ShipmentUploadPage.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
 import {
   ORDER_FILE_UPLOAD,
-  UPDATE_ORDER_STATE,
+  UPDATE_SHIPMENT_STATE,
 } from "../../utils/apollo/apolloMutations";
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
-const OrdersUploadPage = () => {
+const ShipmentUploadPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  console.log(location.state);
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState();
   // eslint-disable-next-line no-unused-vars
@@ -25,8 +26,8 @@ const OrdersUploadPage = () => {
       onError: (error) => setError(error),
     }
   );
-  const [updateOrdersState, { loading: stateLoading }] = useMutation(
-    UPDATE_ORDER_STATE,
+  const [updateShipmentState, { loading: stateLoading }] = useMutation(
+    UPDATE_SHIPMENT_STATE,
     {
       onError: (error) => setError(error),
       onCompleted: () => {
@@ -58,9 +59,9 @@ const OrdersUploadPage = () => {
       },
     });
 
-    await updateOrdersState({
+    await updateShipmentState({
       variables: {
-        updateOrderStateId: deilveryId,
+        updateOrderShipmentStateId: deilveryId,
         state: "Dostarczono",
       },
     });
@@ -119,4 +120,4 @@ const OrdersUploadPage = () => {
   );
 };
 
-export default OrdersUploadPage;
+export default ShipmentUploadPage;

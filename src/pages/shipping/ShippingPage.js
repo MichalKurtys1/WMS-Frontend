@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { GET_ORDER_SHIPMENTS } from "../../utils/apollo/apolloQueries";
 import {
-  GET_ORDER_SHIPMENTS,
-  GET_STOCKS,
-} from "../../utils/apollo/apolloQueries";
-import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
+  SHIPMENT_DELETE,
+  UPDATE_SHIPMENT_STATE,
+} from "../../utils/apollo/apolloMutations";
 
 import style from "./ShippingPage.module.css";
 import Table from "../../components/Table";
@@ -21,10 +21,19 @@ const ShippingPage = () => {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
+  const [id, setId] = useState();
+  const [action, setAction] = useState();
+  // const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
+  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
+    useState(false);
+  const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const { data, refetch, loading } = useQuery(GET_ORDER_SHIPMENTS, {
     onError: (error) => setError(error),
   });
-  const [deleteEmployye] = useMutation(DELETE_EMPLOYYE, {
+  const [deleteShipment] = useMutation(SHIPMENT_DELETE, {
+    onError: (error) => setError(error),
+  });
+  const [updateShipmentState] = useMutation(UPDATE_SHIPMENT_STATE, {
     onError: (error) => setError(error),
   });
 
@@ -49,9 +58,9 @@ const ShippingPage = () => {
   const confirmedDeleteHandler = () => {
     setPopupIsOpen(false);
 
-    deleteEmployye({
+    deleteShipment({
       variables: {
-        deleteUserId: selectedRow,
+        deleteOrderShipmentId: selectedRow,
       },
     })
       .then(() => {
@@ -85,6 +94,44 @@ const ShippingPage = () => {
       },
     });
   };
+
+  const updateStateHandler = (id, action) => {
+    if (action === "Dostarczono") {
+      navigate("/main/shipping/upload", {
+        state: {
+          deliveryId: id,
+        },
+      });
+    } else {
+      setStatePopupIsOpen(true);
+      setId(id);
+      setAction(action);
+    }
+  };
+
+  const button2ActionHandler = () => {
+    setStatePopupIsOpen(false);
+    setShouldUpdateDeliveryState(true);
+  };
+
+  useEffect(() => {
+    if (shouldUpdateDeliveryState) {
+      updateShipmentState({
+        variables: {
+          updateOrderShipmentStateId: id,
+          state: action,
+        },
+      })
+        .then((data) => {
+          refetch();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setShouldUpdateDeliveryState(false);
+    }
+  }, [action, id, refetch, shouldUpdateDeliveryState, updateShipmentState]);
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -130,20 +177,24 @@ const ShippingPage = () => {
               detailsHandler={detailsHandler}
               deleteHandler={deleteHandler}
               selectedRowHandler={selectedRowHandler}
+              updateStateHandler={updateStateHandler}
               data={data.orderShipments}
               format={[
                 "employee",
                 "registrationNumber",
                 "deliveryDate",
                 "warehouse",
+                "state",
               ]}
               titles={[
                 "Przewoźnik",
                 "Nr. rejestracyjny",
                 "Data dostarczenia",
                 "Magazyn",
+                "Stan",
               ]}
-              details={false}
+              allowExpand={true}
+              type="Shipping"
             />
           )}
         </div>
@@ -158,6 +209,19 @@ const ShippingPage = () => {
           button1={"Anuluj"}
           button1Action={declinedDeleteHandler}
           button2Action={confirmedDeleteHandler}
+        />
+      )}
+      {statePopupIsOpen && (
+        <PopUp
+          message={
+            "Czy jesteś pewien, że tego chcesz? Tego procesu nie da się odwrócić."
+          }
+          button2={"Potwierdź"}
+          button1={"Anuluj"}
+          button1Action={() => {
+            setStatePopupIsOpen(false);
+          }}
+          button2Action={button2ActionHandler}
         />
       )}
     </div>

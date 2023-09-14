@@ -1,16 +1,16 @@
 import { FaAngleLeft } from "react-icons/fa";
-import style from "./OrdersUploadPage.module.css";
+import style from "./DeliveriesUploadPage.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
 import {
   ORDER_FILE_UPLOAD,
-  UPDATE_ORDER_STATE,
+  UPDATE_DELIVERY_STATE,
 } from "../../utils/apollo/apolloMutations";
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
-const OrdersUploadPage = () => {
+const DeliveriesUploadPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // eslint-disable-next-line no-unused-vars
@@ -25,8 +25,10 @@ const OrdersUploadPage = () => {
       onError: (error) => setError(error),
     }
   );
-  const [updateOrdersState, { loading: stateLoading }] = useMutation(
-    UPDATE_ORDER_STATE,
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [nameInputValue, setNameInputValue] = useState(null);
+  const [updateDeliveryState, { loading: stateLoading }] = useMutation(
+    UPDATE_DELIVERY_STATE,
     {
       onError: (error) => setError(error),
       onCompleted: () => {
@@ -34,9 +36,6 @@ const OrdersUploadPage = () => {
       },
     }
   );
-
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [nameInputValue, setNameInputValue] = useState(null);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -58,15 +57,13 @@ const OrdersUploadPage = () => {
       },
     });
 
-    await updateOrdersState({
+    await updateDeliveryState({
       variables: {
-        updateOrderStateId: deilveryId,
-        state: "Dostarczono",
+        updateStateId: deilveryId,
+        state: "Zakończono",
       },
     });
   };
-
-  console.log(error);
 
   return (
     <div className={style.container}>
@@ -78,7 +75,7 @@ const OrdersUploadPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/orders")}
+          onClick={() => navigate("/main/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
@@ -119,4 +116,4 @@ const OrdersUploadPage = () => {
   );
 };
 
-export default OrdersUploadPage;
+export default DeliveriesUploadPage;

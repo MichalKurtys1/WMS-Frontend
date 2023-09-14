@@ -203,11 +203,11 @@
   font-family: "Roboto", sans-serif;
   background-color: #fff;
   border: none;
+  margin-left: 10px;
 }
 
 .wrapper .upperBox button .icon {
   position: absolute;
-  padding-left: 20px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -215,7 +215,11 @@
   transition: 0.5s;
 }
 
-.wrapper .upperBox button .icon:hover {
+.wrapper .upperBox button:nth-child(3) .icon:hover {
+  color: #f03a30;
+}
+
+.wrapper .upperBox button:nth-child(2) .icon:hover {
   color: #646e78;
 }
 

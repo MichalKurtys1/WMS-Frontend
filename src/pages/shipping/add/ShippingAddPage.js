@@ -19,8 +19,11 @@ import {
 } from "../../../utils/apollo/apolloQueries";
 import {
   ADD_ORDERS_SHIPMENT,
+  ORDER_FILE_UPLOAD,
   UPDATE_ORDER_STATE,
 } from "../../../utils/apollo/apolloMutations";
+import { pdf } from "@react-pdf/renderer";
+import ShippmentPDF from "../../PDFs/ShippmentPDF";
 
 const positonList = [
   { name: "Wybierz nr. Rejestracyjny" },
@@ -45,6 +48,9 @@ const ShippingAddPage = () => {
     onError: (error) => setError(error),
   });
   const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
+    onError: (error) => setError(error),
+  });
+  const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
     onError: (error) => setError(error),
   });
 
@@ -73,6 +79,39 @@ const ShippingAddPage = () => {
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  };
+
+  const openPdfHandler = async (shipping, id) => {
+    const blob = await pdf(<ShippmentPDF shipment={shipping} />).toBlob();
+    const generateRandomString = (length) => {
+      const characters = "0123456789";
+      let result = "";
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+      }
+
+      return result;
+    };
+
+    let number = generateRandomString(8);
+
+    orderFileUpload({
+      variables: {
+        file: new File([blob], number + ".pdf"),
+        name: `LIST PRZEWOZOWY/${shipping[0].deliveryDate}/${number}`,
+        fileUploadId: id,
+        date: new Date(),
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    const serializedShipping = JSON.stringify(shipping);
+    localStorage.setItem("shippingData", serializedShipping);
+    window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
+    navigate("/main/shipping");
   };
 
   const onSubmit = (values) => {
@@ -138,6 +177,7 @@ const ShippingAddPage = () => {
       },
     })
       .then((data) => {
+        openPdfHandler(shipping, data.data.createOrderShipment.id);
         ordersData.map((item) => {
           updateOrdersState({
             variables: {
@@ -145,20 +185,10 @@ const ShippingAddPage = () => {
               state: "Wysłano",
             },
           })
-            .then((data) => {
-              const serializedShipping = JSON.stringify(shipping);
-              localStorage.setItem("shippingData", serializedShipping);
-              window.open(
-                "http://localhost:3000/pdf/shippment",
-                "_blank",
-                "noreferrer"
-              );
-              navigate("/main/shipping");
-            })
+            .then((data) => {})
             .catch((err) => {
               console.log(err);
             });
-          console.log(data);
         });
       })
       .catch((err) => console.log(err));
@@ -174,7 +204,7 @@ const ShippingAddPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/employees")}
+          onClick={() => navigate("/main/shipping")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

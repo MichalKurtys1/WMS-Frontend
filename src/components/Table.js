@@ -81,6 +81,7 @@ const Table = (props) => {
               data.map((record) => {
                 const id = record.id;
                 const products = record.products || null;
+                const orders = record.orders || null;
                 const formattedData = pickProperties(record, props.format);
                 let keys = Object.keys(formattedData);
                 return (
@@ -89,6 +90,7 @@ const Table = (props) => {
                     id={id}
                     keys={keys}
                     products={products}
+                    orders={orders}
                     details={props.details}
                     record={formattedData}
                     selectedRow={props.selectedRow}

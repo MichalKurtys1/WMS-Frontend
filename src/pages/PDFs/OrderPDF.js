@@ -297,22 +297,17 @@ const pageStyles = StyleSheet.create({
 const OrderPDF = (props) => {
   const [deliveryData] = useState(props.deliveryData);
   let index = 0;
-  console.log(deliveryData);
 
   const priceHandler = (name) => {
     const product = deliveryData.productsInfo.products.filter(
       (item) => item.name + " " + item.type + " " + item.capacity === name
     );
-    console.log(deliveryData.productsInfo.products);
-    console.log(name);
-    console.log(product);
     return product[0].pricePerUnit;
   };
 
   const vatSum = () => {
     let totalVat = 0;
     deliveryData.products.map((item) => {
-      console.log(item);
       return (totalVat = totalVat +=
         priceHandler(item.product) * +item.quantity * 0.23);
     });

@@ -766,3 +766,28 @@ export const FILE_DOWNLOAD = gql`
     fileDownload(filename: $filename)
   }
 `;
+
+export const FILE_DELETE = gql`
+  mutation Mutation($filename: String!) {
+    fileDelete(filename: $filename)
+  }
+`;
+
+export const SHIPMENT_DELETE = gql`
+  mutation Mutation($deleteOrderShipmentId: String!) {
+    deleteOrderShipment(id: $deleteOrderShipmentId)
+  }
+`;
+
+export const UPDATE_SHIPMENT_STATE = gql`
+  mutation Mutation($updateOrderShipmentStateId: String!, $state: String!) {
+    updateOrderShipmentState(id: $updateOrderShipmentStateId, state: $state) {
+      id
+      employee
+      registrationNumber
+      deliveryDate
+      warehouse
+      orders
+    }
+  }
+`;

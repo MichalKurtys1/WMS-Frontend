@@ -1,6 +1,6 @@
-import { Font, PDFViewer } from "@react-pdf/renderer";
+import { Font } from "@react-pdf/renderer";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const stylesText = StyleSheet.create({
   text1: {
@@ -236,196 +236,163 @@ const pageStyles = StyleSheet.create({
   },
 });
 
-const ShippmentPDF = () => {
-  const [shippingData, setShippingData] = useState([]);
-  console.log(shippingData[0]);
-  useEffect(() => {
-    if (localStorage.getItem("shippingData")) {
-      console.log(JSON.parse(localStorage.getItem("shippingData")));
-      setShippingData(JSON.parse(localStorage.getItem("shippingData")));
-    }
-  }, []);
+const ShippmentPDF = (props) => {
+  const [shippingData] = useState(props.shipment);
+
+  console.log(shippingData);
+
   return (
-    <div
-      style={{
-        height: "101%",
-        width: "101%",
-        overflow: "hidden",
-        position: "absolute",
-        top: "-1%",
-        left: "-1%",
-      }}
+    <Document
+      title={`Dostawa/${shippingData[0].deliveryDate}/${
+        Math.floor(Math.random() * (10 - 1 + 1)) + 1
+      }`}
     >
-      {shippingData.length !== 0 && (
-        <PDFViewer width={"100%"} height={"100%"}>
-          <Document
-            title={`Dostawa/${shippingData[0].deliveryDate}/${
-              Math.floor(Math.random() * (10 - 1 + 1)) + 1
-            }`}
-          >
-            {shippingData.map((item) => (
-              <Page size="A4" style={pageStyles.page} wrap={false}>
-                <View style={styles.container}>
-                  <View style={styles.table}>
-                    <View style={stylesRow.row100}>
-                      <Text style={stylesText.text1}>LIST PRZEWOZOWY</Text>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol60}>
-                        <Text style={stylesText.text2}>ZAŁADUNEK</Text>
-                      </View>
-                      <View style={stylesRow.tableCol40First}>
-                        <Text style={stylesText.text2}>PRZEWOŹNIK</Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol30}>
-                        <Text style={stylesText.text3}>Odbiorca:</Text>
-                        <Text style={stylesText.text4}>{item.clientName}</Text>
-                      </View>
-                      <View style={stylesRow.tableCol30}>
-                        <Text style={stylesText.text3}>Adres odbiorcy:</Text>
-                        <Text style={stylesText.text4}>
-                          {item.clientAddress}
-                        </Text>
-                      </View>
-                      <View style={stylesRow.tableCol40}>
-                        <Text style={stylesText.text3}>
-                          Imię i nazwisko kierowcy:
-                        </Text>
-                        <Text style={stylesText.text4}>
-                          {item.employeeName}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol30Sec}>
-                        <Text style={stylesText.text3}>Miejsce nadania:</Text>
-                        <Text style={stylesText.text4}>
-                          {item.warehouseAddress}
-                        </Text>
-                      </View>
-                      <View style={stylesRow.tableCol30Sec}>
-                        <Text style={stylesText.text3}>
-                          Miejsce przeznaczenia:
-                        </Text>
-                        <Text style={stylesText.text4}>
-                          {item.destinationAddress}
-                        </Text>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}>
-                        <Text style={stylesText.text3}>Nr rej. pojazdu:</Text>
-                        <Text style={stylesText.text4}>
-                          {item.registrationNumber}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol60_2}>
-                        <View style={stylesRow.row25}>
-                          <Text style={stylesText.text6}>Ilość</Text>
-                          {item.products.map((item) => (
-                            <Text style={stylesText.text5}>
-                              {item.quantity}
-                            </Text>
-                          ))}
-                        </View>
-                        <View style={stylesRow.row25}>
-                          <Text style={stylesText.text6}>Jednostka</Text>
-                          {item.products.map((item) => (
-                            <Text style={stylesText.text5}>{item.unit}</Text>
-                          ))}
-                        </View>
-                        <View style={stylesRow.row50}>
-                          <Text style={stylesText.text6}>Nazwa</Text>
-                          {item.products.map((item) => (
-                            <Text style={stylesText.text5}>{item.product}</Text>
-                          ))}
-                        </View>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}>
-                        <Text style={stylesText.text3}>
-                          Zastrzeżenia i uwagi przewoźnika:
-                        </Text>
-                        <Text style={stylesText.text4}>{""}</Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100_3}>
-                      <View style={stylesRow.tableCol60_2}>
-                        <Text style={stylesText.text3}>Uwagi:</Text>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}></View>
-                    </View>
-                    <View style={stylesRow.row100_4}>
-                      <View style={stylesRow.tableCol60_2}>
-                        <Text style={stylesText.text7}>
-                          Przesyłkę należy dostarczyć dnia:{" "}
-                          <Text style={stylesText.text2}>
-                            {item.deliveryDate}
-                          </Text>
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol60_2}>
-                        <View style={stylesRow.row50_2}>
-                          <Text style={stylesText.text3}>
-                            Nadawca (podpis/pieczątka):
-                          </Text>
-                        </View>
-                        <View style={stylesRow.row50}>
-                          <Text style={stylesText.text3}>
-                            Nadawca (podpis/pieczątka):
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}>
-                        <Text style={stylesText.text3}>
-                          Kwituję odbiór przesyłki (podpis kierowcy):
-                        </Text>
-                        <Text style={stylesText.text4}>{""}</Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100_4}>
-                      <View style={stylesRow.tableCol60}>
-                        <Text style={stylesText.text9}>ROZŁADUNEK</Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100}>
-                      <View style={stylesRow.tableCol60_4}>
-                        <Text style={stylesText.text3}>
-                          Zastrzeżenia i uwagi odbiorcy:
-                        </Text>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}>
-                        <Text style={stylesText.text3}>
-                          Zastrzeżenia i uwagi przewoźnika:
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={stylesRow.row100_5}>
-                      <View style={stylesRow.tableCol60_4}>
-                        <Text style={stylesText.text3_2}>
-                          Przesyłkę otrzymano:
-                        </Text>
-                        <View style={stylesRow.tableCol100_2}>
-                          <Text style={stylesText.text3_3}>miejscowość</Text>
-                          <Text style={stylesText.text3_3}>data</Text>
-                          <Text style={stylesText.text3_4}>
-                            podpis/pieczątka odbiorcy
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={stylesRow.tableCol40Sec}></View>
-                    </View>
+      {shippingData.map((item) => (
+        <Page size="A4" style={pageStyles.page} wrap={false}>
+          <View style={styles.container}>
+            <View style={styles.table}>
+              <View style={stylesRow.row100}>
+                <Text style={stylesText.text1}>LIST PRZEWOZOWY</Text>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol60}>
+                  <Text style={stylesText.text2}>ZAŁADUNEK</Text>
+                </View>
+                <View style={stylesRow.tableCol40First}>
+                  <Text style={stylesText.text2}>PRZEWOŹNIK</Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol30}>
+                  <Text style={stylesText.text3}>Odbiorca:</Text>
+                  <Text style={stylesText.text4}>{item.clientName}</Text>
+                </View>
+                <View style={stylesRow.tableCol30}>
+                  <Text style={stylesText.text3}>Adres odbiorcy:</Text>
+                  <Text style={stylesText.text4}>{item.clientAddress}</Text>
+                </View>
+                <View style={stylesRow.tableCol40}>
+                  <Text style={stylesText.text3}>
+                    Imię i nazwisko kierowcy:
+                  </Text>
+                  <Text style={stylesText.text4}>{item.employeeName}</Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol30Sec}>
+                  <Text style={stylesText.text3}>Miejsce nadania:</Text>
+                  <Text style={stylesText.text4}>{item.warehouseAddress}</Text>
+                </View>
+                <View style={stylesRow.tableCol30Sec}>
+                  <Text style={stylesText.text3}>Miejsce przeznaczenia:</Text>
+                  <Text style={stylesText.text4}>
+                    {item.destinationAddress}
+                  </Text>
+                </View>
+                <View style={stylesRow.tableCol40Sec}>
+                  <Text style={stylesText.text3}>Nr rej. pojazdu:</Text>
+                  <Text style={stylesText.text4}>
+                    {item.registrationNumber}
+                  </Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol60_2}>
+                  <View style={stylesRow.row25}>
+                    <Text style={stylesText.text6}>Ilość</Text>
+                    {item.products.map((item) => (
+                      <Text style={stylesText.text5}>{item.quantity}</Text>
+                    ))}
+                  </View>
+                  <View style={stylesRow.row25}>
+                    <Text style={stylesText.text6}>Jednostka</Text>
+                    {item.products.map((item) => (
+                      <Text style={stylesText.text5}>{item.unit}</Text>
+                    ))}
+                  </View>
+                  <View style={stylesRow.row50}>
+                    <Text style={stylesText.text6}>Nazwa</Text>
+                    {item.products.map((item) => (
+                      <Text style={stylesText.text5}>{item.product}</Text>
+                    ))}
                   </View>
                 </View>
-              </Page>
-            ))}
-          </Document>
-        </PDFViewer>
-      )}
-    </div>
+                <View style={stylesRow.tableCol40Sec}>
+                  <Text style={stylesText.text3}>
+                    Zastrzeżenia i uwagi przewoźnika:
+                  </Text>
+                  <Text style={stylesText.text4}>{""}</Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100_3}>
+                <View style={stylesRow.tableCol60_2}>
+                  <Text style={stylesText.text3}>Uwagi:</Text>
+                </View>
+                <View style={stylesRow.tableCol40Sec}></View>
+              </View>
+              <View style={stylesRow.row100_4}>
+                <View style={stylesRow.tableCol60_2}>
+                  <Text style={stylesText.text7}>
+                    Przesyłkę należy dostarczyć dnia:{" "}
+                    <Text style={stylesText.text2}>{item.deliveryDate}</Text>
+                  </Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol60_2}>
+                  <View style={stylesRow.row50_2}>
+                    <Text style={stylesText.text3}>
+                      Nadawca (podpis/pieczątka):
+                    </Text>
+                  </View>
+                  <View style={stylesRow.row50}>
+                    <Text style={stylesText.text3}>
+                      Nadawca (podpis/pieczątka):
+                    </Text>
+                  </View>
+                </View>
+                <View style={stylesRow.tableCol40Sec}>
+                  <Text style={stylesText.text3}>
+                    Kwituję odbiór przesyłki (podpis kierowcy):
+                  </Text>
+                  <Text style={stylesText.text4}>{""}</Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100_4}>
+                <View style={stylesRow.tableCol60}>
+                  <Text style={stylesText.text9}>ROZŁADUNEK</Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.tableCol60_4}>
+                  <Text style={stylesText.text3}>
+                    Zastrzeżenia i uwagi odbiorcy:
+                  </Text>
+                </View>
+                <View style={stylesRow.tableCol40Sec}>
+                  <Text style={stylesText.text3}>
+                    Zastrzeżenia i uwagi przewoźnika:
+                  </Text>
+                </View>
+              </View>
+              <View style={stylesRow.row100_5}>
+                <View style={stylesRow.tableCol60_4}>
+                  <Text style={stylesText.text3_2}>Przesyłkę otrzymano:</Text>
+                  <View style={stylesRow.tableCol100_2}>
+                    <Text style={stylesText.text3_3}>miejscowość</Text>
+                    <Text style={stylesText.text3_3}>data</Text>
+                    <Text style={stylesText.text3_4}>
+                      podpis/pieczątka odbiorcy
+                    </Text>
+                  </View>
+                </View>
+                <View style={stylesRow.tableCol40Sec}></View>
+              </View>
+            </View>
+          </View>
+        </Page>
+      ))}
+    </Document>
   );
 };
 

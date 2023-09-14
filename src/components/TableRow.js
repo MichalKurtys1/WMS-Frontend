@@ -127,7 +127,8 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Odebrano" ||
                       props.record["state"] === "Posortowano" ||
-                      props.record["state"] === "Rozlokowano"
+                      props.record["state"] === "Rozlokowano" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : "all",
                   }}
@@ -138,7 +139,8 @@ const TableRow = (props) => {
                       color:
                         props.record["state"] === "Odebrano" ||
                         props.record["state"] === "Posortowano" ||
-                        props.record["state"] === "Rozlokowano"
+                        props.record["state"] === "Rozlokowano" ||
+                        props.record["state"] === "Zakończono"
                           ? "#3054F2"
                           : null,
                     }}
@@ -154,7 +156,8 @@ const TableRow = (props) => {
                   disabled={
                     props.record["state"] === "Posortowano" ||
                     props.record["state"] === "Rozlokowano" ||
-                    props.record["state"] === "Zamówiono"
+                    props.record["state"] === "Zamówiono" ||
+                    props.record["state"] === "Zakończono"
                       ? true
                       : false
                   }
@@ -162,7 +165,8 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Posortowano" ||
                       props.record["state"] === "Rozlokowano" ||
-                      props.record["state"] === "Zamówiono"
+                      props.record["state"] === "Zamówiono" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : "all",
                   }}
@@ -172,7 +176,8 @@ const TableRow = (props) => {
                     style={{
                       color:
                         props.record["state"] === "Posortowano" ||
-                        props.record["state"] === "Rozlokowano"
+                        props.record["state"] === "Rozlokowano" ||
+                        props.record["state"] === "Zakończono"
                           ? "#3054F2"
                           : null,
                     }}
@@ -188,7 +193,8 @@ const TableRow = (props) => {
                   disabled={
                     props.record["state"] === "Rozlokowano" ||
                     props.record["state"] === "Zamówiono" ||
-                    props.record["state"] === "Odebrano"
+                    props.record["state"] === "Odebrano" ||
+                    props.record["state"] === "Zakończono"
                       ? true
                       : false
                   }
@@ -196,7 +202,8 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Rozlokowano" ||
                       props.record["state"] === "Zamówiono" ||
-                      props.record["state"] === "Odebrano"
+                      props.record["state"] === "Odebrano" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : null,
                   }}
@@ -205,7 +212,8 @@ const TableRow = (props) => {
                     className={style.icon}
                     style={{
                       color:
-                        props.record["state"] === "Rozlokowano"
+                        props.record["state"] === "Rozlokowano" ||
+                        props.record["state"] === "Zakończono"
                           ? "#3054F2"
                           : null,
                     }}
@@ -215,11 +223,14 @@ const TableRow = (props) => {
                   </div>
                 </button>
                 <button
-                  onClick={() => props.detailsHandler(props.id)}
+                  onClick={() =>
+                    props.updateStateHandler(props.id, "Zakończono")
+                  }
                   disabled={
                     props.record["state"] === "Odebrano" ||
                     props.record["state"] === "Zamówiono" ||
-                    props.record["state"] === "Posortowano"
+                    props.record["state"] === "Posortowano" ||
+                    props.record["state"] === "Zakończono"
                       ? true
                       : false
                   }
@@ -227,12 +238,21 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Odebrano" ||
                       props.record["state"] === "Zamówiono" ||
-                      props.record["state"] === "Posortowano"
+                      props.record["state"] === "Posortowano" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : null,
                   }}
                 >
-                  <FaFileInvoice className={style.icon} />
+                  <FaFileInvoice
+                    className={style.icon}
+                    style={{
+                      color:
+                        props.record["state"] === "Zakończono"
+                          ? "#3054F2"
+                          : null,
+                    }}
+                  />
                   <div className={style.tooltip}>
                     <p>Dodaj fakturę</p>
                   </div>
@@ -242,7 +262,8 @@ const TableRow = (props) => {
                   disabled={
                     props.record["state"] === "Odebrano" ||
                     props.record["state"] === "Posortowano" ||
-                    props.record["state"] === "Rozlokowano"
+                    props.record["state"] === "Rozlokowano" ||
+                    props.record["state"] === "Zakończono"
                       ? true
                       : false
                   }
@@ -250,7 +271,8 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Odebrano" ||
                       props.record["state"] === "Posortowano" ||
-                      props.record["state"] === "Rozlokowano"
+                      props.record["state"] === "Rozlokowano" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : "all",
                   }}
@@ -265,7 +287,8 @@ const TableRow = (props) => {
                   disabled={
                     props.record["state"] === "Odebrano" ||
                     props.record["state"] === "Posortowano" ||
-                    props.record["state"] === "Rozlokowano"
+                    props.record["state"] === "Rozlokowano" ||
+                    props.record["state"] === "Zakończono"
                       ? true
                       : false
                   }
@@ -273,7 +296,8 @@ const TableRow = (props) => {
                     pointerEvents:
                       props.record["state"] === "Odebrano" ||
                       props.record["state"] === "Posortowano" ||
-                      props.record["state"] === "Rozlokowano"
+                      props.record["state"] === "Rozlokowano" ||
+                      props.record["state"] === "Zakończono"
                         ? "none"
                         : "all",
                   }}
@@ -528,6 +552,98 @@ const TableRow = (props) => {
                       props.record["state"] === "Wysłano" ||
                       props.record["state"] === "Dostarczono" ||
                       props.record["state"] === "Do wysyłki"
+                        ? "none"
+                        : "all",
+                  }}
+                >
+                  <BsTrashFill className={style.icon} />
+                  <div className={style.tooltip}>
+                    <p>Usuń</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+      {isClickedRow && props.allowExpand && props.type === "Shipping" && (
+        <tr className={style.detailsRow} key={props.id + "_1"}>
+          <td colspan="6">
+            <div className={style.wrapper}>
+              <div className={style.details}>
+                {props.orders &&
+                  JSON.parse(JSON.parse(props.orders))[0].map((item) => (
+                    <div className={style.productBox}>
+                      <h4>{item.clientName}</h4>
+                      <h4>{item.clientAddress}</h4>
+                      <h4>{item.destinationAddress}</h4>
+                    </div>
+                  ))}
+              </div>
+              <div className={style.optionsBox}>
+                <button
+                  onClick={() =>
+                    props.updateStateHandler(props.id, "W trakcie")
+                  }
+                  style={{
+                    pointerEvents:
+                      props.record["state"] === "W trakcie" ||
+                      props.record["state"] === "Dostarczono"
+                        ? "none"
+                        : "all",
+                  }}
+                >
+                  <BsCheckCircleFill
+                    className={style.icon}
+                    style={{
+                      color:
+                        props.record["state"] === "W trakcie" ||
+                        props.record["state"] === "Dostarczono"
+                          ? "#3054F2"
+                          : null,
+                    }}
+                  />
+                  <div className={style.tooltip}>
+                    <p>W trakcie</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() =>
+                    props.updateStateHandler(props.id, "Dostarczono")
+                  }
+                  disabled={
+                    props.record["state"] === "Dostarczono" ? true : false
+                  }
+                  style={{
+                    pointerEvents:
+                      props.record["state"] === "Dostarczono" ? "none" : "all",
+                  }}
+                >
+                  <FaClipboardList
+                    className={style.icon}
+                    style={{
+                      color:
+                        props.record["state"] === "Dostarczono"
+                          ? "#3054F2"
+                          : null,
+                    }}
+                  />
+                  <div className={style.tooltip}>
+                    <p>Dostarczono</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => props.deleteHandler(props.id)}
+                  disabled={
+                    props.record["state"] === "W trakcie" ||
+                    props.record["state"] === "Dostarczono"
+                      ? true
+                      : false
+                  }
+                  style={{
+                    pointerEvents:
+                      props.record["state"] === "W trakcie" ||
+                      props.record["state"] === "Dostarczono"
                         ? "none"
                         : "all",
                   }}

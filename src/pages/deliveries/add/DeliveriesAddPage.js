@@ -4,7 +4,7 @@ import {
   GET_PRODUCTS,
   GET_SUPPLIERS,
 } from "../../../utils/apollo/apolloQueries";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
 import { selectValidator } from "../../../utils/inputValidators";
 
@@ -15,6 +15,7 @@ import { FaAngleLeft } from "react-icons/fa";
 import ProductList from "../ProductsList";
 import Spinner from "../../../components/Spiner";
 import ErrorHandler from "../../../components/ErrorHandler";
+import { ADD_DELIVERY, ADD_STOCK } from "../../../utils/apollo/apolloMutations";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -44,6 +45,8 @@ const DeliveriesAddPage = () => {
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
+  const [addDelivery] = useMutation(ADD_DELIVERY);
+  const [addStock] = useMutation(ADD_STOCK);
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -103,19 +106,40 @@ const DeliveriesAddPage = () => {
       setSubmitError(true);
       return;
     }
-    navigate("/main/deliveries/details", {
-      state: {
+
+    addDelivery({
+      variables: {
         supplierId: values.supplier,
-        supplier: data.suppliers.filter(
-          (item) => item.name === values.supplier
-        )[0],
-        date: values.date,
+        expectedDate: values.date,
         warehouse: values.magazine,
-        comments: values.comments || "",
         products: JSON.stringify(productList),
-        productsFromDB: products,
       },
-    });
+    })
+      .then((data) => {
+        productList.forEach((item) => {
+          const product = products.products.filter(
+            (product) =>
+              item.product.includes(product.name) &&
+              item.product.includes(product.type) &&
+              item.product.includes(product.capacity)
+          );
+          addStock({
+            variables: {
+              productId: product[0].id,
+              ordered: parseInt(item.quantity),
+            },
+          }).catch((err) => console.log(err));
+        });
+
+        navigate("/main/deliveries", {
+          state: {
+            userData: data.data.createClient,
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     setSubmitError(false);
   };

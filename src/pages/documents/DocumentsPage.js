@@ -2,11 +2,17 @@ import { useNavigate } from "react-router";
 
 import style from "./DocumentsPage.module.css";
 import { FaAngleLeft } from "react-icons/fa";
-import { BsSortAlphaDownAlt, BsSortAlphaDown, BsEyeFill } from "react-icons/bs";
+import {
+  BsSortAlphaDownAlt,
+  BsSortAlphaDown,
+  BsEyeFill,
+  BsTrash2,
+  BsTrashFill,
+} from "react-icons/bs";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_FILES } from "../../utils/apollo/apolloQueries";
-import { FILE_DOWNLOAD } from "../../utils/apollo/apolloMutations";
+import { FILE_DELETE, FILE_DOWNLOAD } from "../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
@@ -54,10 +60,13 @@ const DocumentsPage = () => {
   const [filterValue, setFilterValue] = useState(true);
   const [error, setError] = useState();
   const [downloading, setDownloading] = useState(false);
-  const { data, loading } = useQuery(GET_FILES, {
+  const { data, refetch, loading } = useQuery(GET_FILES, {
     onError: (error) => setError(error),
   });
   const [fileDownload] = useMutation(FILE_DOWNLOAD, {
+    onError: (error) => setError(error),
+  });
+  const [fileDelete] = useMutation(FILE_DELETE, {
     onError: (error) => setError(error),
   });
 
@@ -81,6 +90,20 @@ const DocumentsPage = () => {
       .then((data) => {
         setDownloading(false);
         window.open(data.data.fileDownload, "_blank", "noreferrer");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const deleteHandler = (filename) => {
+    fileDelete({
+      variables: {
+        filename: filename,
+      },
+    })
+      .then((data) => {
+        refetch();
       })
       .catch((err) => {
         console.log(err);
@@ -124,7 +147,7 @@ const DocumentsPage = () => {
             <select className={style.select} onChange={categoryValueChange}>
               <option>Dostawy</option>
               <option>Zamówienia</option>
-              <option>Listy przewozowe</option>
+              <option>Listy Przewozowe</option>
               <option>Inne</option>
             </select>
           </div>
@@ -162,13 +185,12 @@ const DocumentsPage = () => {
                                 downloadHandler(file.link, file.filename)
                               }
                             />
-                            {/* <a
-                              href="http://localhost:3001/5d75d0db-12e7-4440-95a3-6d96c7dc7d62.pdf"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              
-                            </a> */}
+                          </button>
+                          <button>
+                            <BsTrashFill
+                              className={style.icon}
+                              onClick={() => deleteHandler(file.filename)}
+                            />
                           </button>
                         </div>
                         <p className={style.date}>{file.date.split("T")[0]}</p>

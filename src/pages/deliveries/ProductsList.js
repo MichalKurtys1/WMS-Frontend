@@ -21,11 +21,6 @@ const ProductList = ({
   return (
     <>
       {productsVal.map((item) => {
-        console.log("-----");
-        console.log(item.id);
-        console.log(item.product);
-        console.log(item.unit);
-        console.log(item.quantity);
         return (
           <div className={style.productBox}>
             <BsTrashFill

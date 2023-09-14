@@ -85,7 +85,6 @@ const OrdersAddPage = () => {
       productsInfo: products,
       products: productList,
     };
-
     const blob = await pdf(<OrderPDF deliveryData={order} />).toBlob();
     const generateRandomString = (length) => {
       const characters = "0123456789";
@@ -222,11 +221,13 @@ const OrdersAddPage = () => {
             },
           })
             .then((data) => {
-              navigate("/main/orders", {
-                state: {
-                  userData: data.data,
-                },
-              });
+              if (!error) {
+                navigate("/main/orders", {
+                  state: {
+                    userData: data.data,
+                  },
+                });
+              }
             })
             .catch((err) => console.log(err));
         });
