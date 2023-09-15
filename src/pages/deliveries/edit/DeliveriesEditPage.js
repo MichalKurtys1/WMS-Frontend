@@ -39,37 +39,41 @@ const DeliveriesEditPage = () => {
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
   const [deliveryData, setDeliveryData] = useState();
-  const [options, setOptions] = useState();
-  const [error, setError] = useState();
+  const [options, setOptions] = useState([]);
+  const [error, setError] = useState(null);
+
   const [getDelivery, { loading }] = useMutation(GET_DELIVERY, {
-    onError: (error) => setError(error),
+    onError: setError,
   });
+
   const [updateDelivery, { loading: updateLoading }] = useMutation(
     UPDATE_DELIVERY,
     {
-      onError: (error) => setError(error),
+      onError: setError,
     }
   );
+
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
+    onError: setError,
   });
-  const { data: stocks } = useQuery(GET_STOCKS, {
-    onError: (error) => setError(error),
+
+  const { data: stocks, refetch } = useQuery(GET_STOCKS, {
+    onError: setError,
   });
+
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
-    onError: (error) => setError(error),
+    onError: setError,
   });
+
   const [updateStock] = useMutation(UPDATE_STOCK, {
-    onError: (error) => setError(error),
+    onError: setError,
   });
-  const [deletedProducts, setDeletedProducts] = useState([]);
-  const [productList, setProductList] = useState(() => {
-    if (location.state !== null) {
-      return [];
-    } else {
-      return [{ id: 0, product: null, unit: null, quantity: null }];
-    }
-  });
+
+  const [productList, setProductList] = useState(
+    location.state !== null
+      ? []
+      : [{ id: 0, product: null, unit: null, quantity: null }]
+  );
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -85,30 +89,24 @@ const DeliveriesEditPage = () => {
 
   useEffect(() => {
     getDelivery({ variables: { getDeliveryId: location.state.deliveryId } })
-      .then((data) => {
-        setDeliveryData(data.data.getDelivery);
+      .then(({ data }) => {
+        setDeliveryData(data.getDelivery);
         const oldDeliveries = JSON.parse(
-          JSON.parse(data.data.getDelivery.products)
-        ).map((item) => {
-          return {
-            ...item,
-            maxValue: item.quantity,
-          };
-        });
+          JSON.parse(data.getDelivery.products)
+        ).map((item) => ({
+          ...item,
+          maxValue: item.quantity,
+        }));
         setProductList(oldDeliveries);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(console.error);
   }, [getDelivery, location.state.deliveryId]);
-
-  console.log(productList);
 
   const addProductInputCounter = () => {
     setProductList((prevList) => [
       ...prevList,
       {
-        id: deletedProducts.length + prevList.length,
+        id: Math.floor(10000 + Math.random() * 90000),
         product: null,
         unit: null,
         quantity: null,
@@ -116,11 +114,7 @@ const DeliveriesEditPage = () => {
     ]);
   };
 
-  const deleteHandler = (id) => {
-    setDeletedProducts((prevList) => [
-      ...prevList,
-      productList.filter((item) => item.id === id),
-    ]);
+  const deleteHandler = ({ id, product }) => {
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
@@ -142,21 +136,21 @@ const DeliveriesEditPage = () => {
     );
   };
 
-  const onSubmit = (values) => {
-    const state = productList.filter(
+  const onSubmit = async (values) => {
+    const hasEmptyFields = productList.some(
       (item) =>
         item.product === null ||
         item.quantity === null ||
         item.unit === null ||
         item.quantity === ""
     );
-    if (state.length > 0) {
+
+    if (hasEmptyFields) {
       setSubmitError(true);
       return;
     }
-    console.log(productList);
-    console.log(deletedProducts);
-    updateDelivery({
+
+    const { data: updateDeliveryData } = await updateDelivery({
       variables: {
         updateDeliveryId: location.state.deliveryId,
         supplierId: values.supplier,
@@ -165,85 +159,84 @@ const DeliveriesEditPage = () => {
         comments: values.comments,
         products: JSON.stringify(productList),
       },
-    })
-      .then((data) => {
-        productList.forEach((item) => {
-          const stock = stocks.stocks.filter(
-            (stock) =>
-              item.product.includes(stock.product.name) &&
-              item.product.includes(stock.product.type) &&
-              item.product.includes(stock.product.capacity)
-          );
-          let newValue;
-          if (item.maxValue) {
-            newValue =
-              parseInt(stock[0].ordered) -
-              parseInt(item.maxValue) +
-              parseInt(item.quantity);
-          } else {
-            newValue = parseInt(stock[0].ordered) + parseInt(item.quantity);
-          }
-          console.log(newValue);
-          if (newValue < 0) {
-            setError("SERVER_ERROR");
-            return;
-          }
-          updateStock({
-            variables: {
-              updateStockId: stock[0].id,
-              ordered: newValue,
-            },
-          }).catch((err) => console.log(err));
-        });
-        if (deletedProducts[0]) {
-          // tu może być błąd
-          console.log(deletedProducts[0]);
-          deletedProducts[0].forEach((item) => {
-            const stock = stocks.stocks.filter(
-              (stock) =>
-                item.product.includes(stock.product.name) &&
-                item.product.includes(stock.product.type) &&
-                item.product.includes(stock.product.capacity)
-            );
+    });
+    console.log(productList);
 
-            const newValue =
-              parseInt(stock[0].ordered) - parseInt(item.quantity);
-            // tu może być błąd
-            console.log(stock[0].ordered);
-            console.log(newValue);
-            updateStock({
-              variables: {
-                updateStockId: stock[0].id,
-                ordered: newValue,
-              },
-            })
-              .then((data) => {
-                navigate("/main/deliveries", {
-                  state: {
-                    userData: data.data,
-                  },
-                });
-              })
-              .catch((err) => console.log(err));
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
+    JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
+      const stock = stocks.stocks.find(
+        (stock) =>
+          item.product.includes(stock.product.name) &&
+          item.product.includes(stock.product.type) &&
+          item.product.includes(stock.product.capacity)
+      );
+
+      let newValue = +stock.ordered - +item.quantity;
+
+      await updateStock({
+        variables: {
+          updateStockId: stock.id,
+          ordered: newValue,
+        },
       });
+    });
+
+    refetch().then((newStock) => {
+      productList.forEach(async (item) => {
+        const stock = newStock.data.stocks.find(
+          (stock) =>
+            item.product.includes(stock.product.name) &&
+            item.product.includes(stock.product.type) &&
+            item.product.includes(stock.product.capacity)
+        );
+
+        let newValue = parseInt(stock.ordered) + parseInt(item.quantity);
+
+        await updateStock({
+          variables: {
+            updateStockId: stock.id,
+            ordered: newValue,
+          },
+        });
+      });
+    });
+    //   const stock = stocks.stocks.find(
+    //     (stock) =>
+    //       item.product.includes(stock.product.name) &&
+    //       item.product.includes(stock.product.type) &&
+    //       item.product.includes(stock.product.capacity)
+    //   );
+
+    //   let newValue;
+    //   if (item.maxValue) {
+    //     newValue =
+    //       parseInt(stock.ordered) -
+    //       parseInt(item.maxValue) +
+    //       parseInt(item.quantity);
+    //   } else {
+    //     newValue = parseInt(stock.ordered) + parseInt(item.quantity);
+    //   }
+
+    //   updateStock({
+    //     variables: {
+    //       updateStockId: stock.id,
+    //       ordered: newValue < 0 ? 0 : newValue,
+    //     },
+    //   });
+    // });
+
     navigate("/main/deliveries", {
       state: {
-        userData: data.data,
+        userData: updateDeliveryData,
       },
     });
     setSubmitError(false);
   };
 
   const getSupplierHandler = () => {
-    const supplier = data.suppliers.filter(
+    const supplier = data.suppliers.find(
       (item) => item.id === deliveryData.supplierId
     );
-    return supplier[0].name;
+    return supplier ? supplier.name : null;
   };
 
   return (

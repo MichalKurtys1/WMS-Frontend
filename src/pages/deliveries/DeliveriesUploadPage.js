@@ -40,6 +40,7 @@ const DeliveriesUploadPage = () => {
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
+
   const handleNameChange = (event) => {
     setNameInputValue(event.target.value);
   };

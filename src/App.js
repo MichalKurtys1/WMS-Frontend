@@ -21,14 +21,12 @@ import SuppliersPage from "./pages/suppliers/SuppliersPage";
 import DeliveriesPage from "./pages/deliveries/DeliveriesPage";
 import DeliveriesAddPage from "./pages/deliveries/add/DeliveriesAddPage";
 import DeliveriesEditPage from "./pages/deliveries/edit/DeliveriesEditPage";
-import DeliveriesDetailsPage from "./pages/deliveries/details/DeliveriesDetailsPage";
 import ProductsPage from "./pages/products/ProductsPage";
 import ProductsAddPage from "./pages/products/add/ProductsAddPage";
 import ProductEditPage from "./pages/products/edit/ProductEditPage";
 import OrdersPage from "./pages/orders/OrdersPage";
 import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
 import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
-import OrdersDetailsPage from "./pages/orders/details/OrdersDetailsPage";
 import StockPage from "./pages/stock/StockPage";
 import SortingPage from "./pages/deliveries/sorting/SortingPage";
 import ShippingDetails from "./pages/orders/shipping/ShippingDetails";
@@ -67,10 +65,6 @@ const router = createBrowserRouter([
               {
                 path: "edit",
                 element: <OrdersEditPage />,
-              },
-              {
-                path: "details",
-                element: <OrdersDetailsPage />,
               },
               {
                 path: "shipping",
@@ -129,10 +123,6 @@ const router = createBrowserRouter([
               {
                 path: "edit",
                 element: <DeliveriesEditPage />,
-              },
-              {
-                path: "details",
-                element: <DeliveriesDetailsPage />,
               },
               {
                 path: "sorting",

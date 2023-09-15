@@ -8,9 +8,8 @@ import {
   UPDATE_DELIVERY_STATE,
   UPDATE_DELIVERY_VALUES,
 } from "../../utils/apollo/apolloMutations";
-
 import style from "./DeliveriesPage.module.css";
-import Table from "../../components/Table";
+import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import { dateToPolish } from "../../utils/dateFormatters";
@@ -58,13 +57,9 @@ const DeliveriesPage = () => {
           updateStateId: id,
           state: action,
         },
-      })
-        .then((data) => {
-          refetch();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      }).then((data) => {
+        refetch();
+      });
       setShouldUpdateDeliveryState(false);
     }
   }, [action, id, refetch, shouldUpdateDeliveryState, updateDeliveryState]);
@@ -76,25 +71,17 @@ const DeliveriesPage = () => {
           updateValuesId: location.state.deliveryId,
           products: JSON.stringify(location.state.products),
         },
-      })
-        .then((data) => {
-          updateDeliveryState({
-            variables: {
-              updateStateId: location.state.deliveryId,
-              state: "Posortowano",
-            },
-          })
-            .then((data) => {
-              refetch();
-              navigate(location.pathname, {});
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
+      }).then((data) => {
+        updateDeliveryState({
+          variables: {
+            updateStateId: location.state.deliveryId,
+            state: "Posortowano",
+          },
+        }).then((data) => {
+          refetch();
+          navigate(location.pathname, {});
         });
+      });
     }
   }, [
     updateDeliveryValues,

@@ -10,7 +10,7 @@ import {
 } from "../../utils/apollo/apolloMutations";
 
 import style from "./OrdersPage.module.css";
-import Table from "../../components/Table";
+import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";

@@ -16,8 +16,6 @@ const SortingPage = () => {
     onError: (error) => setError(error),
   });
 
-  console.log(products);
-
   useEffect(() => {
     getDelivery({
       variables: {

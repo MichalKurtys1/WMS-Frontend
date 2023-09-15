@@ -67,7 +67,7 @@ const DeliveriesAddPage = () => {
     ]);
   };
 
-  const deleteHandler = (id) => {
+  const deleteHandler = ({ id }) => {
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
@@ -87,6 +87,23 @@ const DeliveriesAddPage = () => {
     setProductList((prevList) =>
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const getSupplierHandler = () => {
+    const supplier = data.suppliers.filter(
+      (item) => item.name === location.state.savedData.supplierId
+    );
+    return supplier[0].name;
   };
 
   const onSubmit = (values) => {
@@ -142,23 +159,6 @@ const DeliveriesAddPage = () => {
       });
 
     setSubmitError(false);
-  };
-
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
-  const getSupplierHandler = () => {
-    const supplier = data.suppliers.filter(
-      (item) => item.name === location.state.savedData.supplierId
-    );
-    return supplier[0].name;
   };
 
   return (

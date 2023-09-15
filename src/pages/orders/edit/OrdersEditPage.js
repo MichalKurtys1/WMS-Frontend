@@ -6,6 +6,7 @@ import { dateToInput } from "../../../utils/dateFormatters";
 import { selectValidator } from "../../../utils/inputValidators";
 import {
   GET_ORDER,
+  ORDER_FILE_UPLOAD,
   UPDATE_ORDER,
   UPDATE_STOCK,
 } from "../../../utils/apollo/apolloMutations";
@@ -22,6 +23,8 @@ import Select from "../../../components/Select";
 import Input from "../../../components/Input";
 import ProductList from "../../orders/ProductsList";
 import ErrorHandler from "../../../components/ErrorHandler";
+import OrderPDF from "../../PDFs/OrderPDF";
+import { pdf } from "@react-pdf/renderer";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -41,6 +44,7 @@ const OrdersEditPage = () => {
   const [error, setError] = useState();
   const [options, setOptions] = useState();
   const [deliveryData, setDeliveryData] = useState();
+  const [sumbitLoading, setSumbitLoading] = useState(false);
   const [getOrder, { loading }] = useMutation(GET_ORDER, {
     onError: (error) => setError(error),
   });
@@ -63,7 +67,15 @@ const OrdersEditPage = () => {
   const [updateStock] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
   });
-  const { data: stocks, loading: loadingStocks } = useQuery(GET_STOCKS, {
+  const {
+    data: stocks,
+    loading: loadingStocks,
+    refetch,
+  } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
+  });
+
+  const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
     onError: (error) => setError(error),
   });
 
@@ -101,11 +113,16 @@ const OrdersEditPage = () => {
   const addProductInputCounter = () => {
     setProductList((prevList) => [
       ...prevList,
-      { id: prevList.length, product: null, unit: null, quantity: null },
+      {
+        id: Math.floor(10000 + Math.random() * 90000),
+        product: null,
+        unit: null,
+        quantity: null,
+      },
     ]);
   };
 
-  const deleteHandler = (id) => {
+  const deleteHandler = ({ id, product }) => {
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
@@ -127,7 +144,70 @@ const OrdersEditPage = () => {
     );
   };
 
+  const openPdfHandler = async (id, date, client) => {
+    const order = {
+      deliveryDate: new Date(date).getTime(),
+      issueDate: new Date().getTime(),
+      issuePlace: "Bydgoszcz",
+      seller: {
+        name: client.name,
+        address:
+          "ul. " + client.street + " " + client.number + " " + client.city,
+        nip: "NIP: " + client.nip,
+        bank: client.bank,
+        account: client.accountNumber,
+        emailTel: client.email + " Tel: " + client.phone,
+      },
+      buyer: {
+        name: "Oaza napojów Sp. z.o.o.",
+        address: "ul. Cicha 2 Bydgoszcz",
+        nip: "NIP: 1112233444",
+      },
+      productsInfo: products,
+      products: productList,
+    };
+    const blob = await pdf(<OrderPDF deliveryData={order} />).toBlob();
+    const generateRandomString = (length) => {
+      const characters = "0123456789";
+      let result = "";
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+      }
+
+      return result;
+    };
+
+    let number = generateRandomString(8);
+
+    await orderFileUpload({
+      variables: {
+        file: new File([blob], number + ".pdf"),
+        name: `FAKTURA/${
+          new Date(order.deliveryDate).toISOString().split("T")[0]
+        }/${number}`,
+        fileUploadId: id,
+        date: new Date(),
+      },
+    });
+
+    const serializedDelivery = JSON.stringify(order);
+    localStorage.setItem("deliveryData", serializedDelivery);
+    window.open("http://localhost:3000/pdf/order", "_blank", "noreferrer");
+
+    setSumbitLoading(false);
+
+    navigate("/main/orders", {
+      state: {
+        userData: data,
+      },
+    });
+  };
+
   const onSubmit = (values) => {
+    setSumbitLoading(true);
+
     const state = productList.filter(
       (item) =>
         item.product === null ||
@@ -155,45 +235,52 @@ const OrdersEditPage = () => {
         warehouse: values.magazine,
         products: JSON.stringify(productList),
       },
-    })
-      .then((data) => {
-        productList.forEach((item) => {
-          const stock = stocks.stocks.filter(
+    }).then(async (dataa) => {
+      await openPdfHandler(
+        dataa.data.updateOrder.id,
+        values.date,
+        data.clients.filter((item) => item.name === values.client)[0]
+      );
+
+      JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
+        const stock = stocks.stocks.find(
+          (stock) =>
+            item.product.includes(stock.product.name) &&
+            item.product.includes(stock.product.type) &&
+            item.product.includes(stock.product.capacity)
+        );
+
+        let newValue = +stock.availableStock + +item.quantity;
+
+        await updateStock({
+          variables: {
+            updateStockId: stock.id,
+            availableStock: newValue,
+          },
+        });
+      });
+
+      refetch().then((newStock) => {
+        productList.forEach(async (item) => {
+          const stock = newStock.data.stocks.find(
             (stock) =>
               item.product.includes(stock.product.name) &&
               item.product.includes(stock.product.type) &&
               item.product.includes(stock.product.capacity)
           );
-          console.log(stock[0].availableStock);
-          console.log(item.maxValue);
-          console.log(item.quantity);
-          let newValue =
-            parseInt(stock[0].availableStock) +
-            (parseInt(item.maxValue) - parseInt(item.quantity));
 
-          if (newValue < 0) {
-            setError("SERVER_ERROR");
-            return;
-          }
-          updateStock({
+          let newValue =
+            parseInt(stock.availableStock) - parseInt(item.quantity);
+
+          await updateStock({
             variables: {
-              updateStockId: stock[0].id,
-              availableStock: newValue,
+              updateStockId: stock.id,
+              availableStock: newValue < 0 ? 0 : newValue,
             },
-          })
-            .then((data) => {
-              navigate("/main/orders", {
-                state: {
-                  userData: data.data,
-                },
-              });
-            })
-            .catch((err) => console.log(err));
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
       });
+    });
 
     setSubmitError(false);
   };
@@ -222,6 +309,13 @@ const OrdersEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
+      {sumbitLoading && (
+        <div className={style.spinnerBox}>
+          <div className={style.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )}
       {(loadingClients ||
         loadingProducts ||
         loading ||

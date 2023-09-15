@@ -15,7 +15,6 @@ import Select from "../../../components/Select";
 import ProductList from "../ProductsList";
 import { FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../../components/ErrorHandler";
-import Spinner from "../../../components/Spiner";
 import {
   ADD_ORDER,
   ORDER_FILE_UPLOAD,
@@ -23,6 +22,7 @@ import {
 } from "../../../utils/apollo/apolloMutations";
 import OrderPDF from "../../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
+import Spinner from "../../../components/Spiner";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -41,6 +41,7 @@ const OrdersAddPage = () => {
   const [submitError, setSubmitError] = useState(false);
   const [options, setOptions] = useState([]);
   const [error, setError] = useState();
+  const [sumbitLoading, setSumbitLoading] = useState(false);
   const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
     onError: (error) => setError(error),
   });
@@ -55,13 +56,16 @@ const OrdersAddPage = () => {
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
-  const [addOrder] = useMutation(ADD_ORDER);
-  const [updateStock] = useMutation(UPDATE_STOCK, {
+  const [addOrder, { loading: addLoading }] = useMutation(ADD_ORDER);
+  const [updateStock, { loading: updateLoading }] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
   });
-  const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
-    onError: (error) => setError(error),
-  });
+  const [orderFileUpload, { loading: uploadLoading }] = useMutation(
+    ORDER_FILE_UPLOAD,
+    {
+      onError: (error) => setError(error),
+    }
+  );
 
   const openPdfHandler = async (id, date, client) => {
     const order = {
@@ -100,7 +104,7 @@ const OrdersAddPage = () => {
 
     let number = generateRandomString(8);
 
-    orderFileUpload({
+    await orderFileUpload({
       variables: {
         file: new File([blob], number + ".pdf"),
         name: `FAKTURA/${
@@ -109,13 +113,19 @@ const OrdersAddPage = () => {
         fileUploadId: id,
         date: new Date(),
       },
-    }).catch((err) => {
-      console.log(err);
     });
 
     const serializedDelivery = JSON.stringify(order);
     localStorage.setItem("deliveryData", serializedDelivery);
     window.open("http://localhost:3000/pdf/order", "_blank", "noreferrer");
+
+    setSumbitLoading(false);
+
+    navigate("/main/orders", {
+      state: {
+        userData: data.data,
+      },
+    });
   };
 
   useEffect(() => {
@@ -137,7 +147,7 @@ const OrdersAddPage = () => {
     ]);
   };
 
-  const deleteHandler = (id) => {
+  const deleteHandler = ({ id }) => {
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
@@ -165,6 +175,7 @@ const OrdersAddPage = () => {
   };
 
   const onSubmit = (values) => {
+    setSumbitLoading(true);
     const incompleteProducts = productList.filter(
       (item) =>
         item.product === null ||
@@ -193,48 +204,35 @@ const OrdersAddPage = () => {
         warehouse: values.magazine,
         products: JSON.stringify(productList),
       },
-    })
-      .then((dataa) => {
-        openPdfHandler(
-          dataa.data.createOrder.id,
-          values.date,
-          data.clients.filter((item) => item.name === values.client)[0]
-        );
-        productList.forEach((item) => {
-          const stock = stocks.stocks.filter(
-            (stock) =>
-              item.product.includes(stock.product.name) &&
-              item.product.includes(stock.product.type) &&
-              item.product.includes(stock.product.capacity)
-          );
-          let newValue =
-            parseInt(stock[0].availableStock) - parseInt(item.quantity);
+    }).then(async (dataa) => {
+      await openPdfHandler(
+        dataa.data.createOrder.id,
+        values.date,
+        data.clients.filter((item) => item.name === values.client)[0]
+      );
 
-          if (newValue < 0) {
-            setError("SERVER_ERROR");
-            return;
-          }
-          updateStock({
-            variables: {
-              updateStockId: stock[0].id,
-              availableStock: newValue,
-            },
-          })
-            .then((data) => {
-              if (!error) {
-                navigate("/main/orders", {
-                  state: {
-                    userData: data.data,
-                  },
-                });
-              }
-            })
-            .catch((err) => console.log(err));
+      productList.forEach((item) => {
+        const stock = stocks.stocks.filter(
+          (stock) =>
+            item.product.includes(stock.product.name) &&
+            item.product.includes(stock.product.type) &&
+            item.product.includes(stock.product.capacity)
+        );
+        let newValue =
+          parseInt(stock[0].availableStock) - parseInt(item.quantity);
+
+        if (newValue < 0) {
+          setError("SERVER_ERROR");
+          return;
+        }
+        updateStock({
+          variables: {
+            updateStockId: stock[0].id,
+            availableStock: newValue,
+          },
         });
-      })
-      .catch((err) => {
-        console.log(err);
       });
+    });
 
     setSubmitError(false);
   };
@@ -273,104 +271,112 @@ const OrdersAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      <ErrorHandler error={error} />
-      {(loadingClients || loadingProducts || loadingStock) && (
+      {sumbitLoading && (
         <div className={style.spinnerBox}>
           <div className={style.spinner}>
             <Spinner />
           </div>
         </div>
       )}
-      {(!loadingClients || !loadingProducts || !loadingStock) && data && (
-        <main>
-          <Form
-            onSubmit={onSubmit}
-            render={({ handleSubmit, invalid }) => (
-              <form className={style.form} onSubmit={handleSubmit}>
-                <div className={style.basicInfoBox}>
-                  <h1>Dodawanie zamównienia</h1>
-                  <div className={style.basicData}>
-                    <p>Dane podstawowe</p>
-                  </div>
-                  <div className={style.inputBox}>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="client"
-                          validator={selectValidator}
-                          initVal={
-                            location.state &&
-                            location.state.savedData.supplierId
-                              ? getSupplierHandler()
-                              : null
-                          }
-                          options={options || []}
-                        />
-                      </div>
-                      <Input
-                        name="date"
-                        type="datetime-local"
-                        fieldName="date"
-                        min={getCurrentDateTime()}
-                        width="90%"
-                        initVal={
-                          location.state !== null
-                            ? location.state.savedData.date
-                            : null
-                        }
-                      />
+      <ErrorHandler error={error} />
+      {(!loadingClients ||
+        !loadingProducts ||
+        !loadingStock ||
+        uploadLoading ||
+        addLoading ||
+        updateLoading) &&
+        data && (
+          <main>
+            <Form
+              onSubmit={onSubmit}
+              render={({ handleSubmit, invalid }) => (
+                <form className={style.form} onSubmit={handleSubmit}>
+                  <div className={style.basicInfoBox}>
+                    <h1>Dodawanie zamównienia</h1>
+                    <div className={style.basicData}>
+                      <p>Dane podstawowe</p>
                     </div>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="magazine"
-                          validator={selectValidator}
+                    <div className={style.inputBox}>
+                      <div className={style.column}>
+                        <div className={style.selectBox}>
+                          <Select
+                            fieldName="client"
+                            validator={selectValidator}
+                            initVal={
+                              location.state &&
+                              location.state.savedData.supplierId
+                                ? getSupplierHandler()
+                                : null
+                            }
+                            options={options || []}
+                          />
+                        </div>
+                        <Input
+                          name="date"
+                          type="datetime-local"
+                          fieldName="date"
+                          min={getCurrentDateTime()}
+                          width="90%"
                           initVal={
                             location.state !== null
-                              ? location.state.savedData.warehouse
+                              ? location.state.savedData.date
                               : null
                           }
-                          options={warehouseList}
                         />
                       </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{
-                          backgroundColor: invalid ? "#B6BABF" : null,
-                        }}
-                      >
-                        Dalej
-                      </button>
+                      <div className={style.column}>
+                        <div className={style.selectBox}>
+                          <Select
+                            fieldName="magazine"
+                            validator={selectValidator}
+                            initVal={
+                              location.state !== null
+                                ? location.state.savedData.warehouse
+                                : null
+                            }
+                            options={warehouseList}
+                          />
+                        </div>
+                        <button
+                          disabled={invalid}
+                          type="submit"
+                          style={{
+                            backgroundColor: invalid ? "#B6BABF" : null,
+                          }}
+                        >
+                          Dalej
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className={style.productData}>
-                  <p>Produkty</p>
-                </div>
-                <div className={style.productContainer}>
-                  {submitError && (
-                    <div className={style.error}>
-                      <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
-                    </div>
-                  )}
-                  <ProductList
-                    productList={productList}
-                    products={products}
-                    stocks={stocks}
-                    loadingProducts={loadingProducts}
-                    deleteHandler={deleteHandler}
-                    changeProductHandler={changeProductHandler}
-                    changeUnitHandler={changeUnitHandler}
-                    quantityUnitHandler={quantityUnitHandler}
-                    addProductInputCounter={addProductInputCounter}
-                  />
-                </div>
-              </form>
-            )}
-          />
-        </main>
-      )}
+                  <div className={style.productData}>
+                    <p>Produkty</p>
+                  </div>
+                  <div className={style.productContainer}>
+                    {submitError && (
+                      <div className={style.error}>
+                        <p>
+                          Uzupełnij wszystkie produkty lub usuń niepotrzebne.
+                        </p>
+                      </div>
+                    )}
+                    <ProductList
+                      productList={productList}
+                      products={products}
+                      stocks={stocks}
+                      loadingProducts={loadingProducts}
+                      deleteHandler={deleteHandler}
+                      changeProductHandler={changeProductHandler}
+                      changeUnitHandler={changeUnitHandler}
+                      quantityUnitHandler={quantityUnitHandler}
+                      addProductInputCounter={addProductInputCounter}
+                    />
+                  </div>
+                </form>
+              )}
+            />
+          </main>
+        )}
     </div>
   );
 };

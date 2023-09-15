@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { pickProperties } from "../utils/objFormatting";
+import { pickProperties } from "../../utils/objFormatting";
 import style from "./Table.module.css";
 import TableRow from "./TableRow";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";

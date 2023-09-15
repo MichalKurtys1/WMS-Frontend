@@ -8,7 +8,7 @@ import {
 } from "../../utils/apollo/apolloMutations";
 
 import style from "./ShippingPage.module.css";
-import Table from "../../components/Table";
+import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
 import { FaAngleLeft, FaPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";

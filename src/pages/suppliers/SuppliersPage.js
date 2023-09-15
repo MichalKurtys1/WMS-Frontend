@@ -5,7 +5,7 @@ import { GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 import { DELETE_SUPPLIER } from "../../utils/apollo/apolloMutations";
 
 import style from "./SuppliersPage.module.css";
-import Table from "../../components/Table";
+import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";

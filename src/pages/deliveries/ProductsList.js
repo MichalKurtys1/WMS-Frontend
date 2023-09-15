@@ -14,9 +14,54 @@ const ProductList = ({
   addProductInputCounter,
 }) => {
   const [productsVal, setProductsVal] = useState(productList);
+
   useEffect(() => {
     setProductsVal(productList);
   }, [productList]);
+
+  const productOptionDisplayHandler = (product, item) => {
+    let productName =
+      product.name + " " + product.type + " " + product.capacity;
+
+    if (productName === item.product) {
+      return (
+        <option selected value={productName}>
+          {productName}
+        </option>
+      );
+    } else {
+      let flag = true;
+      productsVal.forEach((prod) => {
+        if (prod.product === productName) {
+          flag = false;
+        }
+      });
+      if (flag) {
+        return <option value={productName}>{productName}</option>;
+      } else {
+        return null;
+      }
+    }
+  };
+
+  const unitOptionDisplayHandler = (product, item) => {
+    let productName =
+      product.name + " " + product.type + " " + product.capacity;
+
+    if (productName === item.product) {
+      if (product.unit === item.unit) {
+        return (
+          <option value={product.unit} selected>
+            {product.unit}
+          </option>
+        );
+      } else {
+        return <option value={product.unit}>{product.unit}</option>;
+      }
+    } else {
+      return null;
+    }
+  };
 
   return (
     <>
@@ -25,7 +70,7 @@ const ProductList = ({
           <div className={style.productBox}>
             <BsTrashFill
               className={style.trashIcon}
-              onClick={() => deleteHandler(item.id)}
+              onClick={() => deleteHandler(item)}
             />
             <div className={style.selectBox}>
               <div className={style.selectBox}>
@@ -39,45 +84,9 @@ const ProductList = ({
                   <option value={null}>Wybierz produkt</option>
                   {products &&
                     !loadingProducts &&
-                    products.products.map((option) => {
-                      if (
-                        option.name +
-                          " " +
-                          option.type +
-                          " " +
-                          option.capacity ===
-                        item.product
-                      ) {
-                        return (
-                          <option
-                            selected
-                            value={
-                              option.name +
-                              " " +
-                              option.type +
-                              " " +
-                              option.capacity
-                            }
-                          >
-                            {option.name} {option.type} {option.capacity}
-                          </option>
-                        );
-                      } else {
-                        return (
-                          <option
-                            value={
-                              option.name +
-                              " " +
-                              option.type +
-                              " " +
-                              option.capacity
-                            }
-                          >
-                            {option.name} {option.type} {option.capacity}
-                          </option>
-                        );
-                      }
-                    })}
+                    products.products.map((product) =>
+                      productOptionDisplayHandler(product, item)
+                    )}
                 </select>
               </div>
             </div>
@@ -94,30 +103,9 @@ const ProductList = ({
                     <option value={null}>Wybierz jednostkę</option>
                     {products &&
                       !loadingProducts &&
-                      products.products.map((option) => {
-                        if (
-                          option.name +
-                            " " +
-                            option.type +
-                            " " +
-                            option.capacity ===
-                          item.product
-                        ) {
-                          if (option.unit === item.unit) {
-                            return (
-                              <option value={option.unit} selected>
-                                {option.unit}
-                              </option>
-                            );
-                          } else {
-                            return (
-                              <option value={option.unit}>{option.unit}</option>
-                            );
-                          }
-                        } else {
-                          return null;
-                        }
-                      })}
+                      products.products.map((product) =>
+                        unitOptionDisplayHandler(product, item)
+                      )}
                   </select>
                 </div>
               </div>
