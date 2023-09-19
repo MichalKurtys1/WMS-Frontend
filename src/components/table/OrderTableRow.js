@@ -215,7 +215,8 @@ function DeliveryDetailsRow(props) {
                     record["state"] === "Skompletowano" ||
                     record["state"] === "Wysłano" ||
                     record["state"] === "Dostarczono" ||
-                    record["state"] === "Do wysyłki"
+                    record["state"] === "Do wysyłki" ||
+                    !props.position
                       ? true
                       : false
                   }
@@ -225,7 +226,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Skompletowano" ||
                       record["state"] === "Wysłano" ||
                       record["state"] === "Dostarczono" ||
-                      record["state"] === "Do wysyłki"
+                      record["state"] === "Do wysyłki" ||
+                      !props.position
                         ? "none"
                         : "all",
                   }}
@@ -242,7 +244,8 @@ function DeliveryDetailsRow(props) {
                     record["state"] === "Skompletowano" ||
                     record["state"] === "Wysłano" ||
                     record["state"] === "Dostarczono" ||
-                    record["state"] === "Do wysyłki"
+                    record["state"] === "Do wysyłki" ||
+                    !props.position
                       ? true
                       : false
                   }
@@ -252,7 +255,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Skompletowano" ||
                       record["state"] === "Wysłano" ||
                       record["state"] === "Dostarczono" ||
-                      record["state"] === "Do wysyłki"
+                      record["state"] === "Do wysyłki" ||
+                      !props.position
                         ? "none"
                         : "all",
                   }}

@@ -148,7 +148,7 @@ const DeliveriesAddPage = () => {
           }).catch((err) => console.log(err));
         });
 
-        navigate("/main/deliveries", {
+        navigate("/deliveries", {
           state: {
             userData: data.data.createClient,
           },
@@ -171,7 +171,7 @@ const DeliveriesAddPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

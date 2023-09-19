@@ -90,7 +90,7 @@ const ShippingDetails = () => {
           },
         })
           .then((data) => {
-            navigate("/main/shipping");
+            navigate("/shipping");
           })
           .catch((err) => {
             console.log(err);
@@ -111,7 +111,7 @@ const ShippingDetails = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

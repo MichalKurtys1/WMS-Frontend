@@ -198,7 +198,7 @@ const OrdersEditPage = () => {
 
     setSumbitLoading(false);
 
-    navigate("/main/orders", {
+    navigate("/orders", {
       state: {
         userData: data,
       },
@@ -300,10 +300,7 @@ const OrdersEditPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/orders")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/orders")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

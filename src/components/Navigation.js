@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useNavigate } from "react-router";
 import style from "./Navigation.module.css";
 import {
   BsPeopleFill,
@@ -10,272 +10,146 @@ import {
 } from "react-icons/bs";
 import {
   FaCalendarAlt,
-  FaEnvelope,
-  FaUser,
   FaBoxes,
   FaTruck,
+  FaUserCircle,
+  FaPowerOff,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import NavigationLink from "./NavigationLink";
+import NavigationLinkGroup from "./NavigationLinkGroup";
+import { useDispatch } from "react-redux";
+import { authActions } from "../context/auth";
+import { useState } from "react";
+import { useEffect } from "react";
+import { getAuth } from "../context/index";
 
 const Navigation = () => {
-  const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [nameValue, setNameValue] = useState("");
+  const [positionValue, setPositionValue] = useState("");
+
+  useEffect(() => {
+    const data = getAuth();
+    setNameValue(data.name);
+    setPositionValue(data.position);
+  }, []);
+
+  const logoutHandler = () => {
+    dispatch(authActions.logOut());
+    navigate("/login");
+  };
 
   return (
     <div className={style.container}>
-      <div className={style.menuContainer}>
-        <div className={style.menu}>
-          <div className={style.upperBox}>
-            <Link to={"/main/profile"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/profile"
-                      ? "#3054F2"
-                      : "#424d58"
-                  }`,
-                }}
-              >
-                <FaUser className={style.icon} />
-              </div>
-            </Link>
-            <Link to={"/main/messages"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/messages"
-                      ? "#3054F2"
-                      : "#424d58"
-                  }`,
-                }}
-              >
-                <FaEnvelope className={style.icon} />
-              </div>
-            </Link>
-            <Link to={"/main/calendar"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/calendar"
-                      ? "#3054F2"
-                      : "#424d58"
-                  }`,
-                }}
-              >
-                <FaCalendarAlt className={style.icon} />
-              </div>
-            </Link>
-          </div>
-          <div className={style.lowerBox}>
-            <Link to={"/main"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main" ? "#3054F2" : "#646e78"
-                  }`,
-                }}
-              >
-                <BsGridFill className={style.iconS} />
-                <h2>Dashboard</h2>
-              </div>
-            </Link>
-            <div
-              className={style.linkBox}
-              style={{
-                color: `${
-                  location.pathname === "/main/employees" ||
-                  location.pathname === "/main/clients" ||
-                  location.pathname === "/main/suppliers"
-                    ? "#3054F2"
-                    : "#646e78"
-                }`,
-              }}
-            >
-              <BsPeopleFill className={style.iconS} />
-              <h2>Spis osobowy</h2>
-            </div>
-            <div className={style.linkContainer}>
-              <div className={style.link}>
-                <h3>
-                  <Link
-                    to={"/main/employees"}
-                    style={{
-                      textDecoration: "none",
-                      color: `${
-                        location.pathname === "/main/employees"
-                          ? "#3054F2"
-                          : "#646e78"
-                      }`,
-                    }}
-                  >
-                    Pracownicy
-                  </Link>
-                </h3>
-              </div>
-              <div className={style.link}>
-                <h3>
-                  <Link
-                    to={"/main/clients"}
-                    style={{
-                      textDecoration: "none",
-                      color: `${
-                        location.pathname === "/main/clients"
-                          ? "#3054F2"
-                          : "#646e78"
-                      }`,
-                    }}
-                  >
-                    Klienci
-                  </Link>
-                </h3>
-              </div>
-              <div className={style.link}>
-                <h3>
-                  <Link
-                    to={"/main/suppliers"}
-                    style={{
-                      textDecoration: "none",
-                      color: `${
-                        location.pathname === "/main/suppliers"
-                          ? "#3054F2"
-                          : "#646e78"
-                      }`,
-                    }}
-                  >
-                    Dostwacy
-                  </Link>
-                </h3>
+      {nameValue !== "" && positionValue !== "" && (
+        <div className={style.menuContainer}>
+          <div className={style.menu}>
+            <div className={style.upperBox}>
+              <div className={style.userPanel}>
+                <FaUserCircle className={style.userIcon} />
+                <h4>{nameValue}</h4>
+                <div className={style.powerOff}>
+                  <FaPowerOff
+                    className={style.powerOffIcon}
+                    onClick={logoutHandler}
+                  />
+                </div>
               </div>
             </div>
-            <div
-              className={style.linkBox}
-              style={{
-                color: `${
-                  location.pathname === "/main/products" ||
-                  location.pathname === "/main/stock"
-                    ? "#3054F2"
-                    : "#646e78"
-                }`,
-              }}
-            >
-              <FaBoxes className={style.iconS} />
-              <h2>Magazyn</h2>
+            <div className={style.lowerBox}>
+              <NavigationLink
+                path={"/"}
+                title={"Dashboard"}
+                main={true}
+                icon={<BsGridFill className={style.iconS} />}
+              />
+              <NavigationLink
+                path={"/calendar"}
+                title={"Kalendarz"}
+                icon={<FaCalendarAlt className={style.iconS} />}
+              />
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy") && (
+                <NavigationLinkGroup
+                  title={"Spis osobowy"}
+                  icon={<BsPeopleFill className={style.iconS} />}
+                  links={[
+                    { title: "Pracownicy", link: "/employees" },
+                    { title: "Klienci", link: "/clients" },
+                    { title: "Dostawcy", link: "/suppliers" },
+                  ]}
+                />
+              )}
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy" ||
+                positionValue === "Magazynier") && (
+                <NavigationLinkGroup
+                  title={"Magazyn"}
+                  icon={<FaBoxes className={style.iconS} />}
+                  links={[
+                    { title: "Lista produktów", link: "/products" },
+                    { title: "Spis towarów", link: "/stock" },
+                  ]}
+                />
+              )}
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy" ||
+                positionValue === "Magazynier") && (
+                <NavigationLink
+                  path={"/deliveries"}
+                  title={"Dostawy"}
+                  icon={
+                    <BsFillFileEarmarkArrowUpFill className={style.iconS} />
+                  }
+                />
+              )}
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy" ||
+                positionValue === "Magazynier") && (
+                <NavigationLink
+                  path={"/orders"}
+                  title={"Zamówienia"}
+                  icon={
+                    <BsFillFileEarmarkArrowDownFill className={style.iconS} />
+                  }
+                />
+              )}
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy" ||
+                positionValue === "Przewoźnik" ||
+                positionValue === "Magazynier") && (
+                <NavigationLink
+                  path={"/shipping"}
+                  title={"Wysyłki"}
+                  icon={<FaTruck className={style.iconS} />}
+                />
+              )}
+              {(positionValue === "Admin" ||
+                positionValue === "Menadżer" ||
+                positionValue === "Księgowy") && (
+                <NavigationLink
+                  path={"/documents"}
+                  title={"Dokumenty"}
+                  icon={<BsFillFileEarmarkTextFill className={style.iconS} />}
+                />
+              )}
+              {(positionValue === "Admin" || positionValue === "Menadżer") && (
+                <NavigationLink
+                  path={"/raports"}
+                  title={"Raporty"}
+                  icon={<BsBarChartLineFill className={style.iconS} />}
+                />
+              )}
             </div>
-            <div className={style.linkContainer}>
-              <div className={style.link}>
-                <h3>
-                  <Link
-                    to={"/main/products"}
-                    style={{
-                      textDecoration: "none",
-                      color: `${
-                        location.pathname === "/main/products"
-                          ? "#3054F2"
-                          : "#646e78"
-                      }`,
-                    }}
-                  >
-                    Lista produktów
-                  </Link>
-                </h3>
-              </div>
-              <div className={style.link}>
-                <h3>
-                  <Link
-                    to={"/main/stock"}
-                    style={{
-                      textDecoration: "none",
-                      color: `${
-                        location.pathname === "/main/stock"
-                          ? "#3054F2"
-                          : "#646e78"
-                      }`,
-                    }}
-                  >
-                    Spis towarów
-                  </Link>
-                </h3>
-              </div>
-            </div>
-            <Link to={"/main/deliveries"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/deliveries"
-                      ? "#3054F2"
-                      : "#646e78"
-                  }`,
-                }}
-              >
-                <BsFillFileEarmarkArrowUpFill className={style.iconS} />
-                <h2>Dostawy</h2>
-              </div>
-            </Link>
-            <Link to={"/main/orders"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/orders" ? "#3054F2" : "#646e78"
-                  }`,
-                }}
-              >
-                <BsFillFileEarmarkArrowDownFill className={style.iconS} />
-                <h2>Zamówienia</h2>
-              </div>
-            </Link>
-            <Link to={"/main/shipping"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/shipping"
-                      ? "#3054F2"
-                      : "#646e78"
-                  }`,
-                }}
-              >
-                <FaTruck className={style.iconS} />
-                <h2>Wysyłki</h2>
-              </div>
-            </Link>
-            <Link to={"/main/documents"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/documents"
-                      ? "#3054F2"
-                      : "#646e78"
-                  }`,
-                }}
-              >
-                <BsFillFileEarmarkTextFill className={style.iconS} />
-                <h2>Dokumenty</h2>
-              </div>
-            </Link>
-            <Link to={"/main/raports"} style={{ textDecoration: "none" }}>
-              <div
-                className={style.linkBox}
-                style={{
-                  color: `${
-                    location.pathname === "/main/raports"
-                      ? "#3054F2"
-                      : "#646e78"
-                  }`,
-                }}
-              >
-                <BsBarChartLineFill className={style.iconS} />
-                <h2>Raporty</h2>
-              </div>
-            </Link>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

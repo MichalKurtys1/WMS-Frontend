@@ -64,7 +64,7 @@ const SuppliersPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/suppliers/edit`, {
+    navigate(`/suppliers/edit`, {
       state: {
         supplierId: id,
       },
@@ -73,7 +73,7 @@ const SuppliersPage = () => {
 
   const detailsHandler = (id) => {
     console.log(id);
-    navigate(`/main/suppliers/details`, {
+    navigate(`/suppliers/details`, {
       state: {
         userId: id,
       },
@@ -81,7 +81,7 @@ const SuppliersPage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
 
   return (
@@ -92,7 +92,7 @@ const SuppliersPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -109,7 +109,7 @@ const SuppliersPage = () => {
           <div
             className={style.addOption}
             on
-            onClick={() => navigate(`/main/suppliers/add`)}
+            onClick={() => navigate(`/suppliers/add`)}
           >
             <FaUserPlus className={style.icon} />
             <p>Dodawanie dostawcy</p>

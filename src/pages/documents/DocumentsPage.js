@@ -6,7 +6,6 @@ import {
   BsSortAlphaDownAlt,
   BsSortAlphaDown,
   BsEyeFill,
-  BsTrash2,
   BsTrashFill,
 } from "react-icons/bs";
 import { useEffect, useState } from "react";
@@ -129,7 +128,7 @@ const DocumentsPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

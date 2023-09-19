@@ -111,7 +111,7 @@ const ShippingAddPage = () => {
     const serializedShipping = JSON.stringify(shipping);
     localStorage.setItem("shippingData", serializedShipping);
     window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
-    navigate("/main/shipping");
+    navigate("/shipping");
   };
 
   const onSubmit = (values) => {
@@ -202,10 +202,7 @@ const ShippingAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/shipping")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/shipping")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

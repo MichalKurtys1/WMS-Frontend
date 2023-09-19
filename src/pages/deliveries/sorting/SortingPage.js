@@ -72,7 +72,7 @@ const SortingPage = () => {
       setError("INPUT_ERROR");
       return;
     }
-    navigate("/main/deliveries", {
+    navigate("/deliveries", {
       state: {
         products: products,
         deliveryId: location.state.deliveryId,
@@ -90,7 +90,7 @@ const SortingPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

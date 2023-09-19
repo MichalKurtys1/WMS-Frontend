@@ -121,7 +121,7 @@ const OrdersAddPage = () => {
 
     setSumbitLoading(false);
 
-    navigate("/main/orders", {
+    navigate("/orders", {
       state: {
         userData: data.data,
       },
@@ -263,10 +263,7 @@ const OrdersAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/orders")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/orders")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

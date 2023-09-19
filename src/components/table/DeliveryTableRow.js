@@ -183,7 +183,8 @@ function DeliveryDetailsRow(props) {
                     record["state"] === "Odebrano" ||
                     record["state"] === "Posortowano" ||
                     record["state"] === "Rozlokowano" ||
-                    record["state"] === "Zakończono"
+                    record["state"] === "Zakończono" ||
+                    !props.position
                       ? true
                       : false
                   }
@@ -192,7 +193,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Odebrano" ||
                       record["state"] === "Posortowano" ||
                       record["state"] === "Rozlokowano" ||
-                      record["state"] === "Zakończono"
+                      record["state"] === "Zakończono" ||
+                      !props.position
                         ? "none"
                         : "all",
                   }}
@@ -208,7 +210,8 @@ function DeliveryDetailsRow(props) {
                     record["state"] === "Odebrano" ||
                     record["state"] === "Posortowano" ||
                     record["state"] === "Rozlokowano" ||
-                    record["state"] === "Zakończono"
+                    record["state"] === "Zakończono" ||
+                    !props.position
                       ? true
                       : false
                   }
@@ -217,7 +220,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Odebrano" ||
                       record["state"] === "Posortowano" ||
                       record["state"] === "Rozlokowano" ||
-                      record["state"] === "Zakończono"
+                      record["state"] === "Zakończono" ||
+                      !props.position
                         ? "none"
                         : "all",
                   }}

@@ -63,7 +63,7 @@ const SuppliersEditPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/suppliers", {
+        navigate("/suppliers", {
           state: {
             update: true,
           },
@@ -82,10 +82,7 @@ const SuppliersEditPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/suppliers")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/suppliers")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

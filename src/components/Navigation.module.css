@@ -31,12 +31,55 @@
 }
 
 .menu .upperBox {
-  width: 80%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  width: 90%;
   padding: 15px 0 5px;
   border-bottom: 3px solid #000e4d;
+}
+
+.userPanel {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(206, 211, 217, 0.7);
+  border-radius: 15px;
+  padding: 6px;
+}
+
+.userPanel .userIcon {
+  font-size: 34px;
+  color: #424d58;
+}
+
+.userPanel .powerOff {
+  position: relative;
+  background-color: #f03a30;
+  border-radius: 100px;
+  width: 25px;
+  height: 25px;
+  transition: 0.5s;
+}
+
+.userPanel .powerOff .powerOffIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  color: #ced3d9;
+  cursor: pointer;
+}
+
+.userPanel .powerOff:hover {
+  background-color: #ca0a00;
+}
+
+.userPanel h4 {
+  font-size: 21px;
+  font-weight: normal;
+  color: #424d58;
+  margin: 0;
 }
 
 .icon {

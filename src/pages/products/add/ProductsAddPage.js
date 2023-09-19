@@ -67,7 +67,7 @@ const ProductsAddPage = () => {
           },
         })
           .then((data) => {
-            navigate("/main/products", {
+            navigate("/products", {
               state: {
                 userData: data.data.createProduct,
               },
@@ -88,10 +88,7 @@ const ProductsAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/products")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/products")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

@@ -35,7 +35,7 @@ const ClientsAddPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/clients", {
+        navigate("/clients", {
           state: {
             userData: data.data.createClient,
           },
@@ -54,10 +54,7 @@ const ClientsAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/clients")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/clients")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

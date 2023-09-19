@@ -64,7 +64,7 @@ const ClientsPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/clients/edit`, {
+    navigate(`/clients/edit`, {
       state: {
         clientId: id,
       },
@@ -72,7 +72,7 @@ const ClientsPage = () => {
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/clients/details`, {
+    navigate(`/clients/details`, {
       state: {
         userId: id,
       },
@@ -80,7 +80,7 @@ const ClientsPage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
 
   return (
@@ -108,7 +108,7 @@ const ClientsPage = () => {
           <div
             className={style.addOption}
             on
-            onClick={() => navigate(`/main/clients/add`)}
+            onClick={() => navigate(`/clients/add`)}
           >
             <FaUserPlus className={style.icon} />
             <p>Dodawanie klienta</p>

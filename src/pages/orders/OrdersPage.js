@@ -15,6 +15,7 @@ import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { getAuth } from "../../context";
 
 const OrdersPage = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const OrdersPage = () => {
   const [id, setId] = useState();
   const [action, setAction] = useState();
   // const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
+  const { position } = getAuth();
   const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
     useState(false);
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
@@ -81,7 +83,7 @@ const OrdersPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/orders/edit`, {
+    navigate(`/orders/edit`, {
       state: {
         orderId: id,
       },
@@ -89,13 +91,13 @@ const OrdersPage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
 
   const detailsHandler = (id) => {
     getOrder({ variables: { getOrderId: id } })
       .then((data) => {
-        navigate("/main/orders/details", {
+        navigate("/orders/details", {
           state: {
             details: true,
             clientId: data.data.getOrder.client.name,
@@ -116,13 +118,13 @@ const OrdersPage = () => {
 
   const updateStateHandler = (id, action) => {
     if (action === "Do wysyłki") {
-      navigate("/main/orders/shipping", {
+      navigate("/orders/shipping", {
         state: {
           deliveryId: id,
         },
       });
     } else if (action === "Dostarczono") {
-      navigate("/main/orders/upload", {
+      navigate("/orders/upload", {
         state: {
           deliveryId: id,
         },
@@ -157,42 +159,6 @@ const OrdersPage = () => {
     }
   }, [action, id, refetch, shouldUpdateDeliveryState, updateOrdersState]);
 
-  // useEffect(() => {
-  //   if (location.state && location.state.products) {
-  //     updateDeliveryValues({
-  //       variables: {
-  //         updateValuesId: location.state.deliveryId,
-  //         products: JSON.stringify(location.state.products),
-  //       },
-  //     })
-  //       .then((data) => {
-  //         updateDeliveryState({
-  //           variables: {
-  //             updateStateId: location.state.deliveryId,
-  //             state: "Posortowano",
-  //           },
-  //         })
-  //           .then((data) => {
-  //             refetch();
-  //             navigate(location.pathname, {});
-  //           })
-  //           .catch((err) => {
-  //             console.log(err);
-  //           });
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   }
-  // }, [
-  //   updateDeliveryValues,
-  //   location.state,
-  //   updateDeliveryState,
-  //   location.pathname,
-  //   navigate,
-  //   refetch,
-  // ]);
-
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -201,7 +167,7 @@ const OrdersPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -215,14 +181,15 @@ const OrdersPage = () => {
       <main>
         <div className={style.optionPanel}>
           <h1>Zamówienia</h1>
-          <div
-            className={style.addOption}
-            on
-            onClick={() => navigate(`/main/orders/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodaj nowe</p>
-          </div>
+          {position !== "Magazynier" && (
+            <div
+              className={style.addOption}
+              onClick={() => navigate(`/orders/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodaj nowe</p>
+            </div>
+          )}
         </div>
         <div className={style.tableBox}>
           {loading && (
@@ -258,6 +225,7 @@ const OrdersPage = () => {
               ]}
               allowExpand={true}
               type="Orders"
+              position={position === "Magazynier" ? false : true}
             />
           )}
         </div>

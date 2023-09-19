@@ -79,14 +79,16 @@ function DeliveryDetailsRow(props) {
                   onClick={() => deleteHandler(id)}
                   disabled={
                     record["state"] === "W trakcie" ||
-                    record["state"] === "Dostarczono"
+                    record["state"] === "Dostarczono" ||
+                    !props.position
                       ? true
                       : false
                   }
                   style={{
                     pointerEvents:
                       record["state"] === "W trakcie" ||
-                      record["state"] === "Dostarczono"
+                      record["state"] === "Dostarczono" ||
+                      !props.position
                         ? "none"
                         : "all",
                   }}

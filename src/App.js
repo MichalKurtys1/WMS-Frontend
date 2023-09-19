@@ -2,13 +2,18 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import PageNotFound from "./pages/errors/PageNotFound";
-import MessagesPage from "./pages/messages/MessagesPage";
 import CalendarPage from "./pages/calendar/CalendarPage";
 import EmployeePage from "./pages/employee/EmployeePage";
 import RootLayout from "./components/RootLayout";
 import EmployeeAddPage from "./pages/employee/add/EmployeeAddPage";
-import { checkToken } from "./utils/auth";
-import ProfilePage from "./pages/profile/ProfilePage";
+import {
+  AdmMenKsiMagPermissionCheck,
+  AdmMenKsiMagPrzPermissionCheck,
+  AdmMenKsiPermissionCheck,
+  AdmMenPermissionCheck,
+  checkToken,
+  KsiPermissionCheck,
+} from "./utils/auth";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
 import EmployeeEditPage from "./pages/employee/edit/EmployeeEditPage";
 import ClientsPage from "./pages/clients/ClientsPage";
@@ -38,54 +43,155 @@ import OrderRenderer from "./pages/PDFs/OrderRenderer";
 import ShipmentRenderer from "./pages/PDFs/ShipmentRenderer";
 import DeliveriesUploadPage from "./pages/deliveries/DeliveriesUploadPage";
 import ShipmentUploadPage from "./pages/shipping/ShipmentUploadPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
     errorElement: <PageNotFound />,
     children: [
-      { index: true, element: <LoginPage /> },
+      { path: "/login", element: <LoginPage /> },
       {
-        path: "/main",
         element: <RootLayout />,
         loader: checkToken,
         children: [
           { index: true, element: <DashboardPage /> },
           {
-            path: "documents",
-            element: <DocumentsPage />,
-          },
-          {
-            path: "orders",
-            children: [
-              { index: true, element: <OrdersPage /> },
-              {
-                path: "add",
-                element: <OrdersAddPage />,
-              },
-              {
-                path: "edit",
-                element: <OrdersEditPage />,
-              },
-              {
-                path: "shipping",
-                element: <ShippingDetails />,
-              },
-              {
-                path: "upload",
-                element: <OrdersUploadPage />,
-              },
-            ],
+            path: "calendar",
+            element: <CalendarPage />,
           },
           {
             path: "change-password",
             element: <ChangePasswordPage />,
           },
           {
-            path: "stock",
-            children: [{ index: true, element: <StockPage /> }],
+            path: "/",
+            loader: AdmMenKsiPermissionCheck,
+            children: [
+              {
+                path: "clients",
+                children: [
+                  { index: true, element: <ClientsPage /> },
+                  {
+                    path: "add",
+                    element: <ClientsAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    element: <ClientsEditPage />,
+                  },
+                ],
+              },
+              {
+                path: "employees",
+                children: [
+                  { index: true, element: <EmployeePage /> },
+                  {
+                    path: "add",
+                    loader: KsiPermissionCheck,
+                    element: <EmployeeAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    loader: KsiPermissionCheck,
+                    element: <EmployeeEditPage />,
+                  },
+                ],
+              },
+              {
+                path: "suppliers",
+                children: [
+                  { index: true, element: <SuppliersPage /> },
+                  {
+                    path: "add",
+                    element: <SuppliersAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    element: <SuppliersEditPage />,
+                  },
+                  {
+                    path: "details",
+                    element: <SuppliersDetailsPage />,
+                  },
+                ],
+              },
+              {
+                path: "documents",
+                element: <DocumentsPage />,
+              },
+            ],
+          },
+          {
+            path: "/",
+            loader: AdmMenKsiMagPermissionCheck,
+            children: [
+              {
+                path: "orders",
+                children: [
+                  { index: true, element: <OrdersPage /> },
+                  {
+                    path: "add",
+                    element: <OrdersAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    element: <OrdersEditPage />,
+                  },
+                  {
+                    path: "shipping",
+                    element: <ShippingDetails />,
+                  },
+                  {
+                    path: "upload",
+                    element: <OrdersUploadPage />,
+                  },
+                ],
+              },
+              {
+                path: "deliveries",
+                children: [
+                  { index: true, element: <DeliveriesPage /> },
+                  {
+                    path: "add",
+                    element: <DeliveriesAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    element: <DeliveriesEditPage />,
+                  },
+                  {
+                    path: "sorting",
+                    element: <SortingPage />,
+                  },
+                  {
+                    path: "upload",
+                    element: <DeliveriesUploadPage />,
+                  },
+                ],
+              },
+              {
+                path: "stock",
+                children: [{ index: true, element: <StockPage /> }],
+              },
+              {
+                path: "products",
+                children: [
+                  { index: true, element: <ProductsPage /> },
+                  {
+                    path: "add",
+                    element: <ProductsAddPage />,
+                  },
+                  {
+                    path: "edit",
+                    element: <ProductEditPage />,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: "shipping",
+            loader: AdmMenKsiMagPrzPermissionCheck,
             children: [
               { index: true, element: <ShippingPage /> },
               {
@@ -99,98 +205,9 @@ const router = createBrowserRouter([
             ],
           },
           {
-            path: "clients",
-            children: [
-              { index: true, element: <ClientsPage /> },
-              {
-                path: "add",
-                element: <ClientsAddPage />,
-              },
-              {
-                path: "edit",
-                element: <ClientsEditPage />,
-              },
-            ],
-          },
-          {
-            path: "deliveries",
-            children: [
-              { index: true, element: <DeliveriesPage /> },
-              {
-                path: "add",
-                element: <DeliveriesAddPage />,
-              },
-              {
-                path: "edit",
-                element: <DeliveriesEditPage />,
-              },
-              {
-                path: "sorting",
-                element: <SortingPage />,
-              },
-              {
-                path: "upload",
-                element: <DeliveriesUploadPage />,
-              },
-            ],
-          },
-          {
-            path: "profile",
-            element: <ProfilePage />,
-          },
-          {
-            path: "messages",
-            element: <MessagesPage />,
-          },
-          {
-            path: "calendar",
-            element: <CalendarPage />,
-          },
-          {
-            path: "employees",
-            children: [
-              { index: true, element: <EmployeePage /> },
-              {
-                path: "add",
-                element: <EmployeeAddPage />,
-              },
-              {
-                path: "edit",
-                element: <EmployeeEditPage />,
-              },
-            ],
-          },
-          {
-            path: "products",
-            children: [
-              { index: true, element: <ProductsPage /> },
-              {
-                path: "add",
-                element: <ProductsAddPage />,
-              },
-              {
-                path: "edit",
-                element: <ProductEditPage />,
-              },
-            ],
-          },
-          {
-            path: "suppliers",
-            children: [
-              { index: true, element: <SuppliersPage /> },
-              {
-                path: "add",
-                element: <SuppliersAddPage />,
-              },
-              {
-                path: "edit",
-                element: <SuppliersEditPage />,
-              },
-              {
-                path: "details",
-                element: <SuppliersDetailsPage />,
-              },
-            ],
+            path: "raports",
+            loader: AdmMenPermissionCheck,
+            children: [{ index: true, element: <StockPage /> }],
           },
         ],
       },

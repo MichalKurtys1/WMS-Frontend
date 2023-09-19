@@ -56,7 +56,7 @@ const EmployeeAddPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/employees", {
+        navigate("/employees", {
           state: {
             userData: data.data.createUser,
           },
@@ -75,10 +75,7 @@ const EmployeeAddPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/employees")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/employees")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

@@ -32,7 +32,7 @@ const DeliveriesUploadPage = () => {
     {
       onError: (error) => setError(error),
       onCompleted: () => {
-        if (!error) navigate("/main/documents");
+        if (!error) navigate("/documents");
       },
     }
   );
@@ -76,7 +76,7 @@ const DeliveriesUploadPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

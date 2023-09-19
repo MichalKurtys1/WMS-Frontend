@@ -7,7 +7,7 @@ import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
 import style from "./StockPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
@@ -68,7 +68,7 @@ const StockPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/employees/edit`, {
+    navigate(`/stock`, {
       state: {
         userId: id,
       },
@@ -76,7 +76,7 @@ const StockPage = () => {
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/employees/details`, {
+    navigate(`/stock`, {
       state: {
         userId: id,
       },
@@ -90,7 +90,7 @@ const StockPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -104,13 +104,6 @@ const StockPage = () => {
       <main>
         <div className={style.optionPanel}>
           <h1>Spis towarów</h1>
-          <div
-            className={style.addOption}
-            onClick={() => navigate(`/main/employees/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodawanie towaru</p>
-          </div>
         </div>
         <div className={style.tableBox}>
           {loading && (

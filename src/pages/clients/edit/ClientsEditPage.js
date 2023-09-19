@@ -58,7 +58,7 @@ const ClientsEditPage = () => {
       },
     })
       .then((data) => {
-        navigate("/main/clients", {
+        navigate("/clients", {
           state: {
             update: true,
           },
@@ -77,10 +77,7 @@ const ClientsEditPage = () => {
           src={require("../../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/clients")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/clients")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

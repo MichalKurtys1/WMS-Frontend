@@ -5,7 +5,7 @@ const PageNotFound = () => {
   const navigate = useNavigate();
 
   const clickHandler = () => {
-    navigate("/main");
+    navigate("/");
   };
 
   return (

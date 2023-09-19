@@ -8,3 +8,8 @@ const store = configureStore({
 });
 
 export default store;
+
+export const getAuth = () => {
+  const state = store.getState();
+  return state.auth;
+};

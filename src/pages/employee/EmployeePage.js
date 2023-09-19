@@ -10,6 +10,7 @@ import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { getAuth } from "../../context";
 
 const EmployeePage = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const EmployeePage = () => {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
+  const { position } = getAuth();
   const { data, refetch, loading } = useQuery(GET_EMPLOYYES, {
     onError: (error) => setError(error),
   });
@@ -68,7 +70,7 @@ const EmployeePage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/employees/edit`, {
+    navigate(`/employees/edit`, {
       state: {
         userId: id,
       },
@@ -76,7 +78,7 @@ const EmployeePage = () => {
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/employees/details`, {
+    navigate(`/employees/details`, {
       state: {
         userId: id,
       },
@@ -84,7 +86,7 @@ const EmployeePage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
   return (
     <div className={style.container}>
@@ -94,7 +96,7 @@ const EmployeePage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -108,13 +110,15 @@ const EmployeePage = () => {
       <main>
         <div className={style.optionPanel}>
           <h1>Pracownicy</h1>
-          <div
-            className={style.addOption}
-            onClick={() => navigate(`/main/employees/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodawanie pracownika</p>
-          </div>
+          {position !== "Księgowy" && (
+            <div
+              className={style.addOption}
+              onClick={() => navigate(`/employees/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodawanie pracownika</p>
+            </div>
+          )}
         </div>
         <div className={style.tableBox}>
           {loading && (

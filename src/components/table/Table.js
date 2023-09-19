@@ -93,6 +93,7 @@ const Table = (props) => {
                     orders={orders}
                     details={props.details}
                     record={formattedData}
+                    position={props.position}
                     selectedRow={props.selectedRow}
                     editHandler={props.editHandler}
                     detailsHandler={props.detailsHandler}

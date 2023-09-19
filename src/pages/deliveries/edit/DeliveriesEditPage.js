@@ -224,7 +224,7 @@ const DeliveriesEditPage = () => {
     //   });
     // });
 
-    navigate("/main/deliveries", {
+    navigate("/deliveries", {
       state: {
         userData: updateDeliveryData,
       },
@@ -249,7 +249,7 @@ const DeliveriesEditPage = () => {
         />
         <div
           className={style.returnBox}
-          onClick={() => navigate("/main/deliveries")}
+          onClick={() => navigate("/deliveries")}
         >
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>

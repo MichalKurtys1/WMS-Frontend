@@ -80,7 +80,7 @@ const ShippingPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/employees/edit`, {
+    navigate(`/shipping`, {
       state: {
         userId: id,
       },
@@ -88,7 +88,7 @@ const ShippingPage = () => {
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/employees/details`, {
+    navigate(`/shipping`, {
       state: {
         userId: id,
       },
@@ -97,7 +97,7 @@ const ShippingPage = () => {
 
   const updateStateHandler = (id, action) => {
     if (action === "Dostarczono") {
-      navigate("/main/shipping/upload", {
+      navigate("/shipping/upload", {
         state: {
           deliveryId: id,
         },
@@ -140,7 +140,7 @@ const ShippingPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -156,7 +156,7 @@ const ShippingPage = () => {
           <h1>Wysyłki</h1>
           <div
             className={style.addOption}
-            onClick={() => navigate(`/main/shipping/add`)}
+            onClick={() => navigate(`/shipping/add`)}
           >
             <FaPlus className={style.icon} />
             <p>Dodawanie wysyłki</p>

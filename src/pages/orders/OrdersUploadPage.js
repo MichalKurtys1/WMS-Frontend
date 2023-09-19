@@ -30,7 +30,7 @@ const OrdersUploadPage = () => {
     {
       onError: (error) => setError(error),
       onCompleted: () => {
-        if (!error) navigate("/main/documents");
+        if (!error) navigate("/documents");
       },
     }
   );
@@ -76,10 +76,7 @@ const OrdersUploadPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/main/orders")}
-        >
+        <div className={style.returnBox} onClick={() => navigate("/orders")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>

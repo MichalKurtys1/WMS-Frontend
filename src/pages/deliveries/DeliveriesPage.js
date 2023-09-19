@@ -15,6 +15,7 @@ import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { getAuth } from "../../context";
 
 const DeliveriesPage = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const DeliveriesPage = () => {
   const [updateDeliveryValues] = useMutation(UPDATE_DELIVERY_VALUES, {
     onError: (error) => setError(error),
   });
-
+  const { position } = getAuth();
   useEffect(() => {
     if (location.state) {
       refetch();
@@ -98,14 +99,14 @@ const DeliveriesPage = () => {
 
   const updateStateHandler = (id, action) => {
     if (action === "Posortowano") {
-      navigate("/main/deliveries/sorting", {
+      navigate("/deliveries/sorting", {
         state: {
           deliveryId: id,
         },
       });
     } else if (action === "Zakończono") {
       console.log(id);
-      navigate("/main/deliveries/upload", {
+      navigate("/deliveries/upload", {
         state: {
           deliveryId: id,
         },
@@ -146,7 +147,7 @@ const DeliveriesPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/deliveries/edit`, {
+    navigate(`/deliveries/edit`, {
       state: {
         deliveryId: id,
       },
@@ -154,14 +155,14 @@ const DeliveriesPage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
 
   const detailsHandler = (id) => {
     getDelivery({ variables: { getDeliveryId: id } })
       .then((data) => {
         console.log(data.data.getDelivery.date);
-        navigate("/main/deliveries/details", {
+        navigate("/deliveries/details", {
           state: {
             details: true,
             supplier: data.data.getDelivery.supplier,
@@ -186,7 +187,7 @@ const DeliveriesPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -200,14 +201,15 @@ const DeliveriesPage = () => {
       <main>
         <div className={style.optionPanel}>
           <h1>Dostawy</h1>
-          <div
-            className={style.addOption}
-            on
-            onClick={() => navigate(`/main/deliveries/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodaj nowe</p>
-          </div>
+          {position !== "Magazynier" && (
+            <div
+              className={style.addOption}
+              onClick={() => navigate(`/deliveries/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodaj nowe</p>
+            </div>
+          )}
         </div>
         <div className={style.tableBox}>
           {loading && (
@@ -249,6 +251,7 @@ const DeliveriesPage = () => {
               ]}
               allowExpand={true}
               type={"Delivery"}
+              position={position === "Magazynier" ? false : true}
             />
           )}
         </div>

@@ -97,6 +97,7 @@ const TableRow = (props) => {
         editHandler={props.editHandler}
         deleteHandler={props.deleteHandler}
         record={props.record}
+        position={props.position}
       />
       <OrderTableRow
         isClickedRow={isClickedRow}
@@ -108,6 +109,7 @@ const TableRow = (props) => {
         editHandler={props.editHandler}
         deleteHandler={props.deleteHandler}
         record={props.record}
+        position={props.position}
       />
       <ShipmentTableRow
         isClickedRow={isClickedRow}
@@ -120,6 +122,7 @@ const TableRow = (props) => {
         editHandler={props.editHandler}
         deleteHandler={props.deleteHandler}
         record={props.record}
+        position={props.position}
       />
     </>
   );

@@ -10,10 +10,12 @@ import PopUp from "../../components/PopUp";
 import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { getAuth } from "../../context/index";
 
 const ProductsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { position } = getAuth();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
@@ -64,7 +66,7 @@ const ProductsPage = () => {
   };
 
   const editHandler = (id) => {
-    navigate(`/main/products/edit`, {
+    navigate(`/products/edit`, {
       state: {
         userId: id,
       },
@@ -72,7 +74,7 @@ const ProductsPage = () => {
   };
 
   const detailsHandler = (id) => {
-    navigate(`/main/products/details`, {
+    navigate(`/products/details`, {
       state: {
         userId: id,
       },
@@ -80,7 +82,7 @@ const ProductsPage = () => {
   };
 
   const messageHandler = () => {
-    navigate("/main/messages");
+    navigate("/messages");
   };
 
   return (
@@ -91,7 +93,7 @@ const ProductsPage = () => {
           src={require("../../assets/logo.png")}
           alt="logo"
         />
-        <div className={style.returnBox} onClick={() => navigate("/main")}>
+        <div className={style.returnBox} onClick={() => navigate("/")}>
           <FaAngleLeft className={style.icon} />
           <p>Powrót</p>
         </div>
@@ -105,14 +107,16 @@ const ProductsPage = () => {
       <main>
         <div className={style.optionPanel}>
           <h1>Lista produktów</h1>
-          <div
-            className={style.addOption}
-            on
-            onClick={() => navigate(`/main/products/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodawanie produktu</p>
-          </div>
+          {position !== "Magazynier" && (
+            <div
+              className={style.addOption}
+              on
+              onClick={() => navigate(`/products/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodawanie produktu</p>
+            </div>
+          )}
         </div>
         <div className={style.tableBox}>
           {loading && (

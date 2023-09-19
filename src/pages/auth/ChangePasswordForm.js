@@ -44,7 +44,7 @@ const ChangePasswordForm = () => {
         },
       })
         .then((data) => {
-          navigate("/main");
+          navigate("/");
         })
         .catch((err) => {
           console.log(err);

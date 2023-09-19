@@ -6,12 +6,14 @@ import { gql, useMutation } from "@apollo/client";
 import Spinner from "../../components/Spiner";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../context/auth";
+import { useEffect } from "react";
 
 const LOGIN = gql`
   mutation Mutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       firstname
       lastname
+      position
       token
       firstLogin
       expiresIn
@@ -41,6 +43,10 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [login, { loading, error }] = useMutation(LOGIN);
 
+  useEffect(() => {
+    dispatch(authActions.logOut());
+  }, [dispatch]);
+
   const onSubmit = (values) => {
     login({
       variables: { email: values.Email, password: values.Password },
@@ -51,19 +57,18 @@ const LoginForm = () => {
             token: data.data.login.token,
             expiresIn: data.data.login.expiresIn,
             name: data.data.login.firstname + " " + data.data.login.lastname,
+            position: data.data.login.position,
           })
         );
         if (data.data.login.firstLogin) {
-          navigate("/main/change-password", { replace: true });
+          navigate("/change-password", { replace: true });
         } else {
-          navigate("/main", { replace: true });
+          navigate("/", { replace: true });
         }
       })
       .catch((err) => {
         console.log(err);
       });
-
-    navigate("/main", { replace: true });
   };
 
   return (
