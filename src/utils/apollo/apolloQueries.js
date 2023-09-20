@@ -260,3 +260,14 @@ export const GET_FILES = gql`
     }
   }
 `;
+
+export const GET_CALENDAR = gql`
+  query Query {
+    calendar {
+      id
+      date
+      time
+      event
+    }
+  }
+`;

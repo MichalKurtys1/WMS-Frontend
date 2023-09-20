@@ -42,3 +42,142 @@
   font-size: 20px;
   margin: 20px 0 10px;
 }
+.calendarContainer {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.calendarContainer h1 {
+  color: #2d3640;
+  font-size: 38px;
+  margin: 10px 0;
+}
+
+.eventBox {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.eventBox h2 {
+  font-weight: 500;
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  border-bottom: 2px solid #2d3640;
+}
+
+.eventBox .eventContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.eventBox .event {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  margin: 10px 0;
+}
+
+.eventBox .event h3 {
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  margin-right: 15px;
+  font-size: 18px;
+}
+
+.eventBox .event p {
+  color: #646e78;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+  margin: 0;
+}
+
+.eventBox .plusIcon {
+  margin-left: 10px;
+  font-size: 18px;
+  color: #646e78;
+  transition: 0.5s;
+}
+
+.eventBox .minusIcon {
+  margin-left: 10px;
+  font-size: 18px;
+  color: #646e78;
+  transition: 0.5s;
+}
+
+.eventBox .minusIcon:hover {
+  color: #f03a30;
+}
+
+.eventBox .plusIcon:hover {
+  color: #3054f2;
+}
+
+.eventContainer .addBox {
+  width: 90%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eventContainer .addBox input[type="time"] {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 8px 10px;
+  width: 20%;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 22px;
+  color: #777777;
+}
+
+.eventContainer .addBox input[type="time"]:focus {
+  outline: none;
+}
+
+.eventContainer .addBox input[type="text"] {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 8px 10px;
+  width: 60%;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 22px;
+  color: #777777;
+}
+
+.eventContainer .addBox input[type="text"]:focus {
+  outline: none;
+}
+
+.eventContainer .addBox button {
+  position: relative;
+  border: none;
+  height: 46px;
+  width: 46px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-size: 22px;
+  background-color: #8097ff;
+  color: white;
+  transition: 0.5s;
+}
+
+.eventContainer .addBox button:hover {
+  background-color: #3054f2;
+}
+
+.addBox button .addIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -791,3 +791,15 @@ export const UPDATE_SHIPMENT_STATE = gql`
     }
   }
 `;
+
+export const ADD_CALENDAR = gql`
+  mutation Mutation($date: String!, $time: String!, $event: String!) {
+    createCalendar(date: $date, time: $time, event: $event)
+  }
+`;
+
+export const DELETE_CALENDAR = gql`
+  mutation Mutation($deleteCalendarId: ID!) {
+    deleteCalendar(id: $deleteCalendarId)
+  }
+`;
