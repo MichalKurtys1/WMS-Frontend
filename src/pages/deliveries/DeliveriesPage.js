@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { GET_DELIVERIES } from "../../utils/apollo/apolloQueries";
 import {
   DELETE_DELIVERY,
-  GET_DELIVERY,
   UPDATE_DELIVERY_STATE,
   UPDATE_DELIVERY_VALUES,
 } from "../../utils/apollo/apolloMutations";
@@ -24,46 +23,33 @@ const DeliveriesPage = () => {
   const [id, setId] = useState();
   const [action, setAction] = useState();
   const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
-  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
-    useState(false);
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
+  const { position } = getAuth();
+
   const { data, refetch, loading } = useQuery(GET_DELIVERIES, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteDeliveries] = useMutation(DELETE_DELIVERY, {
     onError: (error) => setError(error),
-  });
-  const [getDelivery] = useMutation(GET_DELIVERY, {
-    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateDeliveryState] = useMutation(UPDATE_DELIVERY_STATE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateDeliveryValues] = useMutation(UPDATE_DELIVERY_VALUES, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-  const { position } = getAuth();
+
   useEffect(() => {
     if (location.state) {
       refetch();
     }
   }, [location.state, refetch]);
-
-  useEffect(() => {
-    if (shouldUpdateDeliveryState) {
-      updateDeliveryState({
-        variables: {
-          updateStateId: id,
-          state: action,
-        },
-      }).then((data) => {
-        refetch();
-      });
-      setShouldUpdateDeliveryState(false);
-    }
-  }, [action, id, refetch, shouldUpdateDeliveryState, updateDeliveryState]);
 
   useEffect(() => {
     if (location.state && location.state.products) {
@@ -73,12 +59,14 @@ const DeliveriesPage = () => {
           products: JSON.stringify(location.state.products),
         },
       }).then((data) => {
+        if (!data.data) return;
         updateDeliveryState({
           variables: {
             updateStateId: location.state.deliveryId,
             state: "Posortowano",
           },
         }).then((data) => {
+          if (!data.data) return;
           refetch();
           navigate(location.pathname, {});
         });
@@ -93,10 +81,6 @@ const DeliveriesPage = () => {
     refetch,
   ]);
 
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
   const updateStateHandler = (id, action) => {
     if (action === "Posortowano") {
       navigate("/deliveries/sorting", {
@@ -105,7 +89,6 @@ const DeliveriesPage = () => {
         },
       });
     } else if (action === "Zakończono") {
-      console.log(id);
       navigate("/deliveries/upload", {
         state: {
           deliveryId: id,
@@ -118,32 +101,33 @@ const DeliveriesPage = () => {
     }
   };
 
-  const button2ActionHandler = () => {
+  const updateState = () => {
+    updateDeliveryState({
+      variables: {
+        updateStateId: id,
+        state: action,
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      refetch();
+    });
     setStatePopupIsOpen(false);
-    setShouldUpdateDeliveryState(true);
   };
 
-  const deleteHandler = (id) => {
-    setdeletePopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
+  const deleteHandler = () => {
     setdeletePopupIsOpen(false);
     deleteDeliveries({
       variables: {
         deleteDeliveryId: selectedRow,
       },
-    })
-      .then((data) => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
+    });
   };
 
   const editHandler = (id) => {
@@ -152,31 +136,6 @@ const DeliveriesPage = () => {
         deliveryId: id,
       },
     });
-  };
-
-  const messageHandler = () => {
-    navigate("/messages");
-  };
-
-  const detailsHandler = (id) => {
-    getDelivery({ variables: { getDeliveryId: id } })
-      .then((data) => {
-        console.log(data.data.getDelivery.date);
-        navigate("/deliveries/details", {
-          state: {
-            details: true,
-            supplier: data.data.getDelivery.supplier,
-            supplierId: data.data.getDelivery.supplier.name,
-            dateNumber: data.data.getDelivery.date,
-            warehouse: data.data.getDelivery.warehouse,
-            comments: data.data.getDelivery.comments,
-            products: JSON.parse(data.data.getDelivery.products),
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   return (
@@ -193,40 +152,32 @@ const DeliveriesPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {successMsg && (
+      {successMsg && !error && (
         <div className={style.succes}>
           <p>Dostawa usunięta pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Dostawy</h1>
-          {position !== "Magazynier" && (
-            <div
-              className={style.addOption}
-              onClick={() => navigate(`/deliveries/add`)}
-            >
-              <FaUserPlus className={style.icon} />
-              <p>Dodaj nowe</p>
-            </div>
-          )}
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
+      {loading && !error && <Spinner />}
+      {data && data.deliveries && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Dostawy</h1>
+            {position !== "Magazynier" && (
+              <div
+                className={style.addOption}
+                onClick={() => navigate(`/deliveries/add`)}
+              >
+                <FaUserPlus className={style.icon} />
+                <p>Dodaj nowe</p>
               </div>
-            </div>
-          )}
-          {data && data.deliveries && (
+            )}
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
-              detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setdeletePopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               updateStateHandler={updateStateHandler}
               data={data.deliveries.map((item) => {
                 return {
@@ -253,9 +204,9 @@ const DeliveriesPage = () => {
               type={"Delivery"}
               position={position === "Magazynier" ? false : true}
             />
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
+      )}
       {deletePopupIsOpen && (
         <PopUp
           message={
@@ -266,7 +217,7 @@ const DeliveriesPage = () => {
           button1Action={() => {
             setdeletePopupIsOpen(false);
           }}
-          button2Action={confirmedDeleteHandler}
+          button2Action={deleteHandler}
         />
       )}
       {statePopupIsOpen && (
@@ -279,7 +230,7 @@ const DeliveriesPage = () => {
           button1Action={() => {
             setStatePopupIsOpen(false);
           }}
-          button2Action={button2ActionHandler}
+          button2Action={updateState}
         />
       )}
     </div>

@@ -5,7 +5,6 @@ import { dateToPolish } from "../../utils/dateFormatters";
 import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
 import {
   DELETE_ORDER,
-  GET_ORDER,
   UPDATE_ORDER_STATE,
 } from "../../utils/apollo/apolloMutations";
 
@@ -22,26 +21,24 @@ const OrdersPage = () => {
   const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
+  const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
   const [id, setId] = useState();
   const [action, setAction] = useState();
-  // const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
   const { position } = getAuth();
-  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
-    useState(false);
-  const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
+
   const { data, refetch, loading } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteOrder] = useMutation(DELETE_ORDER, {
     onError: (error) => setError(error),
-  });
-  const [getOrder] = useMutation(GET_ORDER, {
-    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -49,72 +46,6 @@ const OrdersPage = () => {
       refetch();
     }
   }, [location.state, refetch]);
-
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
-  const deleteHandler = (id) => {
-    setPopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
-    setPopupIsOpen(false);
-
-    deleteOrder({
-      variables: {
-        deleteOrderId: selectedRow,
-      },
-    })
-      .then((data) => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
-  };
-
-  const editHandler = (id) => {
-    navigate(`/orders/edit`, {
-      state: {
-        orderId: id,
-      },
-    });
-  };
-
-  const messageHandler = () => {
-    navigate("/messages");
-  };
-
-  const detailsHandler = (id) => {
-    getOrder({ variables: { getOrderId: id } })
-      .then((data) => {
-        navigate("/orders/details", {
-          state: {
-            details: true,
-            clientId: data.data.getOrder.client.name,
-            client: data.data.getOrder.client,
-            dateNumber: data.data.getOrder.date,
-            warehouse: data.data.getOrder.warehouse,
-            comments: data.data.getOrder.comments,
-            products: JSON.parse(data.data.getOrder.products),
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  // ssss
 
   const updateStateHandler = (id, action) => {
     if (action === "Do wysyłki") {
@@ -136,28 +67,43 @@ const OrdersPage = () => {
     }
   };
 
-  const button2ActionHandler = () => {
+  const updateState = () => {
+    updateOrdersState({
+      variables: {
+        updateOrderStateId: id,
+        state: action,
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      refetch();
+    });
     setStatePopupIsOpen(false);
-    setShouldUpdateDeliveryState(true);
   };
 
-  useEffect(() => {
-    if (shouldUpdateDeliveryState) {
-      updateOrdersState({
-        variables: {
-          updateOrderStateId: id,
-          state: action,
-        },
-      })
-        .then((data) => {
-          refetch();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setShouldUpdateDeliveryState(false);
-    }
-  }, [action, id, refetch, shouldUpdateDeliveryState, updateOrdersState]);
+  const deleteHandler = () => {
+    setPopupIsOpen(false);
+
+    deleteOrder({
+      variables: {
+        deleteOrderId: selectedRow,
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
+    });
+  };
+
+  const editHandler = (id) => {
+    navigate(`/orders/edit`, {
+      state: {
+        orderId: id,
+      },
+    });
+  };
 
   return (
     <div className={style.container}>
@@ -178,35 +124,27 @@ const OrdersPage = () => {
           <p>Zamówienie usunięte pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Zamówienia</h1>
-          {position !== "Magazynier" && (
-            <div
-              className={style.addOption}
-              onClick={() => navigate(`/orders/add`)}
-            >
-              <FaUserPlus className={style.icon} />
-              <p>Dodaj nowe</p>
-            </div>
-          )}
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
+      {loading && !error && <Spinner />}
+      {data && data.orders && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Zamówienia</h1>
+            {position !== "Magazynier" && (
+              <div
+                className={style.addOption}
+                onClick={() => navigate(`/orders/add`)}
+              >
+                <FaUserPlus className={style.icon} />
+                <p>Dodaj nowe</p>
               </div>
-            </div>
-          )}
-          {data && data.orders && (
+            )}
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
-              detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setPopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               updateStateHandler={updateStateHandler}
               data={data.orders.map((item) => {
                 return {
@@ -227,9 +165,9 @@ const OrdersPage = () => {
               type="Orders"
               position={position === "Magazynier" ? false : true}
             />
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
+      )}
       {popupIsOpen && (
         <PopUp
           message={
@@ -237,8 +175,8 @@ const OrdersPage = () => {
           }
           button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
-          button2Action={confirmedDeleteHandler}
+          button1Action={() => setPopupIsOpen(false)}
+          button2Action={deleteHandler}
         />
       )}
       {statePopupIsOpen && (
@@ -251,7 +189,7 @@ const OrdersPage = () => {
           button1Action={() => {
             setStatePopupIsOpen(false);
           }}
-          button2Action={button2ActionHandler}
+          button2Action={updateState}
         />
       )}
     </div>

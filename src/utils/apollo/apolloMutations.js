@@ -284,18 +284,6 @@ export const ADD_TRANSFER = gql`
   }
 `;
 
-export const ADD_STOCK = gql`
-  mutation Mutation($productId: ID!, $ordered: Float) {
-    createStock(productId: $productId, ordered: $ordered) {
-      id
-      productId
-      totalQuantity
-      availableStock
-      ordered
-    }
-  }
-`;
-
 export const ADD_SHIPPING = gql`
   mutation Mutation(
     $orderId: ID!
@@ -801,5 +789,32 @@ export const ADD_CALENDAR = gql`
 export const DELETE_CALENDAR = gql`
   mutation Mutation($deleteCalendarId: ID!) {
     deleteCalendar(id: $deleteCalendarId)
+  }
+`;
+
+export const UPDATE_PASSWORD = gql`
+  mutation Mutation(
+    $oldPassword: String!
+    $newPassword: String!
+    $token: String!
+  ) {
+    changePassword(
+      oldPassword: $oldPassword
+      newPassword: $newPassword
+      token: $token
+    )
+  }
+`;
+
+export const LOGIN = gql`
+  mutation Mutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      firstname
+      lastname
+      position
+      token
+      firstLogin
+      expiresIn
+    }
   }
 `;

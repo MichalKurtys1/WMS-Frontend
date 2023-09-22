@@ -13,6 +13,7 @@ import PopUp from "../../components/PopUp";
 import { FaAngleLeft, FaPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import { getAuth } from "../../context";
 
 const ShippingPage = () => {
   const navigate = useNavigate();
@@ -23,23 +24,20 @@ const ShippingPage = () => {
   const [error, setError] = useState();
   const [id, setId] = useState();
   const [action, setAction] = useState();
-  // const [deletePopupIsOpen, setdeletePopupIsOpen] = useState(false);
-  const [shouldUpdateDeliveryState, setShouldUpdateDeliveryState] =
-    useState(false);
+  const { position } = getAuth();
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
   const { data, refetch, loading } = useQuery(GET_ORDER_SHIPMENTS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteShipment] = useMutation(SHIPMENT_DELETE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateShipmentState] = useMutation(UPDATE_SHIPMENT_STATE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
-  useEffect(() => {
-    refetch();
-  }, [location.pathname, refetch]);
 
   useEffect(() => {
     if (location.state) {
@@ -47,47 +45,24 @@ const ShippingPage = () => {
     }
   }, [location.state, refetch]);
 
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
-  const deleteHandler = (id) => {
-    setPopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
+  const deleteHandler = () => {
     setPopupIsOpen(false);
 
     deleteShipment({
       variables: {
         deleteOrderShipmentId: selectedRow,
       },
-    })
-      .then(() => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
-  };
-
-  const editHandler = (id) => {
-    navigate(`/shipping`, {
-      state: {
-        userId: id,
-      },
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
     });
   };
 
-  const detailsHandler = (id) => {
+  const editHandler = (id) => {
     navigate(`/shipping`, {
       state: {
         userId: id,
@@ -109,28 +84,17 @@ const ShippingPage = () => {
     }
   };
 
-  const button2ActionHandler = () => {
+  const updateState = () => {
+    updateShipmentState({
+      variables: {
+        updateOrderShipmentStateId: id,
+        state: action,
+      },
+    }).then((data) => {
+      refetch();
+    });
     setStatePopupIsOpen(false);
-    setShouldUpdateDeliveryState(true);
   };
-
-  useEffect(() => {
-    if (shouldUpdateDeliveryState) {
-      updateShipmentState({
-        variables: {
-          updateOrderShipmentStateId: id,
-          state: action,
-        },
-      })
-        .then((data) => {
-          refetch();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setShouldUpdateDeliveryState(false);
-    }
-  }, [action, id, refetch, shouldUpdateDeliveryState, updateShipmentState]);
 
   return (
     <div className={style.container}>
@@ -146,37 +110,30 @@ const ShippingPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {successMsg && (
+      {successMsg && !error && (
         <div className={style.succes}>
           <p>Wysyłka usunięta pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Wysyłki</h1>
-          <div
-            className={style.addOption}
-            onClick={() => navigate(`/shipping/add`)}
-          >
-            <FaPlus className={style.icon} />
-            <p>Dodawanie wysyłki</p>
-          </div>
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
+      {loading && <Spinner />}
+      {data && data.orderShipments && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Wysyłki</h1>
+            <div
+              className={style.addOption}
+              onClick={() => navigate(`/shipping/add`)}
+            >
+              <FaPlus className={style.icon} />
+              <p>Dodawanie wysyłki</p>
             </div>
-          )}
-          {data && data.orderShipments && (
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
-              detailsHandler={detailsHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setPopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               updateStateHandler={updateStateHandler}
               data={data.orderShipments}
               format={[
@@ -195,11 +152,11 @@ const ShippingPage = () => {
               ]}
               allowExpand={true}
               type="Shipping"
+              position={position === "Przewoźnik" ? false : true}
             />
-          )}
-        </div>
-      </main>
-
+          </div>
+        </main>
+      )}
       {popupIsOpen && (
         <PopUp
           message={
@@ -207,8 +164,8 @@ const ShippingPage = () => {
           }
           button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
-          button2Action={confirmedDeleteHandler}
+          button1Action={() => setPopupIsOpen(false)}
+          button2Action={deleteHandler}
         />
       )}
       {statePopupIsOpen && (
@@ -221,7 +178,7 @@ const ShippingPage = () => {
           button1Action={() => {
             setStatePopupIsOpen(false);
           }}
-          button2Action={button2ActionHandler}
+          button2Action={updateState}
         />
       )}
     </div>

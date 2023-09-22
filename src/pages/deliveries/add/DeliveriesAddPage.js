@@ -15,7 +15,7 @@ import { FaAngleLeft } from "react-icons/fa";
 import ProductList from "../ProductsList";
 import Spinner from "../../../components/Spiner";
 import ErrorHandler from "../../../components/ErrorHandler";
-import { ADD_DELIVERY, ADD_STOCK } from "../../../utils/apollo/apolloMutations";
+import { ADD_DELIVERY } from "../../../utils/apollo/apolloMutations";
 
 const warehouseList = [
   { name: "Wybierz Magazyn" },
@@ -33,20 +33,24 @@ const DeliveriesAddPage = () => {
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(false);
   const [error, setError] = useState();
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
-    onError: (error) => setError(error),
-  });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-  });
   const [options, setOptions] = useState([]);
   const [productList, setProductList] = useState(
     location.state !== null
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
-  const [addDelivery] = useMutation(ADD_DELIVERY);
-  const [addStock] = useMutation(ADD_STOCK);
+  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [addDelivery] = useMutation(ADD_DELIVERY, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -60,15 +64,15 @@ const DeliveriesAddPage = () => {
     }
   }, [data, loadingSuppliers]);
 
+  const deleteHandler = ({ id }) => {
+    setProductList((prevList) => prevList.filter((item) => item.id !== id));
+  };
+
   const addProductInputCounter = () => {
     setProductList((prevList) => [
       ...prevList,
       { id: prevList.length, product: null, unit: null, quantity: null },
     ]);
-  };
-
-  const deleteHandler = ({ id }) => {
-    setProductList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
   const changeProductHandler = (id, product) => {
@@ -83,7 +87,7 @@ const DeliveriesAddPage = () => {
     );
   };
 
-  const quantityUnitHandler = (id, quantity) => {
+  const changeQuantityHandler = (id, quantity) => {
     setProductList((prevList) =>
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
@@ -118,7 +122,6 @@ const DeliveriesAddPage = () => {
         item.unit === undefined ||
         item.quantity === ""
     );
-
     if (incompleteProducts.length > 0) {
       setSubmitError(true);
       return;
@@ -131,33 +134,14 @@ const DeliveriesAddPage = () => {
         warehouse: values.magazine,
         products: JSON.stringify(productList),
       },
-    })
-      .then((data) => {
-        productList.forEach((item) => {
-          const product = products.products.filter(
-            (product) =>
-              item.product.includes(product.name) &&
-              item.product.includes(product.type) &&
-              item.product.includes(product.capacity)
-          );
-          addStock({
-            variables: {
-              productId: product[0].id,
-              ordered: parseInt(item.quantity),
-            },
-          }).catch((err) => console.log(err));
-        });
-
-        navigate("/deliveries", {
-          state: {
-            userData: data.data.createClient,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/deliveries", {
+        state: {
+          userData: true,
+        },
       });
-
+    });
     setSubmitError(false);
   };
 
@@ -178,13 +162,7 @@ const DeliveriesAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loadingSuppliers || loadingProducts) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loadingSuppliers || loadingProducts) && !error && <Spinner />}
       {(!loadingSuppliers || !loadingProducts) && (
         <main>
           <Form
@@ -264,7 +242,7 @@ const DeliveriesAddPage = () => {
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}
                     changeUnitHandler={changeUnitHandler}
-                    quantityUnitHandler={quantityUnitHandler}
+                    quantityUnitHandler={changeQuantityHandler}
                     addProductInputCounter={addProductInputCounter}
                   />
                 </div>

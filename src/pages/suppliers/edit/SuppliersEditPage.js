@@ -25,26 +25,27 @@ const SuppliersEditPage = () => {
   const [data, setData] = useState();
   const [getSupplier, { loading }] = useMutation(GET_SUPPLIER, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateSupplier, { loading: updateLoading }] = useMutation(
     UPDATE_SUPPLIER,
     {
       onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
 
   useEffect(() => {
+    if (!location.state.supplierId) return;
+
     getSupplier({
       variables: {
         getSupplierId: location.state.supplierId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getSupplier);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setData(data.data.getSupplier);
+    });
   }, [getSupplier, location.state.supplierId]);
 
   const onSubmit = (values) => {
@@ -61,17 +62,14 @@ const SuppliersEditPage = () => {
         accountNumber: values.accountNumber,
         nip: values.nip,
       },
-    })
-      .then((data) => {
-        navigate("/suppliers", {
-          state: {
-            update: true,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/suppliers", {
+        state: {
+          update: true,
+        },
       });
+    });
   };
 
   return (
@@ -88,13 +86,7 @@ const SuppliersEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loading || updateLoading) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loading || updateLoading) && <Spinner />}
       {data && (
         <main>
           <Form

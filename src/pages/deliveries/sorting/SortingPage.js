@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_DELIVERY } from "../../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../../components/ErrorHandler";
+import Spinner from "../../../components/Spiner";
 
 const SortingPage = () => {
   const navigate = useNavigate();
@@ -12,8 +13,9 @@ const SortingPage = () => {
   const [error, setError] = useState();
   const [data, setData] = useState();
   const [products, setProducts] = useState([]);
-  const [getDelivery] = useMutation(GET_DELIVERY, {
+  const [getDelivery, { loading }] = useMutation(GET_DELIVERY, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -21,26 +23,22 @@ const SortingPage = () => {
       variables: {
         getDeliveryId: location.state.deliveryId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getDelivery);
-        JSON.parse(JSON.parse(data.data.getDelivery.products)).map((item) => {
-          return setProducts((prevList) => [
-            ...prevList,
-            {
-              id: prevList.length,
-              product: item.product,
-              unit: item.unit,
-              quantity: item.quantity,
-              delivered: 0,
-              damaged: 0,
-            },
-          ]);
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      setData(data.data.getDelivery);
+      JSON.parse(JSON.parse(data.data.getDelivery.products)).map((item) => {
+        return setProducts((prevList) => [
+          ...prevList,
+          {
+            id: prevList.length,
+            product: item.product,
+            unit: item.unit,
+            quantity: item.quantity,
+            delivered: 0,
+            damaged: 0,
+          },
+        ]);
       });
+    });
   }, [getDelivery, location.state.deliveryId]);
 
   const modifyDeliveredValue = (id, value) => {
@@ -97,37 +95,40 @@ const SortingPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      <div className={style.detailsBox}>
-        <h1>Dostarczony asortyment</h1>
-        <form onSubmit={sendHandler}>
-          {data &&
-            products.map((item) => (
-              <div className={style.productBox}>
-                <p>{item.product}</p>
-                <input
-                  type="number"
-                  placeholder="Ilość dostarczonych"
-                  max={item.quantity}
-                  onChange={(event) =>
-                    modifyDeliveredValue(item.id, event.target.value)
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Ilość uszkodzonych"
-                  max={item.quantity - item.delivered}
-                  onChange={(event) =>
-                    modifyDamagedValue(item.id, event.target.value)
-                  }
-                />
-              </div>
-            ))}
+      {loading && <Spinner />}
+      {!loading && (
+        <div className={style.detailsBox}>
+          <h1>Dostarczony asortyment</h1>
+          <form onSubmit={sendHandler}>
+            {data &&
+              products.map((item) => (
+                <div className={style.productBox}>
+                  <p>{item.product}</p>
+                  <input
+                    type="number"
+                    placeholder="Ilość dostarczonych"
+                    max={item.quantity}
+                    onChange={(event) =>
+                      modifyDeliveredValue(item.id, event.target.value)
+                    }
+                  />
+                  <input
+                    type="number"
+                    placeholder="Ilość uszkodzonych"
+                    max={item.quantity - item.delivered}
+                    onChange={(event) =>
+                      modifyDamagedValue(item.id, event.target.value)
+                    }
+                  />
+                </div>
+              ))}
 
-          <button type="submit" className={style.sendBtn}>
-            Potwierdź
-          </button>
-        </form>
-      </div>
+            <button type="submit" className={style.sendBtn}>
+              Potwierdź
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

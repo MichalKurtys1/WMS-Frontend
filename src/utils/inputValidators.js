@@ -32,3 +32,10 @@ export const phoneValidator = (value) => {
   }
   return undefined;
 };
+
+export const passwordValidator = (value) => {
+  if (!value || value.length < 8) {
+    return "Hasło musi posiadać przynajmniej 8 znaków";
+  }
+  return undefined;
+};

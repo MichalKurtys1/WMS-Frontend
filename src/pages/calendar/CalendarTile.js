@@ -1,19 +1,17 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BsDot } from "react-icons/bs";
 
 const CalendarTile = ({ date, events }) => {
   const [isEvent, setIsEvent] = useState(false);
 
   useEffect(() => {
-    events.forEach((event) => {
-      let eventTime = new Date(+event.date).toISOString().split("T")[0];
-      let tileTime = new Date(date.getTime()).toISOString().split("T")[0];
-      if (eventTime === tileTime) {
-        setIsEvent(true);
-      }
+    const hasEvent = events.some((event) => {
+      const eventTime = new Date(+event.date).toISOString().split("T")[0];
+      const tileTime = new Date(date.getTime()).toISOString().split("T")[0];
+      return eventTime === tileTime;
     });
-  });
+    setIsEvent(hasEvent);
+  }, [date, events]);
 
   return (
     <>

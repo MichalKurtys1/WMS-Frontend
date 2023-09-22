@@ -103,6 +103,7 @@ const Table = (props) => {
                     allowExpand={props.allowExpand}
                     updateStateHandler={props.updateStateHandler}
                     type={props.type}
+                    options={props.options}
                   />
                 );
               })}

@@ -239,8 +239,6 @@ const pageStyles = StyleSheet.create({
 const ShippmentPDF = (props) => {
   const [shippingData] = useState(props.shipment);
 
-  console.log(shippingData);
-
   return (
     <Document
       title={`Dostawa/${shippingData[0].deliveryDate}/${

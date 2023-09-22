@@ -39,7 +39,7 @@ const ShippingTable = (props) => {
     }
   };
 
-  function sortHandler(array, key, sortDirection) {
+  const sortHandler = (array, key, sortDirection) => {
     if (array.length === 0) {
       return [];
     }
@@ -61,7 +61,7 @@ const ShippingTable = (props) => {
     };
 
     setData([...array].sort(compareFunction));
-  }
+  };
 
   return (
     <>

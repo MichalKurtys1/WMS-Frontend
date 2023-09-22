@@ -3,80 +3,80 @@ import style from "./CalendarPage.module.css";
 import "./Calendar.css";
 import { useNavigate } from "react-router";
 import Calendar from "react-calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarTile from "./CalendarTile";
 import { dateToPolish } from "../../utils/dateFormatters";
-import {
-  GET_CALENDAR,
-  GET_DELIVERIES,
-  GET_ORDERS,
-  GET_ORDER_SHIPMENTS,
-} from "../../utils/apollo/apolloQueries";
-import { useMutation, useQuery } from "@apollo/client";
-import {
-  ADD_CALENDAR,
-  DELETE_CALENDAR,
-} from "../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../components/ErrorHandler";
 import { getAuth } from "../../context";
+import Spinner from "../../components/Spiner";
+import { useCalendar } from "./useCalendar";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState(new Date());
+  const [value, setValue] = useState();
   const [activeEvent, setActiveEvent] = useState([]);
   const [addIsOpen, setAddIsOpen] = useState(false);
   const [timeValue, setTimeValue] = useState();
   const [eventValue, setEventValue] = useState();
-  const [error, setError] = useState();
   const { position } = getAuth();
-  const { data, refetch } = useQuery(GET_CALENDAR, {
-    onError: (error) => setError(error),
-  });
-  const { data: orders } = useQuery(GET_ORDERS, {
-    onError: (error) => setError(error),
-  });
-  const { data: deliveries } = useQuery(GET_DELIVERIES, {
-    onError: (error) => setError(error),
-  });
-  const [addEvent] = useMutation(ADD_CALENDAR, {
-    onError: (error) => setError(error),
-  });
-  const [deleteEvent] = useMutation(DELETE_CALENDAR, {
-    onError: (error) => setError(error),
-  });
-  const { data: shipments } = useQuery(GET_ORDER_SHIPMENTS, {
-    onError: (error) => setError(error),
-  });
+  const { error, loading, data, addEvent, deleteEvent, refetch } =
+    useCalendar();
+  const [events, setEvents] = useState();
 
-  const deleteHandler = (id) => {
-    deleteEvent({
-      variables: {
-        deleteCalendarId: id,
-      },
-    }).then((data) => {
-      setAddIsOpen(false);
-      refetch();
-    });
-
-    if (activeEvent.length > 0) {
-      setActiveEvent((prev) => [...prev.filter((item) => item.id !== id)]);
-    } else {
-      setActiveEvent([]);
+  useEffect(() => {
+    let results = [];
+    if (
+      data &&
+      data.deliveries &&
+      data.orders &&
+      data.calendar &&
+      data.shipments &&
+      position !== "Przewoźnik"
+    ) {
+      let deli = data.deliveries.map((item) => {
+        return {
+          date: +item.expectedDate - 24 * 60 * 60 * 1000,
+          time: "--:--",
+          event: "Dostawa " + item.supplier.name,
+        };
+      });
+      let orde = data.orders.map((item) => {
+        return {
+          date: +item.expectedDate - 24 * 60 * 60 * 1000,
+          time: "--:--",
+          event: "Zamówienie " + item.client.name,
+        };
+      });
+      let ship = data.shipments.map((item) => {
+        return {
+          date: (
+            new Date(item.deliveryDate).getTime() -
+            24 * 60 * 60 * 1000
+          ).toString(),
+          time: "--:--",
+          event: "Wysyłka " + item.employee,
+        };
+      });
+      let cale = data.calendar;
+      results = cale.concat(orde, deli, ship);
+      setEvents(results);
     }
-  };
-
-  const dayClickHandler = (date) => {
-    const filteredEvents = eventsHandler().filter(
-      (event) =>
-        new Date(+event.date).toISOString().split("T")[0] ===
-        new Date(date.getTime()).toISOString().split("T")[0]
-    );
-    if (filteredEvents.length === 0) {
-      setActiveEvent(date.getTime());
-    } else {
-      setActiveEvent(filteredEvents);
+    if (data && data.shipments && data.calendar && position === "Przewoźnik") {
+      let ship = data.shipments.map((item) => {
+        return {
+          date: (
+            new Date(item.deliveryDate).getTime() -
+            24 * 60 * 60 * 1000
+          ).toString(),
+          time: "--:--",
+          event: "Wysyłka " + item.employee,
+        };
+      });
+      let cale = data.calendar;
+      results = cale.concat(ship);
+      setEvents(results);
     }
-  };
+  }, [data, position]);
 
   const addHandler = (e) => {
     e.preventDefault();
@@ -90,80 +90,59 @@ const CalendarPage = () => {
         event: eventValue.toString(),
       },
     }).then((data) => {
+      if (!data.data) return;
       setAddIsOpen(false);
       refetch();
+      if (activeEvent.length > 0) {
+        setActiveEvent((prev) => [
+          ...prev,
+          {
+            date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
+            time: timeValue,
+            event: eventValue,
+          },
+        ]);
+      } else {
+        setActiveEvent([
+          {
+            date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
+            time: timeValue,
+            event: eventValue,
+          },
+        ]);
+      }
     });
-    if (activeEvent.length > 0) {
-      setActiveEvent((prev) => [
-        ...prev,
-        {
-          date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
-          time: timeValue,
-          event: eventValue,
-        },
-      ]);
-    } else {
-      setActiveEvent([
-        {
-          date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
-          time: timeValue,
-          event: eventValue,
-        },
-      ]);
-    }
   };
 
-  const eventsHandler = () => {
-    let results = [];
-    if (
-      deliveries &&
-      orders &&
-      data &&
-      shipments &&
-      position !== "Przewoźnik"
-    ) {
-      let deli = deliveries.deliveries.map((item) => {
-        return {
-          date: +item.expectedDate - 24 * 60 * 60 * 1000,
-          time: "--:--",
-          event: "Dostawa " + item.supplier.name,
-        };
-      });
-      let orde = orders.orders.map((item) => {
-        return {
-          date: +item.expectedDate - 24 * 60 * 60 * 1000,
-          time: "--:--",
-          event: "Zamówienie " + item.client.name,
-        };
-      });
-      let ship = shipments.orderShipments.map((item) => {
-        return {
-          date: (
-            new Date(item.deliveryDate).getTime() -
-            24 * 60 * 60 * 1000
-          ).toString(),
-          time: "--:--",
-          event: "Wysyłka " + item.employee,
-        };
-      });
-      let cale = data.calendar;
-      results = cale.concat(orde, deli, ship);
+  const deleteHandler = (id) => {
+    deleteEvent({
+      variables: {
+        deleteCalendarId: id,
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      setAddIsOpen(false);
+      refetch();
+      setEvents((prev) => [...prev.filter((item) => item.id !== id)]);
+      if (activeEvent.length > 0) {
+        setActiveEvent((prev) => [...prev.filter((item) => item.id !== id)]);
+      } else {
+        setActiveEvent([]);
+      }
+    });
+  };
+
+  const dayClickHandler = (date) => {
+    const filteredEvents = events.filter(
+      (event) =>
+        new Date(+event.date).toISOString().split("T")[0] ===
+        new Date(date.getTime()).toISOString().split("T")[0]
+    );
+    if (filteredEvents.length === 0) {
+      setActiveEvent(date.getTime());
+    } else {
+      setActiveEvent(filteredEvents);
     }
-    if (shipments && position === "Przewoźnik") {
-      let ship = shipments.orderShipments.map((item) => {
-        return {
-          date: (
-            new Date(item.deliveryDate).getTime() -
-            24 * 60 * 60 * 1000
-          ).toString(),
-          time: "--:--",
-          event: "Wysyłka " + item.employee,
-        };
-      });
-      let cale = data.calendar;
-      results = cale.concat(ship);
-    }
-    return results;
   };
 
   return (
@@ -180,7 +159,8 @@ const CalendarPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {data && orders && deliveries && (
+      {!data && loading && <Spinner />}
+      {data && events && (
         <>
           <div className={style.calendarContainer}>
             <h1>Kalendarz</h1>
@@ -193,7 +173,7 @@ const CalendarPage = () => {
               defaultValue={value}
               onClickDay={(value, event) => dayClickHandler(value)}
               tileContent={({ date }) => (
-                <CalendarTile date={date} events={eventsHandler()} />
+                <CalendarTile date={date} events={events} />
               )}
             />
           </div>

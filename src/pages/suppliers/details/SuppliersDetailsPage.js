@@ -44,13 +44,7 @@ const SuppliersDetailsPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {loading && <Spinner />}
       {data && (
         <div className={style.supplierBox}>
           <h1>{data.name}</h1>

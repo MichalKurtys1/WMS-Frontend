@@ -20,6 +20,7 @@ const ClientsAddPage = () => {
   const [error, setError] = useState();
   const [addClient, { loading }] = useMutation(ADD_CLIENT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   const onSubmit = (values) => {
@@ -33,17 +34,14 @@ const ClientsAddPage = () => {
         number: values.number,
         nip: values.nip,
       },
-    })
-      .then((data) => {
-        navigate("/clients", {
-          state: {
-            userData: data.data.createClient,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/clients", {
+        state: {
+          userData: data.data.createClient,
+        },
       });
+    });
   };
 
   return (
@@ -60,13 +58,7 @@ const ClientsAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {loading && !error && <Spinner />}
       {!loading && (
         <main>
           <Form

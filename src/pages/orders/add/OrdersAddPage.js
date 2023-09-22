@@ -42,28 +42,36 @@ const OrdersAddPage = () => {
   const [options, setOptions] = useState([]);
   const [error, setError] = useState();
   const [sumbitLoading, setSumbitLoading] = useState(false);
-  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
-    onError: (error) => setError(error),
-  });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-  });
-  const { data: stocks, loading: loadingStock } = useQuery(GET_STOCKS, {
-    onError: (error) => setError(error),
-  });
   const [productList, setProductList] = useState(
     location.state !== null
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
-  const [addOrder, { loading: addLoading }] = useMutation(ADD_ORDER);
+  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const { data: stocks, loading: loadingStock } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [addOrder, { loading: addLoading }] = useMutation(ADD_ORDER, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
   const [updateStock, { loading: updateLoading }] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [orderFileUpload, { loading: uploadLoading }] = useMutation(
     ORDER_FILE_UPLOAD,
     {
       onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
 
@@ -163,7 +171,7 @@ const OrdersAddPage = () => {
     );
   };
 
-  const quantityUnitHandler = (id, quantity, max) => {
+  const changeQuantityHandler = (id, quantity, max) => {
     if (quantity > max) {
       setSubmitError(true);
       return;
@@ -205,6 +213,7 @@ const OrdersAddPage = () => {
         products: JSON.stringify(productList),
       },
     }).then(async (dataa) => {
+      if (!dataa.data) return;
       await openPdfHandler(
         dataa.data.createOrder.id,
         values.date,
@@ -268,13 +277,7 @@ const OrdersAddPage = () => {
           <p>Powrót</p>
         </div>
       </div>
-      {sumbitLoading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {sumbitLoading && !error && <Spinner />}
       <ErrorHandler error={error} />
       {(!loadingClients ||
         !loadingProducts ||
@@ -365,7 +368,7 @@ const OrdersAddPage = () => {
                       deleteHandler={deleteHandler}
                       changeProductHandler={changeProductHandler}
                       changeUnitHandler={changeUnitHandler}
-                      quantityUnitHandler={quantityUnitHandler}
+                      quantityUnitHandler={changeQuantityHandler}
                       addProductInputCounter={addProductInputCounter}
                     />
                   </div>

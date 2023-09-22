@@ -22,14 +22,12 @@ const EmployeePage = () => {
   const { position } = getAuth();
   const { data, refetch, loading } = useQuery(GET_EMPLOYYES, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteEmployye] = useMutation(DELETE_EMPLOYYE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
-  useEffect(() => {
-    refetch();
-  }, [location.pathname, refetch]);
 
   useEffect(() => {
     if (location.state) {
@@ -37,36 +35,21 @@ const EmployeePage = () => {
     }
   }, [location.state, refetch]);
 
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
-  const deleteHandler = (id) => {
-    setPopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
+  const deleteHandler = () => {
     setPopupIsOpen(false);
 
     deleteEmployye({
       variables: {
         deleteUserId: selectedRow,
       },
-    })
-      .then(() => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
+    });
   };
 
   const editHandler = (id) => {
@@ -77,17 +60,6 @@ const EmployeePage = () => {
     });
   };
 
-  const detailsHandler = (id) => {
-    navigate(`/employees/details`, {
-      state: {
-        userId: id,
-      },
-    });
-  };
-
-  const messageHandler = () => {
-    navigate("/messages");
-  };
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -102,40 +74,32 @@ const EmployeePage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {successMsg && (
+      {loading && <Spinner />}
+      {successMsg && !error && (
         <div className={style.succes}>
           <p>Pracownik usunięty pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Pracownicy</h1>
-          {position !== "Księgowy" && (
-            <div
-              className={style.addOption}
-              onClick={() => navigate(`/employees/add`)}
-            >
-              <FaUserPlus className={style.icon} />
-              <p>Dodawanie pracownika</p>
-            </div>
-          )}
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
+      {data && data.users && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Pracownicy</h1>
+            {position !== "Księgowy" && (
+              <div
+                className={style.addOption}
+                onClick={() => navigate(`/employees/add`)}
+              >
+                <FaUserPlus className={style.icon} />
+                <p>Dodawanie pracownika</p>
               </div>
-            </div>
-          )}
-          {data && data.users && (
+            )}
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
-              detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setPopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               data={data.users}
               format={[
                 "firstname",
@@ -155,10 +119,9 @@ const EmployeePage = () => {
               ]}
               details={false}
             />
-          )}
-        </div>
-      </main>
-
+          </div>
+        </main>
+      )}
       {popupIsOpen && (
         <PopUp
           message={
@@ -166,8 +129,8 @@ const EmployeePage = () => {
           }
           button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
-          button2Action={confirmedDeleteHandler}
+          button1Action={() => setPopupIsOpen(false)}
+          button2Action={deleteHandler}
         />
       )}
     </div>

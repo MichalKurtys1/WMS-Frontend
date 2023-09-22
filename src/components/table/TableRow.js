@@ -48,37 +48,42 @@ const TableRow = (props) => {
           );
         })}
         {!props.allowExpand && (
-          <td key="options" onClick={clickHandler}>
-            <BsThreeDotsVertical />
-            {isClicked && (
-              <div className={style.options}>
-                <BsFillTriangleFill className={style.triangleIcon} />
-                <div
-                  className={style.option}
-                  onClick={() => props.editHandler(props.id)}
-                >
-                  <FaPen className={style.icon} />
-                  <p>Edytuj</p>
-                </div>
-                <div
-                  className={style.option}
-                  onClick={() => props.deleteHandler(props.id)}
-                >
-                  <BsTrashFill className={style.icon} />
-                  <p>Usuń</p>
-                </div>
-                {props.details && (
-                  <div
-                    className={style.option}
-                    onClick={() => props.detailsHandler(props.id)}
-                  >
-                    <BsGearFill className={style.icon} />
-                    <p>Szczegóły</p>
+          <>
+            {!props.options && (
+              <td key="options" onClick={clickHandler}>
+                <BsThreeDotsVertical />
+                {isClicked && (
+                  <div className={style.options}>
+                    <BsFillTriangleFill className={style.triangleIcon} />
+                    <div
+                      className={style.option}
+                      onClick={() => props.editHandler(props.id)}
+                    >
+                      <FaPen className={style.icon} />
+                      <p>Edytuj</p>
+                    </div>
+                    <div
+                      className={style.option}
+                      onClick={() => props.deleteHandler(props.id)}
+                    >
+                      <BsTrashFill className={style.icon} />
+                      <p>Usuń</p>
+                    </div>
+                    {props.details && (
+                      <div
+                        className={style.option}
+                        onClick={() => props.detailsHandler(props.id)}
+                      >
+                        <BsGearFill className={style.icon} />
+                        <p>Szczegóły</p>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </td>
             )}
-          </td>
+            {props.options && <td key="options"></td>}
+          </>
         )}
         {props.allowExpand && (
           <td key="options" onClick={clickHandler}>

@@ -61,20 +61,25 @@ const DocumentsPage = () => {
   const [downloading, setDownloading] = useState(false);
   const { data, refetch, loading } = useQuery(GET_FILES, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [fileDownload] = useMutation(FILE_DOWNLOAD, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [fileDelete] = useMutation(FILE_DELETE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   const categoryValueChange = (event) => {
     setCategory(event.target.value);
   };
+
   const searchValueChange = (event) => {
     setSearchValue(event.target.value);
   };
+
   const filterValueChange = (event) => {
     setFilterValue(filterValue ? false : true);
   };
@@ -85,14 +90,11 @@ const DocumentsPage = () => {
       variables: {
         filename: filename,
       },
-    })
-      .then((data) => {
-        setDownloading(false);
-        window.open(data.data.fileDownload, "_blank", "noreferrer");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setDownloading(false);
+      window.open(data.data.fileDownload, "_blank", "noreferrer");
+    });
   };
 
   const deleteHandler = (filename) => {
@@ -100,13 +102,10 @@ const DocumentsPage = () => {
       variables: {
         filename: filename,
       },
-    })
-      .then((data) => {
-        refetch();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      refetch();
+    });
   };
 
   useEffect(() => {
@@ -134,36 +133,37 @@ const DocumentsPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      <main>
-        <h1>Dokumenty</h1>
-        <div className={style.menu}>
-          <input
-            type="text"
-            placeholder="Wpisz nazwę..."
-            onChange={searchValueChange}
-          />
-          <div className={style.selectBox}>
-            <select className={style.select} onChange={categoryValueChange}>
-              <option>Dostawy</option>
-              <option>Zamówienia</option>
-              <option>Listy Przewozowe</option>
-              <option>Inne</option>
-            </select>
-          </div>
+      {(!results && loading) || (downloading && <Spinner />)}
+      {results && !downloading && (
+        <main>
+          <h1>Dokumenty</h1>
+          <div className={style.menu}>
+            <input
+              type="text"
+              placeholder="Wpisz nazwę..."
+              onChange={searchValueChange}
+            />
+            <div className={style.selectBox}>
+              <select className={style.select} onChange={categoryValueChange}>
+                <option>Dostawy</option>
+                <option>Zamówienia</option>
+                <option>Listy Przewozowe</option>
+                <option>Inne</option>
+              </select>
+            </div>
 
-          <button onClick={filterValueChange}>
-            {!filterValue ? (
-              <BsSortAlphaDownAlt className={style.icon} />
-            ) : (
-              <BsSortAlphaDown className={style.icon} />
-            )}
-          </button>
-        </div>
-        <div className={style.files}>
-          <h2>{category}</h2>
-          {results &&
-            !downloading &&
-            results.map((group) => (
+            <button onClick={filterValueChange}>
+              {!filterValue ? (
+                <BsSortAlphaDownAlt className={style.icon} />
+              ) : (
+                <BsSortAlphaDown className={style.icon} />
+              )}
+            </button>
+          </div>
+          <div className={style.files}>
+            <h2>{category}</h2>
+
+            {results.map((group) => (
               <div className={style.groupBox}>
                 <h3>{group.key}</h3>
                 <div>
@@ -200,16 +200,9 @@ const DocumentsPage = () => {
                 </div>
               </div>
             ))}
-          {(!results && loading) ||
-            (downloading && (
-              <div className={style.spinnerBox}>
-                <div className={style.spinner}>
-                  <Spinner />
-                </div>
-              </div>
-            ))}
-        </div>
-      </main>
+          </div>
+        </main>
+      )}
     </div>
   );
 };

@@ -4,14 +4,14 @@ import { useDispatch } from "react-redux";
 import { authActions } from "../context/auth";
 import { useNavigate } from "react-router";
 
-const ErrorHandler = ({ error }) => {
+const ErrorHandler = ({ error, width }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (error && error.message && error.message === "NOT_AUTHENTICATED") {
       dispatch(authActions.logOut());
-      navigate("/");
+      navigate("/login");
     }
   }, [error, dispatch, navigate]);
 

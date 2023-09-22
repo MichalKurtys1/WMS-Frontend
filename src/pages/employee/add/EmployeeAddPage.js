@@ -41,6 +41,7 @@ const EmployeeAddPage = () => {
   const [error, setError] = useState();
   const [addEmployee, { loading }] = useMutation(ADD_EMPLOYEE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   const onSubmit = (values) => {
@@ -54,17 +55,14 @@ const EmployeeAddPage = () => {
         position: values.position,
         adres: values.adres,
       },
-    })
-      .then((data) => {
-        navigate("/employees", {
-          state: {
-            userData: data.data.createUser,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/employees", {
+        state: {
+          userData: data.data.createUser,
+        },
       });
+    });
   };
 
   return (
@@ -81,13 +79,7 @@ const EmployeeAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {loading && !error && <Spinner />}
       {!loading && (
         <main>
           <Form

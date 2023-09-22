@@ -20,9 +20,11 @@ const ClientsPage = () => {
   const [error, setError] = useState();
   const { data, refetch, loading } = useQuery(GET_CLIENTS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteClient] = useMutation(DELETE_CLIENT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -31,36 +33,21 @@ const ClientsPage = () => {
     }
   }, [location.state, refetch]);
 
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
-  const deleteHandler = (id) => {
-    setPopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
+  const deleteHandler = () => {
     setPopupIsOpen(false);
 
     deleteClient({
       variables: {
         deleteClientId: selectedRow,
       },
-    })
-      .then((data) => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
+    });
   };
 
   const editHandler = (id) => {
@@ -69,18 +56,6 @@ const ClientsPage = () => {
         clientId: id,
       },
     });
-  };
-
-  const detailsHandler = (id) => {
-    navigate(`/clients/details`, {
-      state: {
-        userId: id,
-      },
-    });
-  };
-
-  const messageHandler = () => {
-    navigate("/messages");
   };
 
   return (
@@ -97,39 +72,31 @@ const ClientsPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {successMsg && (
+      {loading && <Spinner />}
+      {successMsg && !error && (
         <div className={style.succes}>
           <p>Klient usunięty pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Klienci</h1>
-          <div
-            className={style.addOption}
-            on
-            onClick={() => navigate(`/clients/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodawanie klienta</p>
-          </div>
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
+      {data && data.clients && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Klienci</h1>
+            <div
+              className={style.addOption}
+              on
+              onClick={() => navigate(`/clients/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodawanie klienta</p>
             </div>
-          )}
-          {data && data.clients && (
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
-              detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setPopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               data={data.clients}
               format={[
                 "name",
@@ -150,18 +117,18 @@ const ClientsPage = () => {
                 "NIP",
               ]}
             />
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
+      )}
       {popupIsOpen && (
         <PopUp
           message={
             "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
           }
-          button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
-          button2Action={confirmedDeleteHandler}
+          button2={"Usuń"}
+          button1Action={() => setPopupIsOpen(false)}
+          button2Action={deleteHandler}
         />
       )}
     </div>

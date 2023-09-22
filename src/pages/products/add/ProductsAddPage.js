@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router";
 import { GET_SUPPLIERS } from "../../../utils/apollo/apolloQueries";
-import { ADD_PRODUCT, ADD_STOCK } from "../../../utils/apollo/apolloMutations";
+import { ADD_PRODUCT } from "../../../utils/apollo/apolloMutations";
 import { selectValidator, textValidator } from "../../../utils/inputValidators";
 
 import style from "./ProductsAddPage.module.css";
@@ -28,12 +28,13 @@ const ProductsAddPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [options, setOptions] = useState([]);
-  const [addStock] = useMutation(ADD_STOCK);
   const [addProduct, { loading }] = useMutation(ADD_PRODUCT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -49,7 +50,6 @@ const ProductsAddPage = () => {
   }, [data, loadingSuppliers]);
 
   const onSubmit = (values) => {
-    console.log(values);
     addProduct({
       variables: {
         supplierId: values.supplier,
@@ -59,25 +59,14 @@ const ProductsAddPage = () => {
         unit: values.unit,
         pricePerUnit: parseInt(values.pricePerUnit),
       },
-    })
-      .then((data) => {
-        addStock({
-          variables: {
-            productId: data.data.createProduct.id,
-          },
-        })
-          .then((data) => {
-            navigate("/products", {
-              state: {
-                userData: data.data.createProduct,
-              },
-            });
-          })
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/products", {
+        state: {
+          userData: data.data.createProduct,
+        },
       });
+    });
   };
 
   return (
@@ -94,13 +83,7 @@ const ProductsAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loading || loadingSuppliers) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loading || loadingSuppliers) && !error && <Spinner />}
       {(!loading || !loadingSuppliers) && (
         <main>
           <Form

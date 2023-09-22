@@ -9,8 +9,8 @@
   padding: 0 20px;
   display: flex;
   flex-direction: column;
-  /* width: 50%;
-  height: 50%; */
+  width: 50%;
+  height: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -22,15 +22,17 @@
   justify-content: center;
 }
 
-.box h1 {
-  font-size: 80px;
-  margin: 0;
+.box p {
+  font-size: 40px;
+  margin: 0 0 30px;
+  text-align: center;
 }
 
-.box p {
-  font-size: 50px;
+.errorBox span {
+  font-size: 24px;
   margin: 0;
   margin-left: 10px;
+  text-align: center;
 }
 
 .errorBox button {

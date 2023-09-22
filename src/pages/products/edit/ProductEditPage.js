@@ -33,20 +33,22 @@ const ProductEditPage = () => {
   const [data, setData] = useState();
   const [options, setOptions] = useState([]);
   const [error, setError] = useState();
-
   const [getProduct, { loading }] = useMutation(GET_PRODUCT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateProduct, { loading: updateLoading }] = useMutation(
     UPDATE_PRODUCT,
     {
       onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
   const { data: suppliersData, loading: loadingSuppliers } = useQuery(
     GET_SUPPLIERS,
     {
       onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
 
@@ -63,17 +65,16 @@ const ProductEditPage = () => {
   }, [suppliersData, loadingSuppliers]);
 
   useEffect(() => {
+    if (!location.state.userId) return;
+
     getProduct({
       variables: {
         getProductId: location.state.userId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getProduct);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setData(data.data.getProduct);
+    });
   }, [getProduct, location.state.userId]);
 
   const onSubmit = (values) => {
@@ -87,17 +88,14 @@ const ProductEditPage = () => {
         unit: values.unit,
         pricePerUnit: parseInt(values.pricePerUnit),
       },
-    })
-      .then((data) => {
-        navigate("/products", {
-          state: {
-            update: true,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/products", {
+        state: {
+          update: true,
+        },
       });
+    });
   };
 
   const getSupplierHandler = () => {
@@ -121,13 +119,7 @@ const ProductEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loading || updateLoading || loadingSuppliers) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loading || updateLoading || loadingSuppliers) && !error && <Spinner />}
       {data && (
         <main>
           <Form

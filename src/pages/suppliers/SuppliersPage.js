@@ -20,9 +20,11 @@ const SuppliersPage = () => {
   const [error, setError] = useState();
   const { data, refetch, loading } = useQuery(GET_SUPPLIERS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [deleteSupplier] = useMutation(DELETE_SUPPLIER, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -31,36 +33,21 @@ const SuppliersPage = () => {
     }
   }, [location.state, refetch]);
 
-  const selectedRowHandler = (id) => {
-    setSelectedRow(id);
-  };
-
-  const deleteHandler = (id) => {
-    setPopupIsOpen(true);
-  };
-
-  const confirmedDeleteHandler = () => {
+  const deleteHandler = () => {
     setPopupIsOpen(false);
 
     deleteSupplier({
       variables: {
         deleteSupplierId: selectedRow,
       },
-    })
-      .then((data) => {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          refetch();
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const declinedDeleteHandler = () => {
-    setPopupIsOpen(false);
+    }).then((data) => {
+      if (!data.data) return;
+      setSuccessMsg(true);
+      setTimeout(() => {
+        setSuccessMsg(false);
+        refetch();
+      }, 2000);
+    });
   };
 
   const editHandler = (id) => {
@@ -72,16 +59,11 @@ const SuppliersPage = () => {
   };
 
   const detailsHandler = (id) => {
-    console.log(id);
     navigate(`/suppliers/details`, {
       state: {
         userId: id,
       },
     });
-  };
-
-  const messageHandler = () => {
-    navigate("/messages");
   };
 
   return (
@@ -98,39 +80,32 @@ const SuppliersPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {successMsg && (
+      {successMsg && !error && (
         <div className={style.succes}>
           <p>Dostawca usunięty pomyślnie</p>
         </div>
       )}
-      <main>
-        <div className={style.optionPanel}>
-          <h1>Dostawcy</h1>
-          <div
-            className={style.addOption}
-            on
-            onClick={() => navigate(`/suppliers/add`)}
-          >
-            <FaUserPlus className={style.icon} />
-            <p>Dodawanie dostawcy</p>
-          </div>
-        </div>
-        <div className={style.tableBox}>
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
+      {loading && <Spinner />}
+      {data && data.suppliers && (
+        <main>
+          <div className={style.optionPanel}>
+            <h1>Dostawcy</h1>
+            <div
+              className={style.addOption}
+              on
+              onClick={() => navigate(`/suppliers/add`)}
+            >
+              <FaUserPlus className={style.icon} />
+              <p>Dodawanie dostawcy</p>
             </div>
-          )}
-          {data && data.suppliers && (
+          </div>
+          <div className={style.tableBox}>
             <Table
               selectedRow={selectedRow}
               editHandler={editHandler}
               detailsHandler={detailsHandler}
-              messageHandler={messageHandler}
-              deleteHandler={deleteHandler}
-              selectedRowHandler={selectedRowHandler}
+              deleteHandler={() => setPopupIsOpen(true)}
+              selectedRowHandler={(id) => setSelectedRow(id)}
               data={data.suppliers.map((item) => {
                 return {
                   ...item,
@@ -142,9 +117,9 @@ const SuppliersPage = () => {
               format={["name", "phone", "email", "address", "bank"]}
               titles={["Nazwa", "Telefon", "E-mail", "Adres", "Bank"]}
             />
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
+      )}
       {popupIsOpen && (
         <PopUp
           message={
@@ -152,8 +127,8 @@ const SuppliersPage = () => {
           }
           button2={"Usuń"}
           button1={"Anuluj"}
-          button1Action={declinedDeleteHandler}
-          button2Action={confirmedDeleteHandler}
+          button1Action={() => setPopupIsOpen(false)}
+          button2Action={deleteHandler}
         />
       )}
     </div>

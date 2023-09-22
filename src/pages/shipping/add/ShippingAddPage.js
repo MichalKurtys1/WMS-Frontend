@@ -7,7 +7,7 @@ import style from "./ShippingAddPage.module.css";
 import Spinner from "../../../components/Spiner";
 import Select from "../../../components/Select";
 import { FaAngleLeft } from "react-icons/fa";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ErrorHandler from "../../../components/ErrorHandler";
 import ShippingTable from "./ShippingTable";
 import Input from "../../../components/Input";
@@ -37,22 +37,38 @@ const ShippingAddPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [addOrderShipment] = useMutation(ADD_ORDERS_SHIPMENT);
+  const [addOrderShipment] = useMutation(ADD_ORDERS_SHIPMENT, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
   const { data: employees, loading } = useQuery(GET_EMPLOYYES, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-  const { data: orders, loadingOrders } = useQuery(GET_ORDERS, {
+  const {
+    data: orders,
+    loadingOrders,
+    refetch,
+  } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const { data: shippings, loadingShippings } = useQuery(GET_SHIPPINGS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const selectedRowsAdd = (id) => {
     setSelectedRows((prevList) => [...prevList, { id: id }]);
@@ -111,7 +127,11 @@ const ShippingAddPage = () => {
     const serializedShipping = JSON.stringify(shipping);
     localStorage.setItem("shippingData", serializedShipping);
     window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
-    navigate("/shipping");
+    navigate("/shipping", {
+      state: {
+        updated: true,
+      },
+    });
   };
 
   const onSubmit = (values) => {
@@ -175,23 +195,18 @@ const ShippingAddPage = () => {
           }),
         ]),
       },
-    })
-      .then((data) => {
-        openPdfHandler(shipping, data.data.createOrderShipment.id);
-        ordersData.map((item) => {
-          updateOrdersState({
-            variables: {
-              updateOrderStateId: item.id,
-              state: "Wysłano",
-            },
-          })
-            .then((data) => {})
-            .catch((err) => {
-              console.log(err);
-            });
+    }).then((data) => {
+      if (!data.data) return;
+      openPdfHandler(shipping, data.data.createOrderShipment.id);
+      ordersData.forEach((item) => {
+        updateOrdersState({
+          variables: {
+            updateOrderStateId: item.id,
+            state: "Wysłano",
+          },
         });
-      })
-      .catch((err) => console.log(err));
+      });
+    });
   };
 
   return (
@@ -208,13 +223,7 @@ const ShippingAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {loading && !error && <Spinner />}
       {!loading &&
         !loadingOrders &&
         !loadingShippings &&

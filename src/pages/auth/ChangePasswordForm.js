@@ -2,39 +2,21 @@ import { Form } from "react-final-form";
 import Input from "../../components/Input";
 import style from "./ChangePasswordForm.module.css";
 import { useNavigate } from "react-router";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Spinner from "../../components/Spiner";
 import { useState } from "react";
-
-const CHANGE = gql`
-  mutation Mutation(
-    $oldPassword: String!
-    $newPassword: String!
-    $token: String!
-  ) {
-    changePassword(
-      oldPassword: $oldPassword
-      newPassword: $newPassword
-      token: $token
-    )
-  }
-`;
-
-const passwordValidator = (value) => {
-  if (!value || value.length < 8) {
-    return "Hasło musi posiadać przynajmniej 8 znaków";
-  }
-  return undefined;
-};
+import { getAuth } from "../../context/index";
+import ErrorHandler from "../../components/ErrorHandler";
+import { passwordValidator } from "../../utils/inputValidators";
+import { UPDATE_PASSWORD } from "../../utils/apollo/apolloMutations";
 
 const ChangePasswordForm = () => {
-  const token = localStorage.getItem("token");
+  const { token } = getAuth();
   const navigate = useNavigate();
-  const [changePassword, { loading, error }] = useMutation(CHANGE);
+  const [changePassword, { loading, error }] = useMutation(UPDATE_PASSWORD);
   const [isValid, setIsValid] = useState(true);
 
   const onSubmit = (values) => {
-    console.log(values.newPassword + " " + values.newPasswordRepeat);
     if (values.newPassword === values.newPasswordRepeat) {
       changePassword({
         variables: {
@@ -42,14 +24,11 @@ const ChangePasswordForm = () => {
           newPassword: values.newPassword,
           token: token,
         },
-      })
-        .then((data) => {
-          navigate("/");
-        })
-        .catch((err) => {
-          console.log(err);
-          setIsValid(true);
-        });
+      }).then((data) => {
+        if (!data.data) return;
+        setIsValid(true);
+        navigate("/");
+      });
     }
     setIsValid(false);
   };
@@ -59,6 +38,7 @@ const ChangePasswordForm = () => {
       onSubmit={onSubmit}
       render={({ handleSubmit, invalid }) => (
         <form className={style.form} onSubmit={handleSubmit}>
+          <ErrorHandler error={error} width={"100%"} />
           {loading && (
             <div className={style.spinnerBox}>
               <div className={style.spinner}>

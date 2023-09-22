@@ -20,6 +20,7 @@ const SuppliersAddPage = () => {
   const [error, setError] = useState();
   const [addSupplier, { loading }] = useMutation(ADD_SUPPLIER, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   const onSubmit = (values) => {
@@ -35,17 +36,14 @@ const SuppliersAddPage = () => {
         bank: values.bank,
         accountNumber: values.accountNumber,
       },
-    })
-      .then((data) => {
-        navigate("/suppliers", {
-          state: {
-            userData: data.data.createSupplier,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/suppliers", {
+        state: {
+          userData: data.data.createSupplier,
+        },
       });
+    });
   };
 
   return (
@@ -62,13 +60,7 @@ const SuppliersAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {loading && !error && <Spinner />}
       {!loading && (
         <main>
           <Form

@@ -25,23 +25,24 @@ const ClientsEditPage = () => {
   const [data, setData] = useState();
   const [getClient, { loading }] = useMutation(GET_CLIENT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateClient, { updateLoading }] = useMutation(UPDATE_CLIENT, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
+    if (!location.state.clientId) return;
+
     getClient({
       variables: {
         getClientId: location.state.clientId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getClient);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setData(data.data.getClient);
+    });
   }, [getClient, location.state.clientId]);
 
   const onSubmit = (values) => {
@@ -56,17 +57,14 @@ const ClientsEditPage = () => {
         number: values.number,
         nip: values.nip,
       },
-    })
-      .then((data) => {
-        navigate("/clients", {
-          state: {
-            update: true,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/clients", {
+        state: {
+          update: true,
+        },
       });
+    });
   };
 
   return (
@@ -83,13 +81,7 @@ const ClientsEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loading || updateLoading) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loading || updateLoading) && <Spinner />}
       {data && (
         <main>
           <Form

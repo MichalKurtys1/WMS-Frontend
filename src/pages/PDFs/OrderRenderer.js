@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const OrderRenderer = () => {
   const [deliveryData, setDeliveryData] = useState([]);
-  console.log(deliveryData);
+
   useEffect(() => {
     if (localStorage.getItem("deliveryData")) {
       setDeliveryData(JSON.parse(localStorage.getItem("deliveryData")));

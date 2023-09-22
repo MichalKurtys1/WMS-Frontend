@@ -13,17 +13,15 @@ import Spinner from "../../components/Spiner";
 const ShipmentUploadPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location.state);
-  // eslint-disable-next-line no-unused-vars
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [nameInputValue, setNameInputValue] = useState(null);
   const [error, setError] = useState();
-  // eslint-disable-next-line no-unused-vars
-  const [deilveryId, setDeliveryId] = useState(
-    location.state.deliveryId || null
-  );
+  const [deilveryId] = useState(location.state.deliveryId || null);
   const [orderFileUpload, { loading: uploadLoading }] = useMutation(
     ORDER_FILE_UPLOAD,
     {
       onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
   const [updateShipmentState, { loading: stateLoading }] = useMutation(
@@ -31,17 +29,16 @@ const ShipmentUploadPage = () => {
     {
       onError: (error) => setError(error),
       onCompleted: () => {
-        if (!error) navigate("/documents");
+        setError(false);
+        navigate("/documents");
       },
     }
   );
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [nameInputValue, setNameInputValue] = useState(null);
-
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
+
   const handleNameChange = (event) => {
     setNameInputValue(event.target.value);
   };
@@ -67,8 +64,6 @@ const ShipmentUploadPage = () => {
     });
   };
 
-  console.log(error);
-
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -83,36 +78,28 @@ const ShipmentUploadPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      <main>
-        <form className={style.form} onSubmit={submitHandler}>
-          <h1>Przesyłanie faktury</h1>
-          <p>
-            Poniżej wpisz nazwę pod jaką ma być zapisana faktura oraz wybierz
-            odpowiedni plik. Plik zostanie zapisany w odpowiedniej zakładce w
-            Dokumentach.
-          </p>
-          {(uploadLoading || stateLoading) && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
+      {(uploadLoading || stateLoading) && !error && <Spinner />}
+      {!uploadLoading && !stateLoading && (
+        <main>
+          <form className={style.form} onSubmit={submitHandler}>
+            <h1>Przesyłanie faktury</h1>
+            <p>
+              Poniżej wpisz nazwę pod jaką ma być zapisana faktura oraz wybierz
+              odpowiedni plik. Plik zostanie zapisany w odpowiedniej zakładce w
+              Dokumentach.
+            </p>
+            <div className={style.inputBox}>
+              <input
+                type="text"
+                placeholder="Nazwa pliku"
+                onChange={handleNameChange}
+              />
+              <input type="file" onChange={handleFileChange} />
             </div>
-          )}
-          {!uploadLoading && !stateLoading && (
-            <>
-              <div className={style.inputBox}>
-                <input
-                  type="text"
-                  placeholder="Nazwa pliku"
-                  onChange={handleNameChange}
-                />
-                <input type="file" onChange={handleFileChange} />
-              </div>
-              <button type="submit">Prześlij</button>
-            </>
-          )}
-        </form>
-      </main>
+            <button type="submit">Prześlij</button>
+          </form>
+        </main>
+      )}
     </div>
   );
 };

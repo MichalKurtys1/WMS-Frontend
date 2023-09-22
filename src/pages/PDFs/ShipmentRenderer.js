@@ -5,7 +5,7 @@ import ShippmentPDF from "./ShippmentPDF";
 
 const ShipmentRenderer = () => {
   const [deliveryData, setDeliveryData] = useState([]);
-  console.log(deliveryData[0]);
+
   useEffect(() => {
     if (localStorage.getItem("shippingData")) {
       setDeliveryData(JSON.parse(localStorage.getItem("shippingData")));

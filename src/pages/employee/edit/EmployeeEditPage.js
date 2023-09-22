@@ -45,23 +45,24 @@ const EmployeeEditPage = () => {
   const [data, setData] = useState();
   const [getEmployee, { loading }] = useMutation(GET_EMPLOYEE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const [updateEmployee, { updateLoading }] = useMutation(UPDATE_EMPLOYEE, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
+    if (!location.state.userId) return;
+
     getEmployee({
       variables: {
         getUserId: location.state.userId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getUser);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      setData(data.data.getUser);
+    });
   }, [getEmployee, location.state.userId]);
 
   const onSubmit = (values) => {
@@ -76,17 +77,14 @@ const EmployeeEditPage = () => {
         position: values.position,
         adres: values.adress,
       },
-    })
-      .then((data) => {
-        navigate("/employees", {
-          state: {
-            update: true,
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/employees", {
+        state: {
+          update: true,
+        },
       });
+    });
   };
 
   return (
@@ -103,13 +101,7 @@ const EmployeeEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loading || updateLoading) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loading || updateLoading) && <Spinner />}
       {data && (
         <main>
           <Form

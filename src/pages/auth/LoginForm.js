@@ -2,46 +2,23 @@ import { Form } from "react-final-form";
 import Input from "../../components/Input";
 import style from "./LoginForm.module.css";
 import { useNavigate } from "react-router";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Spinner from "../../components/Spiner";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../context/auth";
 import { useEffect } from "react";
-
-const LOGIN = gql`
-  mutation Mutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      firstname
-      lastname
-      position
-      token
-      firstLogin
-      expiresIn
-    }
-  }
-`;
-
-const emailValidator = (value) => {
-  if (!value) {
-    return "Proszę podać email";
-  }
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    return "Nie jest to email";
-  }
-  return undefined;
-};
-
-const passwordValidator = (value) => {
-  if (!value || value.length < 8) {
-    return "Hasło musi posiadać przynajmniej 8 znaków";
-  }
-  return undefined;
-};
+import { useState } from "react";
+import ErrorHandler from "../../components/ErrorHandler";
+import { emailValidator, passwordValidator } from "../../utils/inputValidators";
+import { LOGIN } from "../../utils/apollo/apolloMutations";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [login, { loading, error }] = useMutation(LOGIN);
+  const [error, setError] = useState();
+  const [login, { loading }] = useMutation(LOGIN, {
+    onError: (error) => setError(error),
+  });
 
   useEffect(() => {
     dispatch(authActions.logOut());
@@ -50,25 +27,23 @@ const LoginForm = () => {
   const onSubmit = (values) => {
     login({
       variables: { email: values.Email, password: values.Password },
-    })
-      .then((data) => {
-        dispatch(
-          authActions.logIn({
-            token: data.data.login.token,
-            expiresIn: data.data.login.expiresIn,
-            name: data.data.login.firstname + " " + data.data.login.lastname,
-            position: data.data.login.position,
-          })
-        );
-        if (data.data.login.firstLogin) {
-          navigate("/change-password", { replace: true });
-        } else {
-          navigate("/", { replace: true });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      if (!data.data) return;
+      let recivedData = data.data.login;
+      dispatch(
+        authActions.logIn({
+          token: recivedData.token,
+          expiresIn: recivedData.expiresIn,
+          name: recivedData.firstname + " " + recivedData.lastname,
+          position: recivedData.position,
+        })
+      );
+      if (recivedData.firstLogin) {
+        navigate("/change-password", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    });
   };
 
   return (
@@ -76,6 +51,7 @@ const LoginForm = () => {
       onSubmit={onSubmit}
       render={({ handleSubmit, invalid }) => (
         <form className={style.form} onSubmit={handleSubmit}>
+          <ErrorHandler error={error} width={"100%"} />
           {loading && (
             <div className={style.spinnerBox}>
               <div className={style.spinner}>

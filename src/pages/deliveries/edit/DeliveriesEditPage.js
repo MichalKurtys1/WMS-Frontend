@@ -41,34 +41,33 @@ const DeliveriesEditPage = () => {
   const [deliveryData, setDeliveryData] = useState();
   const [options, setOptions] = useState([]);
   const [error, setError] = useState(null);
-
   const [getDelivery, { loading }] = useMutation(GET_DELIVERY, {
-    onError: setError,
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const [updateDelivery, { loading: updateLoading }] = useMutation(
     UPDATE_DELIVERY,
     {
-      onError: setError,
+      onError: (error) => setError(error),
+      onCompleted: () => setError(false),
     }
   );
-
   const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: setError,
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const { data: stocks, refetch } = useQuery(GET_STOCKS, {
-    onError: setError,
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
-    onError: setError,
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const [updateStock] = useMutation(UPDATE_STOCK, {
-    onError: setError,
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const [productList, setProductList] = useState(
     location.state !== null
       ? []
@@ -88,18 +87,19 @@ const DeliveriesEditPage = () => {
   }, [data, loadingSuppliers]);
 
   useEffect(() => {
-    getDelivery({ variables: { getDeliveryId: location.state.deliveryId } })
-      .then(({ data }) => {
-        setDeliveryData(data.getDelivery);
-        const oldDeliveries = JSON.parse(
-          JSON.parse(data.getDelivery.products)
-        ).map((item) => ({
-          ...item,
-          maxValue: item.quantity,
-        }));
-        setProductList(oldDeliveries);
-      })
-      .catch(console.error);
+    getDelivery({
+      variables: { getDeliveryId: location.state.deliveryId },
+    }).then(({ data }) => {
+      if (!data) return;
+      setDeliveryData(data.getDelivery);
+      const oldDeliveries = JSON.parse(
+        JSON.parse(data.getDelivery.products)
+      ).map((item) => ({
+        ...item,
+        maxValue: item.quantity,
+      }));
+      setProductList(oldDeliveries);
+    });
   }, [getDelivery, location.state.deliveryId]);
 
   const addProductInputCounter = () => {
@@ -130,10 +130,17 @@ const DeliveriesEditPage = () => {
     );
   };
 
-  const quantityUnitHandler = (id, quantity) => {
+  const changeQuantityHandler = (id, quantity) => {
     setProductList((prevList) =>
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
+  };
+
+  const getSupplierHandler = () => {
+    const supplier = data.suppliers.find(
+      (item) => item.id === deliveryData.supplierId
+    );
+    return supplier ? supplier.name : null;
   };
 
   const onSubmit = async (values) => {
@@ -160,7 +167,6 @@ const DeliveriesEditPage = () => {
         products: JSON.stringify(productList),
       },
     });
-    console.log(productList);
 
     JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
       const stock = stocks.stocks.find(
@@ -232,13 +238,6 @@ const DeliveriesEditPage = () => {
     setSubmitError(false);
   };
 
-  const getSupplierHandler = () => {
-    const supplier = data.suppliers.find(
-      (item) => item.id === deliveryData.supplierId
-    );
-    return supplier ? supplier.name : null;
-  };
-
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -256,13 +255,8 @@ const DeliveriesEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {(loadingSuppliers || loadingProducts || loading || updateLoading) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+      {(loadingSuppliers || loadingProducts || loading || updateLoading) &&
+        !error && <Spinner />}
       {data && deliveryData && (
         <main>
           <Form
@@ -334,7 +328,7 @@ const DeliveriesEditPage = () => {
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}
                     changeUnitHandler={changeUnitHandler}
-                    quantityUnitHandler={quantityUnitHandler}
+                    quantityUnitHandler={changeQuantityHandler}
                     addProductInputCounter={addProductInputCounter}
                   />
                 </div>

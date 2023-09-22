@@ -45,18 +45,6 @@ const OrdersEditPage = () => {
   const [options, setOptions] = useState();
   const [deliveryData, setDeliveryData] = useState();
   const [sumbitLoading, setSumbitLoading] = useState(false);
-  const [getOrder, { loading }] = useMutation(GET_ORDER, {
-    onError: (error) => setError(error),
-  });
-  const [updateOrder, { loading: updateLoading }] = useMutation(UPDATE_ORDER, {
-    onError: (error) => setError(error),
-  });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-  });
-  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
-    onError: (error) => setError(error),
-  });
   const [productList, setProductList] = useState(() => {
     if (location.state !== null) {
       return [];
@@ -64,8 +52,25 @@ const OrdersEditPage = () => {
       return [{ id: 0, product: null, unit: null, quantity: null }];
     }
   });
+  const [getOrder, { loading }] = useMutation(GET_ORDER, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [updateOrder, { loading: updateLoading }] = useMutation(UPDATE_ORDER, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
   const [updateStock] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
   const {
     data: stocks,
@@ -73,10 +78,11 @@ const OrdersEditPage = () => {
     refetch,
   } = useQuery(GET_STOCKS, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
-
   const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -92,8 +98,8 @@ const OrdersEditPage = () => {
   }, [data, loadingClients]);
 
   useEffect(() => {
-    getOrder({ variables: { getOrderId: location.state.orderId } })
-      .then((data) => {
+    getOrder({ variables: { getOrderId: location.state.orderId } }).then(
+      (data) => {
         setDeliveryData(data.data.getOrder);
         const oldDeliveries = JSON.parse(
           JSON.parse(data.data.getOrder.products)
@@ -104,10 +110,8 @@ const OrdersEditPage = () => {
           };
         });
         setProductList(oldDeliveries);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      }
+    );
   }, [getOrder, location.state.orderId]);
 
   const addProductInputCounter = () => {
@@ -138,7 +142,7 @@ const OrdersEditPage = () => {
     );
   };
 
-  const quantityUnitHandler = (id, quantity) => {
+  const changeQuantityHandler = (id, quantity) => {
     setProductList((prevList) =>
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
@@ -236,6 +240,7 @@ const OrdersEditPage = () => {
         products: JSON.stringify(productList),
       },
     }).then(async (dataa) => {
+      if (!dataa.data) return;
       await openPdfHandler(
         dataa.data.updateOrder.id,
         values.date,
@@ -306,24 +311,13 @@ const OrdersEditPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {sumbitLoading && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
       {(loadingClients ||
         loadingProducts ||
         loading ||
         updateLoading ||
-        loadingStocks) && (
-        <div className={style.spinnerBox}>
-          <div className={style.spinner}>
-            <Spinner />
-          </div>
-        </div>
-      )}
+        loadingStocks) &&
+        sumbitLoading &&
+        !error && <Spinner />}
       {data && deliveryData && stocks && (
         <main>
           <Form
@@ -395,7 +389,7 @@ const OrdersEditPage = () => {
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}
                     changeUnitHandler={changeUnitHandler}
-                    quantityUnitHandler={quantityUnitHandler}
+                    quantityUnitHandler={changeQuantityHandler}
                     addProductInputCounter={addProductInputCounter}
                     stocks={stocks}
                   />
