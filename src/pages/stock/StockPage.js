@@ -57,13 +57,21 @@ const StockPage = () => {
                 };
               })}
               format={[
+                "code",
                 "supplier",
                 "product",
                 "totalQuantity",
                 "availableStock",
                 "ordered",
               ]}
-              titles={["Dostawca", "Produkt", "Razem", "Dostępne", "Zamówiono"]}
+              titles={[
+                "Kod",
+                "Dostawca",
+                "Produkt",
+                "Razem",
+                "Dostępne",
+                "Zamówiono",
+              ]}
               details={false}
               options={true}
             />

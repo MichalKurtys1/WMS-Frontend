@@ -7,7 +7,7 @@ import { DELETE_PRODUCT } from "../../utils/apollo/apolloMutations";
 import style from "./ProductsPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context/index";
@@ -76,6 +76,7 @@ const ProductsPage = () => {
       <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Produkt usunięty pomyślnie</p>
         </div>
       )}

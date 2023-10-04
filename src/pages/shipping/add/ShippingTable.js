@@ -8,8 +8,8 @@ import ErrorHandler from "../../../components/ErrorHandler";
 import ShippingTableRow from "./ShippingTableRow";
 import { dateToPolish } from "../../../utils/dateFormatters";
 
-const format = ["client", "warehouse", "expectedDate", "state"];
-const titles = ["Klient", "Magazyn", "Termin", "Stan"];
+const format = ["client", "address", "expectedDate", "state"];
+const titles = ["Klient", "Adres", "Termin", "Stan"];
 
 const ShippingTable = (props) => {
   const [sortedColumn, setSortedColumn] = useState(null);
@@ -19,7 +19,12 @@ const ShippingTable = (props) => {
   const { data: orders } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
     onCompleted: (data) =>
-      setData(orders.orders.filter((item) => item.state === "Do wysyłki")),
+      setData(
+        orders.orders.filter(
+          (item) =>
+            item.state === "Potwierdzono" && item.transportType === "shipment"
+        )
+      ),
   });
 
   useEffect(() => {
@@ -89,8 +94,16 @@ const ShippingTable = (props) => {
           <tbody>
             {data.length !== 0 &&
               data.map((record) => {
-                const tempRecord = { ...record };
-                tempRecord.client = tempRecord.client.name;
+                let tempRecord = {
+                  ...record,
+                  address:
+                    record.client.street +
+                    " " +
+                    record.client.number +
+                    " " +
+                    record.client.city,
+                };
+                tempRecord.client = record.client.name;
                 tempRecord.expectedDate = dateToPolish(tempRecord.expectedDate);
                 const id = tempRecord.id;
                 const products = tempRecord.products || null;

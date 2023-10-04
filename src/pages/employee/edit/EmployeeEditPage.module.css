@@ -78,11 +78,11 @@
 .form button {
   border: none;
   background-color: #8097ff;
-  width: 45%;
+  width: 47%;
   height: 50px;
-  margin: 20px auto;
+  margin-bottom: 40px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 5px;
   color: white;
   font-size: 22px;
   transition: 0.5s;

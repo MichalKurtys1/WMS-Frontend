@@ -7,7 +7,7 @@ import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
 import style from "./EmployeePage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
@@ -77,6 +77,7 @@ const EmployeePage = () => {
       {loading && <Spinner />}
       {successMsg && !error && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Pracownik usunięty pomyślnie</p>
         </div>
       )}
@@ -101,22 +102,8 @@ const EmployeePage = () => {
               deleteHandler={() => setPopupIsOpen(true)}
               selectedRowHandler={(id) => setSelectedRow(id)}
               data={data.users}
-              format={[
-                "firstname",
-                "lastname",
-                "phone",
-                "email",
-                "magazine",
-                "position",
-              ]}
-              titles={[
-                "Imię",
-                "Nazwisko",
-                "Telefon",
-                "E-mail",
-                "Magazyn",
-                "Stanowisko",
-              ]}
+              format={["firstname", "lastname", "phone", "email", "position"]}
+              titles={["Imię", "Nazwisko", "Telefon", "E-mail", "Stanowisko"]}
               details={false}
             />
           </div>

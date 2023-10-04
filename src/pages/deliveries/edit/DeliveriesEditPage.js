@@ -23,17 +23,6 @@ import ProductList from "../ProductsList";
 import { FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../../components/ErrorHandler";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const DeliveriesEditPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -162,7 +151,6 @@ const DeliveriesEditPage = () => {
         updateDeliveryId: location.state.deliveryId,
         supplierId: values.supplier,
         expectedDate: values.date,
-        warehouse: values.magazine,
         comments: values.comments,
         products: JSON.stringify(productList),
       },
@@ -238,6 +226,14 @@ const DeliveriesEditPage = () => {
     setSubmitError(false);
   };
 
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  console.log(deliveryData);
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -269,46 +265,38 @@ const DeliveriesEditPage = () => {
                     <p>Dane podstawowe</p>
                   </div>
                   <div className={style.inputBox}>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="supplier"
-                          validator={selectValidator}
-                          initVal={
-                            location.state !== null
-                              ? getSupplierHandler()
-                              : null
-                          }
-                          options={options || []}
-                        />
-                      </div>
-                      <Input
-                        name="date"
-                        type="datetime-local"
-                        fieldName="date"
-                        width="90%"
-                        initVal={dateToInput(deliveryData.expectedDate)}
+                    <div className={style.input}>
+                      <Select
+                        fieldName="supplier"
+                        validator={selectValidator}
+                        initVal={
+                          location.state !== null ? getSupplierHandler() : null
+                        }
+                        options={options || []}
                       />
                     </div>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="magazine"
-                          validator={selectValidator}
-                          initVal={deliveryData.warehouse}
-                          options={warehouseList}
-                        />
-                      </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{
-                          backgroundColor: invalid ? "#B6BABF" : null,
-                        }}
-                      >
-                        Edytuj
-                      </button>
+                    <div className={style.input}>
+                      <Input
+                        name="date"
+                        type="date"
+                        fieldName="date"
+                        min={getCurrentDateTime()}
+                        width="90%"
+                        margin={true}
+                        initVal={
+                          dateToInput(deliveryData.expectedDate).split("T")[0]
+                        }
+                      />
                     </div>
+                    <button
+                      disabled={invalid}
+                      type="submit"
+                      style={{
+                        backgroundColor: invalid ? "#B6BABF" : null,
+                      }}
+                    >
+                      Edytuj
+                    </button>
                   </div>
                 </div>
                 <div className={style.productData}>

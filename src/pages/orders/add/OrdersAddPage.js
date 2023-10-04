@@ -24,17 +24,6 @@ import OrderPDF from "../../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
 import Spinner from "../../../components/Spiner";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const OrdersAddPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -209,7 +198,6 @@ const OrdersAddPage = () => {
       variables: {
         clientId: values.client,
         expectedDate: values.date,
-        warehouse: values.magazine,
         products: JSON.stringify(productList),
       },
     }).then(async (dataa) => {
@@ -251,9 +239,7 @@ const OrdersAddPage = () => {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return `${year}-${month}-${day}`;
   };
 
   const getSupplierHandler = () => {
@@ -297,26 +283,27 @@ const OrdersAddPage = () => {
                       <p>Dane podstawowe</p>
                     </div>
                     <div className={style.inputBox}>
-                      <div className={style.column}>
-                        <div className={style.selectBox}>
-                          <Select
-                            fieldName="client"
-                            validator={selectValidator}
-                            initVal={
-                              location.state &&
-                              location.state.savedData.supplierId
-                                ? getSupplierHandler()
-                                : null
-                            }
-                            options={options || []}
-                          />
-                        </div>
+                      <div className={style.input}>
+                        <Select
+                          fieldName="client"
+                          validator={selectValidator}
+                          initVal={
+                            location.state &&
+                            location.state.savedData.supplierId
+                              ? getSupplierHandler()
+                              : null
+                          }
+                          options={options || []}
+                        />
+                      </div>
+                      <div className={style.input}>
                         <Input
                           name="date"
-                          type="datetime-local"
+                          type="date"
                           fieldName="date"
                           min={getCurrentDateTime()}
                           width="90%"
+                          margin={true}
                           initVal={
                             location.state !== null
                               ? location.state.savedData.date
@@ -324,29 +311,15 @@ const OrdersAddPage = () => {
                           }
                         />
                       </div>
-                      <div className={style.column}>
-                        <div className={style.selectBox}>
-                          <Select
-                            fieldName="magazine"
-                            validator={selectValidator}
-                            initVal={
-                              location.state !== null
-                                ? location.state.savedData.warehouse
-                                : null
-                            }
-                            options={warehouseList}
-                          />
-                        </div>
-                        <button
-                          disabled={invalid}
-                          type="submit"
-                          style={{
-                            backgroundColor: invalid ? "#B6BABF" : null,
-                          }}
-                        >
-                          Dalej
-                        </button>
-                      </div>
+                      <button
+                        disabled={invalid}
+                        type="submit"
+                        style={{
+                          backgroundColor: invalid ? "#B6BABF" : null,
+                        }}
+                      >
+                        Dalej
+                      </button>
                     </div>
                   </div>
                   <div className={style.productData}>

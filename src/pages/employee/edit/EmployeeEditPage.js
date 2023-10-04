@@ -20,22 +20,12 @@ import Input from "../../../components/Input";
 import { FaAngleLeft, FaPen } from "react-icons/fa";
 import ErrorHandler from "../../../components/ErrorHandler";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const positonList = [
   { name: "Wybierz Stanowisko" },
   { name: "Magazynier" },
   { name: "Księgowy" },
   { name: "Menadżer" },
+  { name: "Przewoźnik" },
 ];
 
 const EmployeeEditPage = () => {
@@ -73,7 +63,6 @@ const EmployeeEditPage = () => {
         firstname: values.name,
         lastname: values.surname,
         phone: values.phone,
-        magazine: values.magazine,
         position: values.position,
         adres: values.adress,
       },
@@ -154,15 +143,6 @@ const EmployeeEditPage = () => {
                     initVal={data.adres}
                     width="47%"
                   />
-                  <div className={style.selectBox}>
-                    <Select
-                      fieldName="magazine"
-                      validator={selectValidator}
-                      initVal={data.magazine}
-                      options={warehouseList}
-                      title="Magazny"
-                    />
-                  </div>
                   <div className={style.selectBox}>
                     <Select
                       fieldName="position"

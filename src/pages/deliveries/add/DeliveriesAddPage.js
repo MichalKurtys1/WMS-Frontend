@@ -17,17 +17,6 @@ import Spinner from "../../../components/Spiner";
 import ErrorHandler from "../../../components/ErrorHandler";
 import { ADD_DELIVERY } from "../../../utils/apollo/apolloMutations";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const DeliveriesAddPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -98,9 +87,7 @@ const DeliveriesAddPage = () => {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return `${year}-${month}-${day}`;
   };
 
   const getSupplierHandler = () => {
@@ -175,25 +162,24 @@ const DeliveriesAddPage = () => {
                     <p>Dane podstawowe</p>
                   </div>
                   <div className={style.inputBox}>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="supplier"
-                          validator={selectValidator}
-                          initVal={
-                            location.state !== null
-                              ? getSupplierHandler()
-                              : null
-                          }
-                          options={options || []}
-                        />
-                      </div>
+                    <div className={style.input}>
+                      <Select
+                        fieldName="supplier"
+                        validator={selectValidator}
+                        initVal={
+                          location.state !== null ? getSupplierHandler() : null
+                        }
+                        options={options || []}
+                      />
+                    </div>
+                    <div className={style.input}>
                       <Input
                         name="date"
-                        type="datetime-local"
+                        type="date"
                         fieldName="date"
                         min={getCurrentDateTime()}
                         width="90%"
+                        margin={true}
                         initVal={
                           location.state !== null
                             ? location.state.savedData.date
@@ -201,29 +187,16 @@ const DeliveriesAddPage = () => {
                         }
                       />
                     </div>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="magazine"
-                          validator={selectValidator}
-                          initVal={
-                            location.state !== null
-                              ? location.state.savedData.warehouse
-                              : null
-                          }
-                          options={warehouseList}
-                        />
-                      </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{
-                          backgroundColor: invalid ? "#B6BABF" : null,
-                        }}
-                      >
-                        Dalej
-                      </button>
-                    </div>
+
+                    <button
+                      disabled={invalid}
+                      type="submit"
+                      style={{
+                        backgroundColor: invalid ? "#B6BABF" : null,
+                      }}
+                    >
+                      Dalej
+                    </button>
                   </div>
                 </div>
                 <div className={style.productData}>

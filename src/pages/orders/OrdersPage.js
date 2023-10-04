@@ -2,19 +2,21 @@ import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { dateToPolish } from "../../utils/dateFormatters";
-import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
+import { GET_ORDERS, GET_STOCKS } from "../../utils/apollo/apolloQueries";
 import {
   DELETE_ORDER,
   UPDATE_ORDER_STATE,
+  UPDATE_ORDER_TRANSPORTTYPE,
 } from "../../utils/apollo/apolloMutations";
 
 import style from "./OrdersPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
+import ShipmentPopup from "./ShipmentPopup";
 
 const OrdersPage = () => {
   const location = useLocation();
@@ -22,21 +24,30 @@ const OrdersPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
+  const [shipmentPopupOpen, setShipmentPopupOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
   const [id, setId] = useState();
   const [action, setAction] = useState();
   const { position } = getAuth();
-
   const { data, refetch, loading } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
+  const { data: stocks, loading: loadingStocks } = useQuery(GET_STOCKS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+
   const [deleteOrder] = useMutation(DELETE_ORDER, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
   const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [updateOrdersTransportType] = useMutation(UPDATE_ORDER_TRANSPORTTYPE, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -48,13 +59,10 @@ const OrdersPage = () => {
   }, [location.state, refetch]);
 
   const updateStateHandler = (id, action) => {
-    if (action === "Do wysyłki") {
-      navigate("/orders/shipping", {
-        state: {
-          deliveryId: id,
-        },
-      });
-    } else if (action === "Dostarczono") {
+    if (action === "Potwierdzono") {
+      setShipmentPopupOpen(true);
+      setId(id);
+    } else if (action === "Odebrano") {
       navigate("/orders/upload", {
         state: {
           deliveryId: id,
@@ -105,6 +113,85 @@ const OrdersPage = () => {
     });
   };
 
+  const transportTypeHandler = (type) => {
+    setShipmentPopupOpen(false);
+    if (type === "personal") {
+      updateOrdersTransportType({
+        variables: {
+          updateOrderTrasportTypeId: id,
+          transportType: type,
+        },
+      });
+    } else {
+      updateOrdersTransportType({
+        variables: {
+          updateOrderTrasportTypeId: id,
+          transportType: type,
+        },
+      });
+    }
+    updateOrdersState({
+      variables: {
+        updateOrderStateId: id,
+        state: "Potwierdzono",
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      refetch();
+    });
+  };
+
+  const generateRandomString = (length) => {
+    const characters = "0123456789";
+    let result = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+    }
+
+    return result;
+  };
+
+  const openPicklist = (id, products) => {
+    const picklist = {
+      createDate: new Date().getTime(),
+      picklistID: generateRandomString(8),
+      orders: [
+        {
+          orderID: data.orders.find((order) => order.id === id).orderID,
+          orderDate: data.orders.find((order) => order.id === id).expectedDate,
+          products: JSON.parse(JSON.parse(products)).map((item) => {
+            const stock = stocks.stocks.find(
+              (stock) =>
+                item.product.includes(stock.product.name) &&
+                item.product.includes(stock.product.type) &&
+                item.product.includes(stock.product.capacity)
+            );
+            return {
+              productCode: stock.code,
+              productQuantity: item.quantity,
+              productUnit: item.unit,
+              productName: item.product,
+            };
+          }),
+        },
+      ],
+    };
+
+    console.log(picklist);
+
+    const serializedDelivery = JSON.stringify(picklist);
+    localStorage.setItem("picklistData", serializedDelivery);
+    window.open("http://localhost:3000/pdf/picklist", "_blank", "noreferrer");
+
+    navigate("/orders", {
+      state: {
+        userData: data.data,
+      },
+    });
+  };
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -121,11 +208,12 @@ const OrdersPage = () => {
       <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Zamówienie usunięte pomyślnie</p>
         </div>
       )}
-      {loading && !error && <Spinner />}
-      {data && data.orders && (
+      {(loading || loadingStocks) && !error && <Spinner />}
+      {data && data.orders && !shipmentPopupOpen && (
         <main>
           <div className={style.optionPanel}>
             <h1>Zamówienia</h1>
@@ -149,25 +237,25 @@ const OrdersPage = () => {
               data={data.orders.map((item) => {
                 return {
                   ...item,
+                  date: item.date ? dateToPolish(item.date) : "-",
                   expectedDate: dateToPolish(item.expectedDate),
                   client: item.client.name,
                 };
               })}
-              format={["client", "warehouse", "expectedDate", "date", "state"]}
-              titles={[
-                "Klient",
-                "Magazyn",
-                "Przewidywany termin",
-                "Termin",
-                "Stan",
-              ]}
+              format={["orderID", "client", "expectedDate", "date", "state"]}
+              titles={["ID", "Klient", "Przewidywany termin", "Termin", "Stan"]}
               allowExpand={true}
               type="Orders"
               position={position === "Magazynier" ? false : true}
+              openPicklist={openPicklist}
             />
           </div>
         </main>
       )}
+      <ShipmentPopup
+        shipmentPopupOpen={shipmentPopupOpen}
+        transportTypeHandler={transportTypeHandler}
+      />
       {popupIsOpen && (
         <PopUp
           message={

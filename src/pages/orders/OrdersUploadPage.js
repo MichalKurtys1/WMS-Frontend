@@ -30,7 +30,11 @@ const OrdersUploadPage = () => {
       onError: (error) => setError(error),
       onCompleted: () => {
         setError(false);
-        navigate("/documents");
+        navigate("/orders", {
+          state: {
+            update: true,
+          },
+        });
       },
     }
   );
@@ -58,7 +62,7 @@ const OrdersUploadPage = () => {
     await updateOrdersState({
       variables: {
         updateOrderStateId: deilveryId,
-        state: "Dostarczono",
+        state: "Odebrano",
       },
     });
   };

@@ -34,7 +34,7 @@ import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
 import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
 import StockPage from "./pages/stock/StockPage";
 import SortingPage from "./pages/deliveries/sorting/SortingPage";
-import ShippingDetails from "./pages/orders/shipping/ShippingDetails";
+import ShippingDetails from "./pages/shipping/shippingDetails/ShippingDetails";
 import ShippingPage from "./pages/shipping/ShippingPage";
 import ShippingAddPage from "./pages/shipping/add/ShippingAddPage";
 import OrdersUploadPage from "./pages/orders/OrdersUploadPage";
@@ -43,6 +43,7 @@ import OrderRenderer from "./pages/PDFs/OrderRenderer";
 import ShipmentRenderer from "./pages/PDFs/ShipmentRenderer";
 import DeliveriesUploadPage from "./pages/deliveries/DeliveriesUploadPage";
 import ShipmentUploadPage from "./pages/shipping/ShipmentUploadPage";
+import PicklistRenderer from "./pages/PDFs/PicklistRenderer";
 
 const router = createBrowserRouter([
   {
@@ -138,10 +139,6 @@ const router = createBrowserRouter([
                     element: <OrdersEditPage />,
                   },
                   {
-                    path: "shipping",
-                    element: <ShippingDetails />,
-                  },
-                  {
                     path: "upload",
                     element: <OrdersUploadPage />,
                   },
@@ -202,6 +199,10 @@ const router = createBrowserRouter([
                 path: "upload",
                 element: <ShipmentUploadPage />,
               },
+              {
+                path: "add-details",
+                element: <ShippingDetails />,
+              },
             ],
           },
           {
@@ -222,6 +223,10 @@ const router = createBrowserRouter([
           {
             path: "order",
             element: <OrderRenderer />,
+          },
+          {
+            path: "picklist",
+            element: <PicklistRenderer />,
           },
         ],
       },

@@ -120,14 +120,24 @@ main .optionPanel .addOption:hover {
 }
 
 .succes {
-  width: 50%;
+  position: absolute;
+  top: 0;
+  right: 20px;
+  width: 40%;
   padding: 1px;
   text-align: center;
   margin: 10px auto;
   background-color: #e5ffeb;
   border: 2px solid #22e650;
   color: #22e650;
-  font-size: 20px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.succes .checkIcon {
+  margin-right: 20px;
 }
 
 .tableBox {

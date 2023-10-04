@@ -1,0 +1,40 @@
+.popup h1 {
+  color: #2d3640;
+  font-size: 30px;
+  margin: 30px 0 0;
+  text-align: center;
+}
+
+.popup .buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttons button {
+  width: 20%;
+  background-color: #fff;
+  border: none;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 15px;
+}
+
+.buttons button:hover {
+  box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.popup .buttons button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.popup .buttons button p {
+  font-size: 22px;
+  color: #2d3640;
+  font-family: "Roboto";
+  font-weight: 500;
+}

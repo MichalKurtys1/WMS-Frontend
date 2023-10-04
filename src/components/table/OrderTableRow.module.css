@@ -1,0 +1,137 @@
+.wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.wrapper .details {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  border-right: 1px solid #ced3d9;
+  min-height: 70px;
+}
+
+.details .productBox {
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ced3d9;
+}
+
+.details .productBox:last-child {
+  border: none;
+}
+
+.details .productBox h4 {
+  margin: 0;
+  margin-right: 20px;
+}
+
+.details .productBox p {
+  margin: 0;
+}
+
+.wrapper .orderType {
+  width: 20%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-right: 1px solid #ced3d9;
+}
+
+.wrapper .orderType p {
+  margin: 0;
+  display: block;
+  width: 100%;
+}
+
+.wrapper .optionsContainer {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.optionsContainer .optionsBox {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+}
+
+/*  */
+
+.optionsBox button {
+  position: relative;
+  background-color: #fff;
+  border: none;
+}
+
+.optionsBox button:disabled .icon {
+  color: #646e78;
+}
+
+.optionsBox button .tooltip {
+  position: absolute;
+  bottom: 0;
+  z-index: 5;
+  left: 50%;
+  transform: translate(-50%, 80%);
+  visibility: hidden;
+}
+
+.optionsBox button .tooltip p {
+  font-size: 14px;
+}
+
+.optionsBox button:hover .tooltip {
+  visibility: visible;
+}
+
+.optionsBox button p {
+  margin: 0;
+  color: #2d3640;
+  font-size: 18px;
+}
+
+.optionsBox button .icon {
+  display: block;
+  width: 100%;
+  margin-right: 5px;
+  font-size: 22px;
+  color: #2d3640;
+  padding: 2px 5px 2px 0;
+  transition: 0.5s;
+}
+
+.optionsBox button .iconReverse {
+  transform: scale(-1, 1);
+  margin-right: 5px;
+  font-size: 22px;
+  color: #2d3640;
+  padding: 2px 5px 2px 0;
+  transition: 0.5s;
+}
+
+.optionsBox button:hover .icon,
+.optionsBox button:hover .iconReverse {
+  color: #3054f2;
+}
+
+.optionsBox .picklist {
+  padding: 10px;
+  border-radius: 10px;
+  transition: 0.5s;
+  font-size: 14px;
+  background-color: #8097ff;
+  color: white;
+}
+
+.optionsBox .picklist:hover {
+  background-color: #3054f2;
+  /* color: white; */
+}

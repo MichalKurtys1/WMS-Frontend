@@ -82,6 +82,7 @@ const Table = (props) => {
                 const id = record.id;
                 const products = record.products || null;
                 const orders = record.orders || null;
+                const transportType = record.transportType || null;
                 const formattedData = pickProperties(record, props.format);
                 let keys = Object.keys(formattedData);
                 return (
@@ -91,6 +92,7 @@ const Table = (props) => {
                     keys={keys}
                     products={products}
                     orders={orders}
+                    transportType={transportType}
                     details={props.details}
                     record={formattedData}
                     position={props.position}
@@ -104,6 +106,8 @@ const Table = (props) => {
                     updateStateHandler={props.updateStateHandler}
                     type={props.type}
                     options={props.options}
+                    openPicklist={props.openPicklist}
+                    openWaybill={props.openWaybill}
                   />
                 );
               })}

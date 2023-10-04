@@ -4,8 +4,6 @@ export const dateToPolish = (givenDate) => {
     year: "numeric",
     month: "long",
     day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
   };
   const polishDate = date.toLocaleString("pl-PL", options);
   return polishDate;

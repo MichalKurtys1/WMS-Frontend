@@ -11,7 +11,6 @@ export const GET_EMPLOYYES = gql`
       firstname
       lastname
       phone
-      magazine
       position
       token
       firstLogin
@@ -84,7 +83,6 @@ export const GET_DELIVERIES = gql`
       supplierId
       date
       expectedDate
-      warehouse
       products
       state
       supplier {
@@ -115,11 +113,12 @@ export const GET_ORDERS = gql`
         number
         nip
       }
+      orderID
       date
       expectedDate
-      warehouse
       products
       state
+      transportType
     }
   }
 `;
@@ -202,6 +201,7 @@ export const GET_STOCKS = gql`
     stocks {
       id
       productId
+      code
       totalQuantity
       availableStock
       ordered
@@ -241,8 +241,9 @@ export const GET_ORDER_SHIPMENTS = gql`
       employee
       registrationNumber
       deliveryDate
-      warehouse
       orders
+      pickingList
+      waybill
       state
     }
   }

@@ -7,7 +7,7 @@ import { DELETE_CLIENT } from "../../utils/apollo/apolloMutations";
 import style from "./ClientsPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
@@ -75,6 +75,7 @@ const ClientsPage = () => {
       {loading && <Spinner />}
       {successMsg && !error && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Klient usunięty pomyślnie</p>
         </div>
       )}

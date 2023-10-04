@@ -17,17 +17,6 @@ import { ADD_EMPLOYEE } from "../../../utils/apollo/apolloMutations";
 import { useState } from "react";
 import ErrorHandler from "../../../components/ErrorHandler";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const positonList = [
   { name: "Wybierz Stanowisko" },
   { name: "Magazynier" },
@@ -51,7 +40,6 @@ const EmployeeAddPage = () => {
         firstname: values.name,
         lastname: values.surname,
         phone: values.phone,
-        magazine: values.warehouse,
         position: values.position,
         adres: values.adres,
       },
@@ -127,14 +115,6 @@ const EmployeeAddPage = () => {
                     validator={textValidator}
                     width="47%"
                   />
-                  <div className={style.selectBox}>
-                    <Select
-                      fieldName="warehouse"
-                      validator={selectValidator}
-                      options={warehouseList}
-                      title="Magazny"
-                    />
-                  </div>
                   <div className={style.selectBox}>
                     <Select
                       fieldName="position"

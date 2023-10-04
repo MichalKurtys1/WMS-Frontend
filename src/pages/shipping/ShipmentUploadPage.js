@@ -55,8 +55,7 @@ const ShipmentUploadPage = () => {
         date: new Date(),
       },
     });
-
-    await updateShipmentState({
+    updateShipmentState({
       variables: {
         updateOrderShipmentStateId: deilveryId,
         state: "Dostarczono",

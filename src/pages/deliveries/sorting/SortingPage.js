@@ -115,7 +115,7 @@ const SortingPage = () => {
                   <input
                     type="number"
                     placeholder="Ilość uszkodzonych"
-                    max={item.quantity - item.delivered}
+                    max={item.quantityd}
                     onChange={(event) =>
                       modifyDamagedValue(item.id, event.target.value)
                     }

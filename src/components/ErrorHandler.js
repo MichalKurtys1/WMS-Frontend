@@ -3,6 +3,7 @@ import style from "./ErrorHandler.module.css";
 import { useDispatch } from "react-redux";
 import { authActions } from "../context/auth";
 import { useNavigate } from "react-router";
+import { BsX } from "react-icons/bs";
 
 const ErrorHandler = ({ error, width }) => {
   const dispatch = useDispatch();
@@ -17,8 +18,13 @@ const ErrorHandler = ({ error, width }) => {
 
   return (
     <>
+      {/* <div className={style.errorBox}>
+        <BsX className={style.icon} />
+        <p>Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.</p>
+      </div> */}
       {error && error.message && (
         <div className={style.errorBox}>
+          <BsX className={style.icon} />
           {error.message === "SERVER_ERROR" && (
             <p>Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.</p>
           )}
@@ -26,10 +32,7 @@ const ErrorHandler = ({ error, width }) => {
             <p>Podany adres email jest już zajęty. Porsze podać inny email.</p>
           )}
           {error.message === "INPUT_ERROR" && (
-            <p>
-              Wystąpił nieoczekiwany problem przy wysyłaniu danych. Spróbuj
-              ponownie za chwilę.
-            </p>
+            <p>Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.</p>
           )}
           {error.message !== "INPUT_ERROR" &&
             error.message !== "EMAIL_TAKEN" &&

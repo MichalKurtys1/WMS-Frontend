@@ -7,7 +7,7 @@ import { DELETE_SUPPLIER } from "../../utils/apollo/apolloMutations";
 import style from "./SuppliersPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 
@@ -82,6 +82,7 @@ const SuppliersPage = () => {
       <ErrorHandler error={error} />
       {successMsg && !error && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Dostawca usunięty pomyślnie</p>
         </div>
       )}

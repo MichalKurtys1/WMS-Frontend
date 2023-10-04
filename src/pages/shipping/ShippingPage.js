@@ -10,10 +10,11 @@ import {
 import style from "./ShippingPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaAngleLeft, FaPlus } from "react-icons/fa";
+import { FaAngleLeft, FaCheck, FaPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
+import { dateToPolish } from "../../utils/dateFormatters";
 
 const ShippingPage = () => {
   const navigate = useNavigate();
@@ -40,10 +41,8 @@ const ShippingPage = () => {
   });
 
   useEffect(() => {
-    if (location.state) {
-      refetch();
-    }
-  }, [location.state, refetch]);
+    refetch();
+  }, [location.state, location.pathname, refetch]);
 
   const deleteHandler = () => {
     setPopupIsOpen(false);
@@ -77,6 +76,12 @@ const ShippingPage = () => {
           deliveryId: id,
         },
       });
+    } else if (action === "Wysłano") {
+      navigate("/shipping/add-details", {
+        state: {
+          deliveryId: id,
+        },
+      });
     } else {
       setStatePopupIsOpen(true);
       setId(id);
@@ -96,6 +101,27 @@ const ShippingPage = () => {
     setStatePopupIsOpen(false);
   };
 
+  const openPicklist = (id) => {
+    const pickingList = data.orderShipments.find((item) => item.id === id);
+    const serializedDelivery = pickingList.pickingList;
+    localStorage.setItem("picklistData", serializedDelivery);
+    window.open("http://localhost:3000/pdf/picklist", "_blank", "noreferrer");
+
+    navigate("/shipping", {
+      state: {
+        userData: data.data,
+      },
+    });
+  };
+
+  const openWaybill = (id) => {
+    const serializedShipping = data.orderShipments.find(
+      (item) => item.id === id
+    ).waybill;
+    localStorage.setItem("shippingData", serializedShipping);
+    window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
+  };
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -112,6 +138,7 @@ const ShippingPage = () => {
       <ErrorHandler error={error} />
       {successMsg && !error && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Wysyłka usunięta pomyślnie</p>
         </div>
       )}
@@ -135,24 +162,31 @@ const ShippingPage = () => {
               deleteHandler={() => setPopupIsOpen(true)}
               selectedRowHandler={(id) => setSelectedRow(id)}
               updateStateHandler={updateStateHandler}
-              data={data.orderShipments}
+              data={data.orderShipments.map((item) => {
+                return {
+                  ...item,
+                  deliveryDate: item.deliveryDate
+                    ? dateToPolish(new Date(item.deliveryDate).getTime())
+                    : "-",
+                };
+              })}
               format={[
                 "employee",
                 "registrationNumber",
                 "deliveryDate",
-                "warehouse",
                 "state",
               ]}
               titles={[
                 "Przewoźnik",
                 "Nr. rejestracyjny",
                 "Data dostarczenia",
-                "Magazyn",
                 "Stan",
               ]}
               allowExpand={true}
               type="Shipping"
               position={position === "Przewoźnik" ? false : true}
+              openPicklist={openPicklist}
+              openWaybill={openWaybill}
             />
           </div>
         </main>

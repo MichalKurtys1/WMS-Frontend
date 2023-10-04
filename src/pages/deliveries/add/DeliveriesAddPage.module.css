@@ -74,17 +74,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-direction: row;
   flex-wrap: wrap;
 }
 
+.input {
+  width: 45%;
+  margin-bottom: 30px;
+}
+
 .form button {
+  align-self: flex-start;
   border: none;
   background-color: #8097ff;
-  width: 90%;
+  width: 45%;
   height: 50px;
   padding: 10px;
-  margin-bottom: 40px;
   border-radius: 5px;
   color: white;
   font-size: 22px;
@@ -125,22 +129,6 @@
   font-size: 18px;
   font-family: "Roboto", sans-serif;
 }
-
-.column {
-  width: 50%;
-}
-
-.selectBox {
-  width: 90%;
-  height: 50px;
-  margin-bottom: 25px;
-}
-
-.selectBox:nth-of-type(3) {
-  margin-bottom: 0;
-}
-
-/* sss */
 
 .productContainer {
   position: relative;
@@ -195,6 +183,7 @@
 
 .selectBox {
   position: relative;
+  width: 45%;
 }
 
 .select {

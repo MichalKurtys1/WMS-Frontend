@@ -1,7 +1,15 @@
 import React from "react";
-import style from "./TableRow.module.css";
-import { BsTrashFill, BsCheckCircleFill } from "react-icons/bs";
-import { FaClipboardList } from "react-icons/fa";
+import {
+  BsTrashFill,
+  BsFillBoxSeamFill,
+  BsCheckSquareFill,
+} from "react-icons/bs";
+import style from "./ShipmentTableRow.module.css";
+import { useQuery } from "@apollo/client";
+import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
+import { useState } from "react";
+import { FaListOl } from "react-icons/fa";
+import ErrorHandler from "../ErrorHandler";
 
 function DeliveryDetailsRow(props) {
   const {
@@ -13,91 +21,116 @@ function DeliveryDetailsRow(props) {
     updateStateHandler,
     deleteHandler,
     record,
+    openPicklist,
+    openWaybill,
   } = props;
+  const [error, setError] = useState();
+  const { data } = useQuery(GET_ORDERS, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
 
   return (
     <>
+      <ErrorHandler error={error} />
       {isClickedRow && allowExpand && type === "Shipping" && (
         <tr className={style.detailsRow} key={id + "_1"}>
-          <td colspan="6">
+          <td colspan="6" style={{ padding: 0 }}>
             <div className={style.wrapper}>
               <div className={style.details}>
                 {orders &&
-                  JSON.parse(JSON.parse(orders))[0].map((item) => (
-                    <div className={style.productBox}>
-                      <h4>{item.clientName}</h4>
-                      <h4>{item.clientAddress}</h4>
-                      <h4>{item.destinationAddress}</h4>
-                    </div>
-                  ))}
+                  data.orders
+                    .filter((item) => {
+                      return JSON.parse(orders).includes(item.id);
+                    })
+                    .map((item) => (
+                      <div className={style.productBox}>
+                        <h4>{item.client.name}</h4>
+                        <h5>
+                          {item.client.street +
+                            " " +
+                            item.client.number +
+                            " " +
+                            item.client.city}
+                        </h5>
+                      </div>
+                    ))}
               </div>
-              <div className={style.optionsBox}>
-                <button
-                  onClick={() => updateStateHandler(id, "W trakcie")}
-                  style={{
-                    pointerEvents:
-                      record["state"] === "W trakcie" ||
-                      record["state"] === "Dostarczono"
-                        ? "none"
-                        : "all",
-                  }}
-                >
-                  <BsCheckCircleFill
-                    className={style.icon}
-                    style={{
-                      color:
-                        record["state"] === "W trakcie" ||
-                        record["state"] === "Dostarczono"
-                          ? "#3054F2"
-                          : null,
-                    }}
-                  />
-                  <div className={style.tooltip}>
-                    <p>W trakcie</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => updateStateHandler(id, "Dostarczono")}
-                  disabled={record["state"] === "Dostarczono" ? true : false}
-                  style={{
-                    pointerEvents:
-                      record["state"] === "Dostarczono" ? "none" : "all",
-                  }}
-                >
-                  <FaClipboardList
-                    className={style.icon}
-                    style={{
-                      color:
-                        record["state"] === "Dostarczono" ? "#3054F2" : null,
-                    }}
-                  />
-                  <div className={style.tooltip}>
-                    <p>Dostarczono</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => deleteHandler(id)}
-                  disabled={
-                    record["state"] === "W trakcie" ||
-                    record["state"] === "Dostarczono" ||
-                    !props.position
-                      ? true
-                      : false
-                  }
-                  style={{
-                    pointerEvents:
-                      record["state"] === "W trakcie" ||
+              <div className={style.optionsContainer}>
+                <div className={style.optionsBox}>
+                  {record["state"] === "Wysłano" && (
+                    <button onClick={() => openWaybill(id)}>
+                      <p className={style.picklist}>List przewozowy</p>
+                    </button>
+                  )}
+
+                  <button onClick={() => openPicklist(id)}>
+                    <p className={style.picklist}>Lista kompletacyjna</p>
+                  </button>
+                  {record["state"] === "Zlecone" && (
+                    <button
+                      onClick={() => updateStateHandler(id, "Kompletowanie")}
+                    >
+                      <FaListOl className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p>Kompletowanie</p>
+                      </div>
+                    </button>
+                  )}
+                  {record["state"] === "Kompletowanie" && (
+                    <button onClick={() => updateStateHandler(id, "Pakowanie")}>
+                      <BsFillBoxSeamFill className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p>Pakowanie</p>
+                      </div>
+                    </button>
+                  )}
+                  {record["state"] === "Pakowanie" && (
+                    <button onClick={() => updateStateHandler(id, "Wysłano")}>
+                      <BsCheckSquareFill className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p style={{ whiteSpace: "nowrap" }}>Wysyłanie</p>
+                      </div>
+                    </button>
+                  )}
+                  {record["state"] === "Wysłano" && (
+                    <button
+                      onClick={() => updateStateHandler(id, "Dostarczono")}
+                    >
+                      <BsCheckSquareFill className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p style={{ whiteSpace: "nowrap" }}>Dostarczono</p>
+                      </div>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => deleteHandler(id)}
+                    disabled={
+                      record["state"] === "Kompletowanie" ||
+                      record["state"] === "Pakowanie" ||
+                      record["state"] === "Wysłano" ||
                       record["state"] === "Dostarczono" ||
                       !props.position
-                        ? "none"
-                        : "all",
-                  }}
-                >
-                  <BsTrashFill className={style.icon} />
-                  <div className={style.tooltip}>
-                    <p>Usuń</p>
-                  </div>
-                </button>
+                        ? true
+                        : false
+                    }
+                    style={{
+                      pointerEvents:
+                        record["state"] === "Kompletowanie" ||
+                        record["state"] === "Pakowanie" ||
+                        record["state"] === "Wysłano" ||
+                        record["state"] === "Dostarczono" ||
+                        !props.position
+                          ? "none"
+                          : "all",
+                    }}
+                  >
+                    <BsTrashFill className={style.icon} />
+                    <div className={style.tooltip}>
+                      <p>Usuń</p>
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </td>

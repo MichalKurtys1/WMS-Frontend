@@ -299,13 +299,15 @@ const ShippmentPDF = (props) => {
                   <View style={stylesRow.row25}>
                     <Text style={stylesText.text6}>Ilość</Text>
                     {item.products.map((item) => (
-                      <Text style={stylesText.text5}>{item.quantity}</Text>
+                      <Text style={stylesText.text5}>
+                        {item.quantity}x {item.unit}
+                      </Text>
                     ))}
                   </View>
                   <View style={stylesRow.row25}>
-                    <Text style={stylesText.text6}>Jednostka</Text>
+                    <Text style={stylesText.text6}>Waga</Text>
                     {item.products.map((item) => (
-                      <Text style={stylesText.text5}>{item.unit}</Text>
+                      <Text style={stylesText.text5}>{item.weight}</Text>
                     ))}
                   </View>
                   <View style={stylesRow.row50}>
@@ -345,7 +347,7 @@ const ShippmentPDF = (props) => {
                   </View>
                   <View style={stylesRow.row50}>
                     <Text style={stylesText.text3}>
-                      Nadawca (podpis/pieczątka):
+                      Miejsce i data załadunku:
                     </Text>
                   </View>
                 </View>

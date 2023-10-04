@@ -1,10 +1,19 @@
 .errorBox {
-  width: 50%;
+  position: absolute;
+  top: 0;
+  right: 20px;
+  width: 40%;
+  display: flex;
+  align-items: center;
   padding: 1px;
   text-align: center;
   margin: 10px auto;
   border: 2px solid #f03a30;
   background-color: #ffb6b2;
   color: #f03a30;
-  font-size: 20px;
+  font-size: 16px;
+}
+
+.errorBox .icon {
+  font-size: 35px;
 }

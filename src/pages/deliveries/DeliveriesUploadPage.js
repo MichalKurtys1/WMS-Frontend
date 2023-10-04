@@ -23,7 +23,11 @@ const DeliveriesUploadPage = () => {
       onError: (error) => setError(error),
       onCompleted: () => {
         setError(false);
-        navigate("/documents");
+        navigate("/deliveries", {
+          state: {
+            update: true,
+          },
+        });
       },
     }
   );

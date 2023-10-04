@@ -10,7 +10,7 @@ import {
 import style from "./DeliveriesPage.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft } from "react-icons/fa";
+import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
 import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
@@ -154,6 +154,7 @@ const DeliveriesPage = () => {
       <ErrorHandler error={error} />
       {successMsg && !error && (
         <div className={style.succes}>
+          <FaCheck className={style.checkIcon} />
           <p>Dostawa usunięta pomyślnie</p>
         </div>
       )}
@@ -182,24 +183,13 @@ const DeliveriesPage = () => {
               data={data.deliveries.map((item) => {
                 return {
                   ...item,
+                  date: item.date ? dateToPolish(item.date) : "-",
                   expectedDate: dateToPolish(item.expectedDate),
                   supplier: item.supplier.name,
                 };
               })}
-              format={[
-                "supplier",
-                "warehouse",
-                "expectedDate",
-                "date",
-                "state",
-              ]}
-              titles={[
-                "Dostawca",
-                "Magazyn",
-                "Przewidywany termin",
-                "Termin",
-                "Stan",
-              ]}
+              format={["supplier", "expectedDate", "date", "state"]}
+              titles={["Dostawca", "Przewidywany termin", "Termin", "Stan"]}
               allowExpand={true}
               type={"Delivery"}
               position={position === "Magazynier" ? false : true}

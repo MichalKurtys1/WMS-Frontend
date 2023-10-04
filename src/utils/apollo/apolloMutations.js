@@ -52,7 +52,6 @@ export const ADD_EMPLOYEE = gql`
     $firstname: String!
     $lastname: String!
     $phone: String!
-    $magazine: String!
     $position: String!
     $adres: String!
   ) {
@@ -61,7 +60,6 @@ export const ADD_EMPLOYEE = gql`
       firstname: $firstname
       lastname: $lastname
       phone: $phone
-      magazine: $magazine
       position: $position
       adres: $adres
     ) {
@@ -70,7 +68,6 @@ export const ADD_EMPLOYEE = gql`
       firstname
       lastname
       phone
-      magazine
       position
       adres
     }
@@ -177,20 +174,17 @@ export const ADD_DELIVERY = gql`
   mutation Mutation(
     $supplierId: ID!
     $expectedDate: String!
-    $warehouse: String!
     $products: JSON!
   ) {
     createDelivery(
       supplierId: $supplierId
       expectedDate: $expectedDate
-      warehouse: $warehouse
       products: $products
     ) {
       id
       supplierId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -198,23 +192,16 @@ export const ADD_DELIVERY = gql`
 `;
 
 export const ADD_ORDER = gql`
-  mutation Mutation(
-    $clientId: ID!
-    $expectedDate: String!
-    $warehouse: String!
-    $products: JSON!
-  ) {
+  mutation Mutation($clientId: ID!, $expectedDate: String!, $products: JSON!) {
     createOrder(
       clientId: $clientId
       expectedDate: $expectedDate
-      warehouse: $warehouse
       products: $products
     ) {
       id
       clientId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -314,22 +301,23 @@ export const ADD_ORDERS_SHIPMENT = gql`
     $employee: String!
     $registrationNumber: String!
     $deliveryDate: String!
-    $warehouse: String!
     $orders: JSON!
+    $pickingList: JSON!
   ) {
     createOrderShipment(
       employee: $employee
       registrationNumber: $registrationNumber
       deliveryDate: $deliveryDate
-      warehouse: $warehouse
       orders: $orders
+      pickingList: $pickingList
     ) {
       id
       employee
       registrationNumber
       deliveryDate
-      warehouse
       orders
+      state
+      pickingList
     }
   }
 `;
@@ -359,7 +347,6 @@ export const GET_EMPLOYEE = gql`
       firstname
       lastname
       phone
-      magazine
       position
       adres
     }
@@ -416,7 +403,6 @@ export const GET_DELIVERY = gql`
       }
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -440,9 +426,9 @@ export const GET_ORDER = gql`
       }
       date
       expectedDate
-      warehouse
       products
       state
+      transportType
     }
   }
 `;
@@ -489,7 +475,6 @@ export const UPDATE_EMPLOYEE = gql`
     $firstname: String!
     $lastname: String!
     $phone: String!
-    $magazine: String!
     $position: String!
     $adres: String!
   ) {
@@ -499,7 +484,6 @@ export const UPDATE_EMPLOYEE = gql`
       firstname: $firstname
       lastname: $lastname
       phone: $phone
-      magazine: $magazine
       position: $position
       adres: $adres
     ) {
@@ -508,7 +492,6 @@ export const UPDATE_EMPLOYEE = gql`
       firstname
       lastname
       phone
-      magazine
       position
       adres
     }
@@ -589,7 +572,6 @@ export const UPDATE_DELIVERY = gql`
     $updateDeliveryId: ID!
     $supplierId: ID!
     $expectedDate: String!
-    $warehouse: String!
     $products: JSON!
     $date: String
   ) {
@@ -597,7 +579,6 @@ export const UPDATE_DELIVERY = gql`
       id: $updateDeliveryId
       supplierId: $supplierId
       expectedDate: $expectedDate
-      warehouse: $warehouse
       products: $products
       date: $date
     ) {
@@ -605,7 +586,6 @@ export const UPDATE_DELIVERY = gql`
       supplierId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -617,21 +597,18 @@ export const UPDATE_ORDER = gql`
     $updateOrderId: ID!
     $clientId: ID!
     $expectedDate: String!
-    $warehouse: String!
     $products: JSON!
   ) {
     updateOrder(
       id: $updateOrderId
       clientId: $clientId
       expectedDate: $expectedDate
-      warehouse: $warehouse
       products: $products
     ) {
       id
       clientId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -665,7 +642,6 @@ export const UPDATE_DELIVERY_STATE = gql`
       supplierId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -679,7 +655,6 @@ export const UPDATE_DELIVERY_VALUES = gql`
       supplierId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -717,7 +692,6 @@ export const UPDATE_ORDER_STATE = gql`
       clientId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -731,7 +705,6 @@ export const UPDATE_ORDER_PRODUCTS = gql`
       clientId
       date
       expectedDate
-      warehouse
       products
       state
     }
@@ -774,7 +747,6 @@ export const UPDATE_SHIPMENT_STATE = gql`
       employee
       registrationNumber
       deliveryDate
-      warehouse
       orders
     }
   }
@@ -815,6 +787,44 @@ export const LOGIN = gql`
       token
       firstLogin
       expiresIn
+    }
+  }
+`;
+
+export const UPDATE_ORDER_TRANSPORTTYPE = gql`
+  mutation Mutation(
+    $updateOrderTrasportTypeId: String!
+    $transportType: String!
+  ) {
+    updateOrderTrasportType(
+      id: $updateOrderTrasportTypeId
+      transportType: $transportType
+    ) {
+      id
+      clientId
+      date
+      expectedDate
+      products
+      state
+      transportType
+    }
+  }
+`;
+
+export const UPDATE_ORDERSHIPPMENT_WAYBILL = gql`
+  mutation Mutation($updateOrderShipmentWaybillId: String!, $waybill: JSON!) {
+    updateOrderShipmentWaybill(
+      id: $updateOrderShipmentWaybillId
+      waybill: $waybill
+    ) {
+      id
+      employee
+      registrationNumber
+      deliveryDate
+      orders
+      pickingList
+      waybill
+      state
     }
   }
 `;

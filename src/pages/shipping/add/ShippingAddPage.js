@@ -1,31 +1,25 @@
 import { Form } from "react-final-form";
 import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router";
-import { selectValidator } from "../../../utils/inputValidators";
 
 import style from "./ShippingAddPage.module.css";
 import Spinner from "../../../components/Spiner";
-import Select from "../../../components/Select";
 import { FaAngleLeft } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import ErrorHandler from "../../../components/ErrorHandler";
 import ShippingTable from "./ShippingTable";
-import Input from "../../../components/Input";
-
+import { selectValidator } from "../../../utils/inputValidators";
 import {
   GET_EMPLOYYES,
   GET_ORDERS,
   GET_SHIPPINGS,
+  GET_STOCKS,
 } from "../../../utils/apollo/apolloQueries";
-import {
-  ADD_ORDERS_SHIPMENT,
-  ORDER_FILE_UPLOAD,
-  UPDATE_ORDER_STATE,
-} from "../../../utils/apollo/apolloMutations";
-import { pdf } from "@react-pdf/renderer";
-import ShippmentPDF from "../../PDFs/ShippmentPDF";
+import { ADD_ORDERS_SHIPMENT } from "../../../utils/apollo/apolloMutations";
+import Select from "../../../components/Select";
+import Input from "../../../components/Input";
 
-const positonList = [
+const plateNumbersList = [
   { name: "Wybierz nr. Rejestracyjny" },
   { name: "CAL 55AB" },
   { name: "CAL 75TM" },
@@ -57,11 +51,8 @@ const ShippingAddPage = () => {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const [updateOrdersState] = useMutation(UPDATE_ORDER_STATE, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
+
+  const { data: stocks, loading: loadingStocks } = useQuery(GET_STOCKS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -97,8 +88,26 @@ const ShippingAddPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const openPdfHandler = async (shipping, id) => {
-    const blob = await pdf(<ShippmentPDF shipment={shipping} />).toBlob();
+  const onSubmit = (values) => {
+    addOrderShipment({
+      variables: {
+        employee: values.employee,
+        registrationNumber: values.number,
+        deliveryDate: values.date,
+        orders: JSON.stringify(selectedRows),
+        pickingList: createPickinglist(selectedRows),
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      navigate("/shipping", {
+        state: {
+          updated: true,
+        },
+      });
+    });
+  };
+
+  const createPickinglist = (ids) => {
     const generateRandomString = (length) => {
       const characters = "0123456789";
       let result = "";
@@ -110,103 +119,33 @@ const ShippingAddPage = () => {
 
       return result;
     };
-
-    let number = generateRandomString(8);
-
-    orderFileUpload({
-      variables: {
-        file: new File([blob], number + ".pdf"),
-        name: `LIST PRZEWOZOWY/${shipping[0].deliveryDate}/${number}`,
-        fileUploadId: id,
-        date: new Date(),
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    const serializedShipping = JSON.stringify(shipping);
-    localStorage.setItem("shippingData", serializedShipping);
-    window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
-    navigate("/shipping", {
-      state: {
-        updated: true,
-      },
-    });
-  };
-
-  const onSubmit = (values) => {
-    let ordersData = orders.orders.filter((item) =>
-      selectedRows.some((obj) => obj.id === item.id)
-    );
-
-    let shipping = ordersData.map((item) => {
-      let clientAddress =
-        item.client.street + " " + item.client.number + " " + item.client.city;
-      let products = JSON.parse(JSON.parse(item.products));
-      let shippingData = shippings.shippings.filter(
-        (shipping) => shipping.orderId === item.id
-      );
-
-      return {
-        employeeName: values.employee,
-        registrationNumber: values.number,
-        deliveryDate: values.date,
-        warehouseAddress: "ul. Cicha 2 Bydgoszcz",
-        orderId: item.id,
-        clientName: item.client.name,
-        clientAddress: clientAddress,
-        destinationAddress: clientAddress,
-        products: products,
-        totalWeight: shippingData[0].totalWeight,
-        palletNumber: shippingData[0].palletNumber,
-        palletSize: shippingData[0].palletSize,
-      };
-    });
-
-    addOrderShipment({
-      variables: {
-        employee: values.employee,
-        registrationNumber: values.number,
-        deliveryDate: values.date,
-        warehouse: "ul. Cicha 2 Bydgoszcz",
-        orders: JSON.stringify([
-          ordersData.map((item) => {
-            let clientAddress =
-              item.client.street +
-              " " +
-              item.client.number +
-              " " +
-              item.client.city;
-            let products = JSON.parse(JSON.parse(item.products));
-            let shippingData = shippings.shippings.filter(
-              (shipping) => shipping.orderId === item.id
+    const picklist = {
+      createDate: new Date().getTime(),
+      picklistID: generateRandomString(8),
+      orders: ids.map((id) => {
+        const order = orders.orders.find((order) => order.id === id.id);
+        return {
+          orderID: order.orderID,
+          orderDate: order.expectedDate,
+          products: JSON.parse(JSON.parse(order.products)).map((item) => {
+            const stock = stocks.stocks.find(
+              (stock) =>
+                item.product.includes(stock.product.name) &&
+                item.product.includes(stock.product.type) &&
+                item.product.includes(stock.product.capacity)
             );
-
             return {
-              orderId: item.id,
-              clientName: item.client.name,
-              clientAddress: clientAddress,
-              destinationAddress: clientAddress,
-              products: products,
-              totalWeight: shippingData[0].totalWeight,
-              palletNumber: shippingData[0].palletNumber,
-              palletSize: shippingData[0].palletSize,
+              productCode: stock.code,
+              productQuantity: item.quantity,
+              productUnit: item.unit,
+              productName: item.product,
             };
           }),
-        ]),
-      },
-    }).then((data) => {
-      if (!data.data) return;
-      openPdfHandler(shipping, data.data.createOrderShipment.id);
-      ordersData.forEach((item) => {
-        updateOrdersState({
-          variables: {
-            updateOrderStateId: item.id,
-            state: "Wysłano",
-          },
-        });
-      });
-    });
+        };
+      }),
+    };
+
+    return picklist;
   };
 
   return (
@@ -223,7 +162,8 @@ const ShippingAddPage = () => {
         </div>
       </div>
       <ErrorHandler error={error} />
-      {loading && !error && <Spinner />}
+      {(loading || loadingOrders || loadingShippings || loadingStocks) &&
+        !error && <Spinner />}
       {!loading &&
         !loadingOrders &&
         !loadingShippings &&
@@ -254,7 +194,7 @@ const ShippingAddPage = () => {
                       <Select
                         fieldName="number"
                         validator={selectValidator}
-                        options={positonList}
+                        options={plateNumbersList}
                         title="Numer rejestracyjny"
                       />
                     </div>

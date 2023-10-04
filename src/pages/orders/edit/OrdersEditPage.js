@@ -26,17 +26,6 @@ import ErrorHandler from "../../../components/ErrorHandler";
 import OrderPDF from "../../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
 
-const warehouseList = [
-  { name: "Wybierz Magazyn" },
-  { name: "Centralny" },
-  {
-    name: "ul. Cicha 2 Bydgoszcz",
-  },
-  {
-    name: "ul. Głośna 12 Bydgoszcz",
-  },
-];
-
 const OrdersEditPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,10 +57,13 @@ const OrdersEditPage = () => {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const [updateStock] = useMutation(UPDATE_STOCK, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
+  const [updateStock, { loading: loadingUpdateStocks }] = useMutation(
+    UPDATE_STOCK,
+    {
+      onError: (error) => setError(error),
+      onCompleted: () => setError(false),
+    }
+  );
   const {
     data: stocks,
     loading: loadingStocks,
@@ -80,10 +72,13 @@ const OrdersEditPage = () => {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const [orderFileUpload] = useMutation(ORDER_FILE_UPLOAD, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
+  const [orderFileUpload, { loading: loadingUploadFile }] = useMutation(
+    ORDER_FILE_UPLOAD,
+    {
+      onError: (error) => setError(error),
+      onCompleted: () => setError(false),
+    }
+  );
 
   useEffect(() => {
     if (data && !loadingClients) {
@@ -236,7 +231,6 @@ const OrdersEditPage = () => {
         updateOrderId: location.state.orderId,
         clientId: values.client,
         expectedDate: values.date,
-        warehouse: values.magazine,
         products: JSON.stringify(productList),
       },
     }).then(async (dataa) => {
@@ -297,6 +291,14 @@ const OrdersEditPage = () => {
     return client[0].name;
   };
 
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>
@@ -315,6 +317,8 @@ const OrdersEditPage = () => {
         loadingProducts ||
         loading ||
         updateLoading ||
+        loadingUpdateStocks ||
+        loadingUploadFile ||
         loadingStocks) &&
         sumbitLoading &&
         !error && <Spinner />}
@@ -330,46 +334,38 @@ const OrdersEditPage = () => {
                     <p>Dane podstawowe</p>
                   </div>
                   <div className={style.inputBox}>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="client"
-                          validator={selectValidator}
-                          initVal={
-                            location.state !== null
-                              ? getSupplierHandler()
-                              : null
-                          }
-                          options={options || []}
-                        />
-                      </div>
-                      <Input
-                        name="date"
-                        type="datetime-local"
-                        fieldName="date"
-                        width="90%"
-                        initVal={dateToInput(deliveryData.expectedDate)}
+                    <div className={style.input}>
+                      <Select
+                        fieldName="client"
+                        validator={selectValidator}
+                        initVal={
+                          location.state !== null ? getSupplierHandler() : null
+                        }
+                        options={options || []}
                       />
                     </div>
-                    <div className={style.column}>
-                      <div className={style.selectBox}>
-                        <Select
-                          fieldName="magazine"
-                          validator={selectValidator}
-                          initVal={deliveryData.warehouse}
-                          options={warehouseList}
-                        />
-                      </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{
-                          backgroundColor: invalid ? "#B6BABF" : null,
-                        }}
-                      >
-                        Edytuj
-                      </button>
+                    <div className={style.input}>
+                      <Input
+                        name="date"
+                        type="date"
+                        fieldName="date"
+                        min={getCurrentDateTime()}
+                        width="90%"
+                        margin={true}
+                        initVal={
+                          dateToInput(deliveryData.expectedDate).split("T")[0]
+                        }
+                      />
                     </div>
+                    <button
+                      disabled={invalid}
+                      type="submit"
+                      style={{
+                        backgroundColor: invalid ? "#B6BABF" : null,
+                      }}
+                    >
+                      Edytuj
+                    </button>
                   </div>
                 </div>
                 <div className={style.productData}>
