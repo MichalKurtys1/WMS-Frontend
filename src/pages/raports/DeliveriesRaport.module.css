@@ -1,0 +1,92 @@
+.container {
+  height: 50vh;
+  width: 70vw;
+  margin: 0 auto;
+}
+
+.tooltip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 2px;
+  box-shadow: 0px 1px 5px -1px rgba(160, 160, 160, 0.5);
+  -webkit-box-shadow: 0px 1px 5px -1px rgba(160, 160, 160, 0.5);
+  -moz-box-shadow: 0px 1px 5px -1px rgba(160, 160, 160, 0.5);
+}
+
+.tooltip .color {
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+}
+
+.tooltip .earned {
+  width: 80%;
+}
+
+.tooltip .earned p {
+  text-align: center;
+  margin: 0;
+}
+
+/*  */
+
+.sumBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.sumBox .sum {
+  user-select: none;
+  position: relative;
+  width: 25%;
+  height: 12vh;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px -1px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0px 1px 5px -1px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 1px 5px -1px rgba(0, 0, 0, 0.5);
+  color: #2d3640;
+  font-family: "Roboto", sans-serif;
+}
+
+.sumBox .sum p {
+  margin: 0;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.sumBox .sum h2 {
+  margin: 0;
+  position: absolute;
+  font-size: 36px;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sumBox .sum .difference {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 12px;
+}
+
+.sumBox .sum .difference .icon {
+  margin-right: 5px;
+}
+
+.sumBox .sum .difference span {
+  font-weight: bold;
+}

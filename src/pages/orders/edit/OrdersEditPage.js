@@ -226,12 +226,26 @@ const OrdersEditPage = () => {
       return;
     }
 
+    let totalPrice = 0;
+    productList.forEach((item) => {
+      const product = products.products.find(
+        (products) =>
+          item.product.includes(products.name) &&
+          item.product.includes(products.type) &&
+          item.product.includes(products.capacity)
+      );
+      totalPrice +=
+        +item.quantity * +product.pricePerUnit * 1.4 +
+        +item.quantity * +product.pricePerUnit * 1.4 * 0.23;
+    });
+
     updateOrder({
       variables: {
         updateOrderId: location.state.orderId,
         clientId: values.client,
         expectedDate: values.date,
         products: JSON.stringify(productList),
+        totalPrice,
       },
     }).then(async (dataa) => {
       if (!dataa.data) return;

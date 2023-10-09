@@ -44,6 +44,7 @@ import ShipmentRenderer from "./pages/PDFs/ShipmentRenderer";
 import DeliveriesUploadPage from "./pages/deliveries/DeliveriesUploadPage";
 import ShipmentUploadPage from "./pages/shipping/ShipmentUploadPage";
 import PicklistRenderer from "./pages/PDFs/PicklistRenderer";
+import RaportsPage from "./pages/raports/RaportsPage";
 
 const router = createBrowserRouter([
   {
@@ -208,7 +209,7 @@ const router = createBrowserRouter([
           {
             path: "raports",
             loader: AdmMenPermissionCheck,
-            children: [{ index: true, element: <StockPage /> }],
+            children: [{ index: true, element: <RaportsPage /> }],
           },
         ],
       },

@@ -62,7 +62,7 @@ const OrdersUploadPage = () => {
     await updateOrdersState({
       variables: {
         updateOrderStateId: deilveryId,
-        state: "Odebrano",
+        state: "Zakończono",
       },
     });
   };

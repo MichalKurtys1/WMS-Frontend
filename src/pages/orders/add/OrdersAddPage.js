@@ -170,7 +170,7 @@ const OrdersAddPage = () => {
       prevList.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   };
-
+  console.log(JSON.stringify(error, null, 2));
   const onSubmit = (values) => {
     setSumbitLoading(true);
     const incompleteProducts = productList.filter(
@@ -194,11 +194,25 @@ const OrdersAddPage = () => {
       return;
     }
 
+    let totalPrice = 0;
+    productList.forEach((item) => {
+      const product = products.products.find(
+        (products) =>
+          item.product.includes(products.name) &&
+          item.product.includes(products.type) &&
+          item.product.includes(products.capacity)
+      );
+      totalPrice +=
+        +item.quantity * +product.pricePerUnit * 1.4 +
+        +item.quantity * +product.pricePerUnit * 1.4 * 0.23;
+    });
+    console.log(error);
     addOrder({
       variables: {
         clientId: values.client,
         expectedDate: values.date,
         products: JSON.stringify(productList),
+        totalPrice: totalPrice,
       },
     }).then(async (dataa) => {
       if (!dataa.data) return;

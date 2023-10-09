@@ -83,6 +83,7 @@ export const GET_DELIVERIES = gql`
       supplierId
       date
       expectedDate
+      totalPrice
       products
       state
       supplier {
@@ -119,6 +120,7 @@ export const GET_ORDERS = gql`
       products
       state
       transportType
+      totalPrice
     }
   }
 `;

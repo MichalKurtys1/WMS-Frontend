@@ -33,30 +33,49 @@ const CalendarPage = () => {
       data.shipments &&
       position !== "Przewoźnik"
     ) {
-      let deli = data.deliveries.map((item) => {
-        return {
-          date: +item.expectedDate - 24 * 60 * 60 * 1000,
-          time: "--:--",
-          event: "Dostawa " + item.supplier.name,
-        };
-      });
-      let orde = data.orders.map((item) => {
-        return {
-          date: +item.expectedDate - 24 * 60 * 60 * 1000,
-          time: "--:--",
-          event: "Zamówienie " + item.client.name,
-        };
-      });
-      let ship = data.shipments.map((item) => {
-        return {
-          date: (
-            new Date(item.deliveryDate).getTime() -
-            24 * 60 * 60 * 1000
-          ).toString(),
-          time: "--:--",
-          event: "Wysyłka " + item.employee,
-        };
-      });
+      let deli = data.deliveries
+        .map((item) => {
+          if (item.state !== "Zakończono") {
+            return {
+              date: +item.expectedDate - 24 * 60 * 60 * 1000,
+              time: "--:--",
+              event: "Dostawa " + item.supplier.name,
+            };
+          } else {
+            return null;
+          }
+        })
+        .filter((item) => item !== null && Object.keys(item).length !== 0);
+      console.log(deli);
+      let orde = data.orders
+        .map((item) => {
+          if (item.state !== "Zakończono") {
+            return {
+              date: +item.expectedDate - 24 * 60 * 60 * 1000,
+              time: "--:--",
+              event: "Zamówienie " + item.client.name,
+            };
+          } else {
+            return null;
+          }
+        })
+        .filter((item) => item !== null && Object.keys(item).length !== 0);
+      let ship = data.shipments
+        .map((item) => {
+          if (item.state !== "Zakończono") {
+            return {
+              date: (
+                new Date(item.deliveryDate).getTime() -
+                24 * 60 * 60 * 1000
+              ).toString(),
+              time: "--:--",
+              event: "Wysyłka " + item.employee,
+            };
+          } else {
+            return null;
+          }
+        })
+        .filter((item) => item !== null && Object.keys(item).length !== 0);
       let cale = data.calendar;
       results = cale.concat(orde, deli, ship);
       setEvents(results);

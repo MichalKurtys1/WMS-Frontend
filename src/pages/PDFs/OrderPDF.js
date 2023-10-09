@@ -311,7 +311,7 @@ const OrderPDF = (props) => {
       return (totalVat = totalVat +=
         priceHandler(item.product) * +item.quantity * 0.23);
     });
-    return totalVat.toFixed(2);
+    return totalVat * (1.4).toFixed(2);
   };
 
   const priceSum = () => {
@@ -320,7 +320,7 @@ const OrderPDF = (props) => {
       return (totalPrice = totalPrice +=
         priceHandler(item.product) * item.quantity);
     });
-    return totalPrice.toFixed(2);
+    return totalPrice * (1.4).toFixed(2);
   };
 
   return (
@@ -476,6 +476,7 @@ const OrderPDF = (props) => {
                       {(
                         priceHandler(product.product) *
                         +product.quantity *
+                        1.4 *
                         0.23
                       ).toFixed(2)}{" "}
                       zł
@@ -484,8 +485,13 @@ const OrderPDF = (props) => {
                   <View style={stylesRow.col}>
                     <Text style={stylesText.text6}>
                       {(
-                        +priceHandler(product.product) * +product.quantity +
-                        priceHandler(product.product) * +product.quantity * 0.23
+                        +priceHandler(product.product) *
+                          +product.quantity *
+                          1.4 +
+                        priceHandler(product.product) *
+                          +product.quantity *
+                          1.4 *
+                          0.23
                       ).toFixed(2)}{" "}
                       zł
                     </Text>
@@ -515,10 +521,10 @@ const OrderPDF = (props) => {
                 <Text style={stylesText.text6}>Podstawowy podatek VAT 23%</Text>
               </View>
               <View style={stylesRow.colSum20}>
-                <Text style={stylesText.text6}>{priceSum()} zł</Text>
+                <Text style={stylesText.text6}>{priceSum().toFixed(2)} zł</Text>
               </View>
               <View style={stylesRow.colSum}>
-                <Text style={stylesText.text6}>{vatSum()} zł</Text>
+                <Text style={stylesText.text6}>{vatSum().toFixed(2)} zł</Text>
               </View>
               <View style={stylesRow.colSum}>
                 <Text style={stylesText.text6}>

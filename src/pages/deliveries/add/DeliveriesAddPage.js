@@ -96,7 +96,7 @@ const DeliveriesAddPage = () => {
     );
     return supplier[0].name;
   };
-
+  console.log(JSON.stringify(error, null, 2));
   const onSubmit = (values) => {
     const incompleteProducts = productList.filter(
       (item) =>
@@ -114,12 +114,26 @@ const DeliveriesAddPage = () => {
       return;
     }
 
+    let totalPrice = 0;
+    productList.forEach((item) => {
+      const product = products.products.find(
+        (products) =>
+          item.product.includes(products.name) &&
+          item.product.includes(products.type) &&
+          item.product.includes(products.capacity)
+      );
+      totalPrice +=
+        +item.quantity * +product.pricePerUnit +
+        +item.quantity * +product.pricePerUnit * 0.23;
+    });
+
     addDelivery({
       variables: {
         supplierId: values.supplier,
         expectedDate: values.date,
         warehouse: values.magazine,
         products: JSON.stringify(productList),
+        totalPrice: totalPrice,
       },
     }).then((data) => {
       if (!data.data) return;

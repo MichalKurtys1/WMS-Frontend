@@ -131,7 +131,8 @@ const DeliveriesEditPage = () => {
     );
     return supplier ? supplier.name : null;
   };
-
+  console.log(location.state.deliveryId);
+  console.log(JSON.stringify(error, null, 2));
   const onSubmit = async (values) => {
     const hasEmptyFields = productList.some(
       (item) =>
@@ -146,44 +147,39 @@ const DeliveriesEditPage = () => {
       return;
     }
 
-    const { data: updateDeliveryData } = await updateDelivery({
+    let totalPrice = 0;
+    productList.forEach((item) => {
+      const product = products.products.find(
+        (products) =>
+          item.product.includes(products.name) &&
+          item.product.includes(products.type) &&
+          item.product.includes(products.capacity)
+      );
+      totalPrice +=
+        +item.quantity * +product.pricePerUnit +
+        +item.quantity * +product.pricePerUnit * 0.23;
+    });
+    let updateDeliveryData;
+    updateDelivery({
       variables: {
         updateDeliveryId: location.state.deliveryId,
         supplierId: values.supplier,
         expectedDate: values.date,
         comments: values.comments,
         products: JSON.stringify(productList),
+        totalPrice,
       },
-    });
-
-    JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
-      const stock = stocks.stocks.find(
-        (stock) =>
-          item.product.includes(stock.product.name) &&
-          item.product.includes(stock.product.type) &&
-          item.product.includes(stock.product.capacity)
-      );
-
-      let newValue = +stock.ordered - +item.quantity;
-
-      await updateStock({
-        variables: {
-          updateStockId: stock.id,
-          ordered: newValue,
-        },
-      });
-    });
-
-    refetch().then((newStock) => {
-      productList.forEach(async (item) => {
-        const stock = newStock.data.stocks.find(
+    }).then((data) => {
+      if (!data.data) return;
+      JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
+        const stock = stocks.stocks.find(
           (stock) =>
             item.product.includes(stock.product.name) &&
             item.product.includes(stock.product.type) &&
             item.product.includes(stock.product.capacity)
         );
 
-        let newValue = parseInt(stock.ordered) + parseInt(item.quantity);
+        let newValue = +stock.ordered - +item.quantity;
 
         await updateStock({
           variables: {
@@ -192,38 +188,57 @@ const DeliveriesEditPage = () => {
           },
         });
       });
+
+      refetch().then((newStock) => {
+        productList.forEach(async (item) => {
+          const stock = newStock.data.stocks.find(
+            (stock) =>
+              item.product.includes(stock.product.name) &&
+              item.product.includes(stock.product.type) &&
+              item.product.includes(stock.product.capacity)
+          );
+
+          let newValue = parseInt(stock.ordered) + parseInt(item.quantity);
+
+          await updateStock({
+            variables: {
+              updateStockId: stock.id,
+              ordered: newValue,
+            },
+          });
+        });
+      });
+      //     (stock) =>
+      //       item.product.includes(stock.product.name) &&
+      //       item.product.includes(stock.product.type) &&
+      //       item.product.includes(stock.product.capacity)
+      //   );
+
+      //   let newValue;
+      //   if (item.maxValue) {
+      //     newValue =
+      //       parseInt(stock.ordered) -
+      //       parseInt(item.maxValue) +
+      //       parseInt(item.quantity);
+      //   } else {
+      //     newValue = parseInt(stock.ordered) + parseInt(item.quantity);
+      //   }
+
+      //   updateStock({
+      //     variables: {
+      //       updateStockId: stock.id,
+      //       ordered: newValue < 0 ? 0 : newValue,
+      //     },
+      //   });
+      // });
+
+      navigate("/deliveries", {
+        state: {
+          userData: updateDeliveryData,
+        },
+      });
+      setSubmitError(false);
     });
-    //   const stock = stocks.stocks.find(
-    //     (stock) =>
-    //       item.product.includes(stock.product.name) &&
-    //       item.product.includes(stock.product.type) &&
-    //       item.product.includes(stock.product.capacity)
-    //   );
-
-    //   let newValue;
-    //   if (item.maxValue) {
-    //     newValue =
-    //       parseInt(stock.ordered) -
-    //       parseInt(item.maxValue) +
-    //       parseInt(item.quantity);
-    //   } else {
-    //     newValue = parseInt(stock.ordered) + parseInt(item.quantity);
-    //   }
-
-    //   updateStock({
-    //     variables: {
-    //       updateStockId: stock.id,
-    //       ordered: newValue < 0 ? 0 : newValue,
-    //     },
-    //   });
-    // });
-
-    navigate("/deliveries", {
-      state: {
-        userData: updateDeliveryData,
-      },
-    });
-    setSubmitError(false);
   };
 
   const getCurrentDateTime = () => {
@@ -233,7 +248,7 @@ const DeliveriesEditPage = () => {
     const day = String(now.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  console.log(deliveryData);
+
   return (
     <div className={style.container}>
       <div className={style.titileBox}>

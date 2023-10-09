@@ -141,9 +141,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Kompletowanie" ||
                       record["state"] === "Pakowanie" ||
                       record["state"] === "Wysłano" ||
-                      record["state"] === "Dostarczono" ||
                       record["state"] === "Do odebrania" ||
-                      record["state"] === "Odebrano" ||
+                      record["state"] === "Zakończono" ||
                       !props.position
                         ? true
                         : false
@@ -154,9 +153,8 @@ function DeliveryDetailsRow(props) {
                         record["state"] === "Kompletowanie" ||
                         record["state"] === "Pakowanie" ||
                         record["state"] === "Wysłano" ||
-                        record["state"] === "Dostarczono" ||
                         record["state"] === "Do odebrania" ||
-                        record["state"] === "Odebrano" ||
+                        record["state"] === "Zakończono" ||
                         !props.position
                           ? "none"
                           : "all",
@@ -174,9 +172,8 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Kompletowanie" ||
                       record["state"] === "Pakowanie" ||
                       record["state"] === "Wysłano" ||
-                      record["state"] === "Dostarczono" ||
                       record["state"] === "Do odebrania" ||
-                      record["state"] === "Odebrano" ||
+                      record["state"] === "Zakończono" ||
                       !props.position
                         ? true
                         : false
@@ -187,9 +184,8 @@ function DeliveryDetailsRow(props) {
                         record["state"] === "Kompletowanie" ||
                         record["state"] === "Pakowanie" ||
                         record["state"] === "Wysłano" ||
-                        record["state"] === "Dostarczono" ||
                         record["state"] === "Do odebrania" ||
-                        record["state"] === "Odebrano" ||
+                        record["state"] === "Zakończono" ||
                         !props.position
                           ? "none"
                           : "all",

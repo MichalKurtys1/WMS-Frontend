@@ -1,0 +1,130 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 17%;
+  width: 83%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.logoImg {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  width: 120px;
+  height: 45px;
+  object-fit: cover;
+}
+
+.titileBox {
+  width: 95%;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #646e78;
+}
+
+.returnBox {
+  display: flex;
+  align-items: center;
+  color: #2d3640;
+}
+
+.returnBox .icon {
+  margin: 20px 0 10px;
+  font-size: 20px;
+}
+.returnBox p {
+  font-weight: bold;
+  font-family: "Roboto";
+  font-size: 20px;
+  margin: 20px 0 10px;
+}
+
+/* --- */
+
+.timeScope {
+  position: relative;
+  width: 20%;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  border-radius: 5px;
+  font-size: 22px;
+  padding: 12px 10px;
+  outline: none;
+  color: #777777;
+}
+
+.timeScope::after {
+  pointer-events: none;
+  content: "";
+  justify-self: end;
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 13px;
+  height: 10px;
+  background-color: grey;
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  transition: 0.5s;
+}
+
+/* --- */
+
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+  margin: 15px auto 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #646e78;
+}
+
+.menu h1 {
+  color: #2d3640;
+  font-size: 38px;
+  margin: 10px 0;
+}
+
+.menu .raportsNavigation {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  width: 40%;
+}
+
+.menu .raportsNavigation .icon {
+  padding: 10px;
+  font-size: 30px;
+  color: #424d58;
+  transition: 0.5s;
+}
+
+.menu .raportsNavigation .icon:hover {
+  color: #3054f2;
+}
+
+.menu .raportsNavigation p {
+  color: #424d58;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}

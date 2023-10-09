@@ -175,11 +175,13 @@ export const ADD_DELIVERY = gql`
     $supplierId: ID!
     $expectedDate: String!
     $products: JSON!
+    $totalPrice: Float!
   ) {
     createDelivery(
       supplierId: $supplierId
       expectedDate: $expectedDate
       products: $products
+      totalPrice: $totalPrice
     ) {
       id
       supplierId
@@ -187,23 +189,33 @@ export const ADD_DELIVERY = gql`
       expectedDate
       products
       state
+      totalPrice
     }
   }
 `;
 
 export const ADD_ORDER = gql`
-  mutation Mutation($clientId: ID!, $expectedDate: String!, $products: JSON!) {
+  mutation Mutation(
+    $clientId: ID!
+    $expectedDate: String!
+    $products: JSON!
+    $totalPrice: Float!
+  ) {
     createOrder(
       clientId: $clientId
       expectedDate: $expectedDate
       products: $products
+      totalPrice: $totalPrice
     ) {
       id
       clientId
+      orderID
       date
       expectedDate
       products
       state
+      transportType
+      totalPrice
     }
   }
 `;
@@ -573,14 +585,14 @@ export const UPDATE_DELIVERY = gql`
     $supplierId: ID!
     $expectedDate: String!
     $products: JSON!
-    $date: String
+    $totalPrice: Float!
   ) {
     updateDelivery(
       id: $updateDeliveryId
       supplierId: $supplierId
       expectedDate: $expectedDate
       products: $products
-      date: $date
+      totalPrice: $totalPrice
     ) {
       id
       supplierId
@@ -588,6 +600,7 @@ export const UPDATE_DELIVERY = gql`
       expectedDate
       products
       state
+      totalPrice
     }
   }
 `;
@@ -598,19 +611,24 @@ export const UPDATE_ORDER = gql`
     $clientId: ID!
     $expectedDate: String!
     $products: JSON!
+    $totalPrice: Float!
   ) {
     updateOrder(
       id: $updateOrderId
       clientId: $clientId
       expectedDate: $expectedDate
       products: $products
+      totalPrice: $totalPrice
     ) {
       id
       clientId
+      orderID
       date
       expectedDate
       products
       state
+      transportType
+      totalPrice
     }
   }
 `;

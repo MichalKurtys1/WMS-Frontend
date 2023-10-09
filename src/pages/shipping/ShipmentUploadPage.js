@@ -58,7 +58,7 @@ const ShipmentUploadPage = () => {
     updateShipmentState({
       variables: {
         updateOrderShipmentStateId: deilveryId,
-        state: "Dostarczono",
+        state: "Zakończono",
       },
     });
   };
