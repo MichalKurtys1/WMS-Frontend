@@ -1,7 +1,4 @@
-import { useNavigate } from "react-router";
-
 import style from "./DocumentsPage.module.css";
-import { FaAngleLeft } from "react-icons/fa";
 import {
   BsSortAlphaDownAlt,
   BsSortAlphaDown,
@@ -14,6 +11,7 @@ import { GET_FILES } from "../../utils/apollo/apolloQueries";
 import { FILE_DELETE, FILE_DOWNLOAD } from "../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import Header from "../../components/Header";
 
 const dataFiltering = (data, category, searchValue, filterValue) => {
   let temporaryData = data.files;
@@ -52,7 +50,6 @@ const dataFiltering = (data, category, searchValue, filterValue) => {
 };
 
 const DocumentsPage = () => {
-  const navigate = useNavigate();
   const [category, setCategory] = useState("Dostawy");
   const [results, setResults] = useState();
   const [searchValue, setSearchValue] = useState(null);
@@ -121,17 +118,7 @@ const DocumentsPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {(!results && loading) || (downloading && <Spinner />)}
       {results && !downloading && (
@@ -161,19 +148,34 @@ const DocumentsPage = () => {
             </button>
           </div>
           <div className={style.files}>
-            <h2>{category}</h2>
-
             {results.map((group) => (
               <div className={style.groupBox}>
                 <h3>{group.key}</h3>
                 <div>
                   {group.value.map((file) => (
                     <div className={style.filesBox}>
-                      <img
-                        src={require("../../assets/PDF_file_icon.png")}
-                        alt="pdf icon"
-                        className={style.image}
-                      />
+                      {file.filename.includes(".pdf") && (
+                        <img
+                          src={require("../../assets/PDF_file_icon.png")}
+                          alt="pdf icon"
+                          className={style.image}
+                        />
+                      )}
+                      {file.filename.includes(".txt") && (
+                        <img
+                          src={require("../../assets/txt_file_icon.png")}
+                          alt="pdf icon"
+                          className={style.image}
+                        />
+                      )}
+                      {file.filename.includes(".docx") && (
+                        <img
+                          src={require("../../assets/docx_file_icon.png")}
+                          alt="pdf icon"
+                          className={style.image}
+                        />
+                      )}
+
                       <div className={style.wrapper}>
                         <div className={style.upperBox}>
                           <p>{file.name}</p>

@@ -275,7 +275,7 @@ const GeneralRaport = ({ timeScope }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orders, deliveries, timeScope, products, clients, stocks]);
-  console.log(generalData);
+
   return (
     <div className={style.container}>
       <ErrorHandler error={error} />

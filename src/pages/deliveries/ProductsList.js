@@ -1,5 +1,5 @@
 import { FaPlus } from "react-icons/fa";
-import style from "./ProductsList.module.css";
+import style from "../styles/productsList.module.css";
 import { BsTrashFill } from "react-icons/bs";
 import { useEffect, useState } from "react";
 
@@ -90,30 +90,38 @@ const ProductList = ({
                 </select>
               </div>
             </div>
-            {item.product !== null && item.product !== "Wybierz produkt" && (
+            <div className={style.selectBox}>
               <div className={style.selectBox}>
-                <div className={style.selectBox}>
-                  <select
-                    defaultValue={item.unit}
-                    className={style.select}
-                    onChange={(event) =>
-                      changeUnitHandler(item.id, event.target.value)
-                    }
-                  >
-                    <option value={null}>Wybierz jednostkę</option>
-                    {products &&
-                      !loadingProducts &&
-                      products.products.map((product) =>
-                        unitOptionDisplayHandler(product, item)
-                      )}
-                  </select>
-                </div>
+                <select
+                  defaultValue={item.unit}
+                  className={style.select}
+                  disabled={
+                    item.product !== null && item.product !== "Wybierz produkt"
+                      ? false
+                      : true
+                  }
+                  onChange={(event) =>
+                    changeUnitHandler(item.id, event.target.value)
+                  }
+                >
+                  <option value={null}>Wybierz jednostkę</option>
+                  {products &&
+                    !loadingProducts &&
+                    products.products.map((product) =>
+                      unitOptionDisplayHandler(product, item)
+                    )}
+                </select>
               </div>
-            )}
+            </div>
             <div className={style.inputBox}>
               <input
                 defaultValue={item.quantity}
                 type="number"
+                disabled={
+                  item.product !== null && item.product !== "Wybierz produkt"
+                    ? false
+                    : true
+                }
                 min={0}
                 placeholder="Ilość"
                 onChange={(event) =>

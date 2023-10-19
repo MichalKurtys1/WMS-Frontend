@@ -1,0 +1,33 @@
+.succes {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  width: 40%;
+  display: flex;
+  align-items: center;
+  padding: 1px;
+  text-align: center;
+  background-color: #e5ffeb;
+  border: 2px solid #22e650;
+  color: #22e650;
+  font-size: 16px;
+  border-radius: 5px;
+  user-select: none;
+}
+
+.succes .checkIcon {
+  font-size: 20px;
+  margin: 10px;
+}
+
+.succes .iconCancel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 22px;
+  color: #22e650;
+}
+
+.succes p {
+  font-family: "Roboto", sans-serif;
+}

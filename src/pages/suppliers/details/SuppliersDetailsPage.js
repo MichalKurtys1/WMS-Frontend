@@ -1,15 +1,14 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import style from "./SuppliersDetailsPage.module.css";
-import { FaAngleLeft } from "react-icons/fa";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_SUPPLIER } from "../../../utils/apollo/apolloMutations";
 import Spinner from "../../../components/Spiner";
 import ErrorHandler from "../../../components/ErrorHandler";
+import Header from "../../../components/Header";
 
 const SuppliersDetailsPage = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [error, setError] = useState();
   const [data, setData] = useState();
   const [getSupplier, { loading }] = useMutation(GET_SUPPLIER, {
@@ -32,17 +31,7 @@ const SuppliersDetailsPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/suppliers")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/suppliers"} />
       <ErrorHandler error={error} />
       {loading && <Spinner />}
       {data && (

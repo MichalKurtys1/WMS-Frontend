@@ -1,14 +1,13 @@
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import style from "../raports/RaportsPage.module.css";
-import { useNavigate } from "react-router";
 import { useState } from "react";
 import StockRaport from "./StockRaport";
 import OrdersRaport from "./OrdersRaport";
 import DeliveriesRaport from "./DeliveriesRaport";
 import GeneralRaport from "./GeneralRaport";
+import Header from "../../components/Header";
 
 const RaportsPage = () => {
-  const navigate = useNavigate();
   const [timeScope, setTimeScope] = useState("Tydzień");
   const [raportType, setRaportType] = useState(0);
 
@@ -26,17 +25,7 @@ const RaportsPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <div className={style.menu}>
         <h1>Raporty</h1>
         <div className={style.raportsNavigation}>

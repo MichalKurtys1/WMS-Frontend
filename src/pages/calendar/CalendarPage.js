@@ -1,7 +1,6 @@
-import { FaAngleLeft, FaCheck, FaMinus, FaPlus } from "react-icons/fa";
+import { FaCheck, FaMinus, FaPlus } from "react-icons/fa";
 import style from "./CalendarPage.module.css";
 import "./Calendar.css";
-import { useNavigate } from "react-router";
 import Calendar from "react-calendar";
 import { useEffect, useState } from "react";
 import CalendarTile from "./CalendarTile";
@@ -10,9 +9,9 @@ import ErrorHandler from "../../components/ErrorHandler";
 import { getAuth } from "../../context";
 import Spinner from "../../components/Spiner";
 import { useCalendar } from "./useCalendar";
+import Header from "../../components/Header";
 
 const CalendarPage = () => {
-  const navigate = useNavigate();
   const [value, setValue] = useState();
   const [activeEvent, setActiveEvent] = useState([]);
   const [addIsOpen, setAddIsOpen] = useState(false);
@@ -46,7 +45,6 @@ const CalendarPage = () => {
           }
         })
         .filter((item) => item !== null && Object.keys(item).length !== 0);
-      console.log(deli);
       let orde = data.orders
         .map((item) => {
           if (item.state !== "Zakończono") {
@@ -166,17 +164,7 @@ const CalendarPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {!data && loading && <Spinner />}
       {data && events && (

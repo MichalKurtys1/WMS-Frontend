@@ -4,13 +4,15 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_EMPLOYYES } from "../../utils/apollo/apolloQueries";
 import { DELETE_EMPLOYYE } from "../../utils/apollo/apolloMutations";
 
-import style from "./EmployeePage.module.css";
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
+import Header from "../../components/Header";
+import SuccessMsg from "../../components/SuccessMsg";
+import DeletePopup from "../../components/DeletePopup";
 
 const EmployeePage = () => {
   const navigate = useNavigate();
@@ -62,25 +64,13 @@ const EmployeePage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {loading && <Spinner />}
-      {successMsg && !error && (
-        <div className={style.succes}>
-          <FaCheck className={style.checkIcon} />
-          <p>Pracownik usunięty pomyślnie</p>
-        </div>
-      )}
+      <SuccessMsg
+        msg={"Pracownik usunięty pomyślnie"}
+        state={successMsg && !error}
+      />
       {data && data.users && (
         <main>
           <div className={style.optionPanel}>
@@ -109,17 +99,11 @@ const EmployeePage = () => {
           </div>
         </main>
       )}
-      {popupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego pracownika z systemu?"
-          }
-          button2={"Usuń"}
-          button1={"Anuluj"}
-          button1Action={() => setPopupIsOpen(false)}
-          button2Action={deleteHandler}
-        />
-      )}
+      <DeletePopup
+        refuseAction={() => setPopupIsOpen(false)}
+        confirmAction={deleteHandler}
+        state={popupIsOpen}
+      />
     </div>
   );
 };

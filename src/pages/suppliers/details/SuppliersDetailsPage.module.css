@@ -65,12 +65,18 @@
   color: #2d3640;
   font-family: "Roboto", sans-serif;
   font-weight: 500;
-  border-bottom: 2px solid #2d3640;
+  font-family: "Roboto", sans-serif;
+  font-size: 40px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
 }
 
 .supplierBox .dataBox {
   display: flex;
   align-items: center;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .supplierBox .dataBox h2 {

@@ -4,13 +4,14 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_PRODUCTS } from "../../utils/apollo/apolloQueries";
 import { DELETE_PRODUCT } from "../../utils/apollo/apolloMutations";
 
-import style from "./ProductsPage.module.css";
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
+import { FaUserPlus, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context/index";
+import Header from "../../components/Header";
 
 const ProductsPage = () => {
   const location = useLocation();
@@ -62,17 +63,7 @@ const ProductsPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>

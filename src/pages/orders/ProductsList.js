@@ -1,5 +1,5 @@
 import { FaPlus } from "react-icons/fa";
-import style from "./ProductsList.module.css";
+import style from "../styles/productsList.module.css";
 import { BsTrashFill } from "react-icons/bs";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -22,13 +22,17 @@ const ProductList = ({
   }, [productList]);
 
   const availableHandler = (item) => {
-    const stock = stocks.stocks.filter(
-      (stock) =>
-        item.product.includes(stock.product.name) &&
-        item.product.includes(stock.product.type) &&
-        item.product.includes(stock.product.capacity)
-    );
-    return stock[0].availableStock;
+    if (item.product) {
+      const stock = stocks.stocks.filter(
+        (stock) =>
+          item.product.includes(stock.product.name) &&
+          item.product.includes(stock.product.type) &&
+          item.product.includes(stock.product.capacity)
+      );
+      return stock[0].availableStock;
+    } else {
+      return "-";
+    }
   };
 
   const productOptionDisplayHandler = (product, item) => {
@@ -102,37 +106,46 @@ const ProductList = ({
                 </select>
               </div>
             </div>
-            {item.product !== null && item.product !== "Wybierz produkt" && (
-              <>
-                <div className={style.availableStockBox}>
-                  Dostępne: <strong>{availableHandler(item)}</strong>
-                </div>
+            <>
+              <div className={style.availableStockBox}>
+                Dostępne: <strong>{availableHandler(item)}</strong>
+              </div>
+              <div className={style.selectBox}>
                 <div className={style.selectBox}>
-                  <div className={style.selectBox}>
-                    <select
-                      defaultValue={item.unit}
-                      className={style.select}
-                      onChange={(event) =>
-                        changeUnitHandler(item.id, event.target.value)
-                      }
-                    >
-                      <option value={null}>Wybierz jednostkę</option>
-                      {products &&
-                        !loadingProducts &&
-                        products.products.map((product) =>
-                          unitOptionDisplayHandler(product, item)
-                        )}
-                    </select>
-                  </div>
+                  <select
+                    defaultValue={item.unit}
+                    className={style.select}
+                    disabled={
+                      item.product !== null &&
+                      item.product !== "Wybierz produkt"
+                        ? false
+                        : true
+                    }
+                    onChange={(event) =>
+                      changeUnitHandler(item.id, event.target.value)
+                    }
+                  >
+                    <option value={null}>Wybierz jednostkę</option>
+                    {products &&
+                      !loadingProducts &&
+                      products.products.map((product) =>
+                        unitOptionDisplayHandler(product, item)
+                      )}
+                  </select>
                 </div>
-              </>
-            )}
+              </div>
+            </>
             {stocks && (
               <div className={style.inputBox}>
                 <input
                   defaultValue={item.quantity}
                   type="number"
                   min={0}
+                  disabled={
+                    item.product !== null && item.product !== "Wybierz produkt"
+                      ? false
+                      : true
+                  }
                   placeholder="Ilość"
                   onChange={(event) =>
                     quantityUnitHandler(

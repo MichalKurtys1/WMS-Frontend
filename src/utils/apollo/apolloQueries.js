@@ -207,6 +207,7 @@ export const GET_STOCKS = gql`
       totalQuantity
       availableStock
       ordered
+      preOrdered
       product {
         id
         supplierId

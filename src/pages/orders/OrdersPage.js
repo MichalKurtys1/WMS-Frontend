@@ -9,14 +9,32 @@ import {
   UPDATE_ORDER_TRANSPORTTYPE,
 } from "../../utils/apollo/apolloMutations";
 
-import style from "./OrdersPage.module.css";
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
+import { FaUserPlus, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
-import ShipmentPopup from "./ShipmentPopup";
+import ShipmentPopup from "./ShipmentPopup/ShipmentPopup";
+import Header from "../../components/Header";
+
+const format = [
+  "orderID",
+  "client",
+  "expectedDate",
+  "date",
+  "totalPrice",
+  "state",
+];
+const titles = [
+  "ID",
+  "Klient",
+  "Przewidywany termin",
+  "Termin",
+  "Cena",
+  "Stan",
+];
 
 const OrdersPage = () => {
   const location = useLocation();
@@ -30,6 +48,12 @@ const OrdersPage = () => {
   const [id, setId] = useState();
   const [action, setAction] = useState();
   const { position } = getAuth();
+  const [totalPriceAcces] = useState(
+    position === "Menadżder" || position === "Admin" || position === "Księgowy"
+      ? true
+      : false
+  );
+
   const { data, refetch, loading } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
@@ -88,9 +112,8 @@ const OrdersPage = () => {
     setStatePopupIsOpen(false);
   };
 
-  const deleteHandler = () => {
+  const deleteHandler = (id, action) => {
     setPopupIsOpen(false);
-
     deleteOrder({
       variables: {
         deleteOrderId: selectedRow,
@@ -194,17 +217,7 @@ const OrdersPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/orders"} />
       <ErrorHandler error={error} />
       {successMsg && (
         <div className={style.succes}>
@@ -240,10 +253,17 @@ const OrdersPage = () => {
                   date: item.date ? dateToPolish(item.date) : "-",
                   expectedDate: dateToPolish(item.expectedDate),
                   client: item.client.name,
+                  totalPrice: item.totalPrice.toFixed(0) + " zł",
                 };
               })}
-              format={["orderID", "client", "expectedDate", "date", "state"]}
-              titles={["ID", "Klient", "Przewidywany termin", "Termin", "Stan"]}
+              format={
+                totalPriceAcces
+                  ? format
+                  : format.filter((x) => x !== "totalPrice")
+              }
+              titles={
+                totalPriceAcces ? titles : titles.filter((x) => x !== "Cena")
+              }
               allowExpand={true}
               type="Orders"
               position={position === "Magazynier" ? false : true}

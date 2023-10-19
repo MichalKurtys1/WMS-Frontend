@@ -8,7 +8,7 @@ import style from "./ShipmentTableRow.module.css";
 import { useQuery } from "@apollo/client";
 import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
 import { useState } from "react";
-import { FaListOl } from "react-icons/fa";
+import { FaClipboardList, FaListOl, FaTruck } from "react-icons/fa";
 import ErrorHandler from "../ErrorHandler";
 
 function DeliveryDetailsRow(props) {
@@ -38,6 +38,7 @@ function DeliveryDetailsRow(props) {
           <td colspan="6" style={{ padding: 0 }}>
             <div className={style.wrapper}>
               <div className={style.details}>
+                <h5>Klient</h5>
                 {orders &&
                   data.orders
                     .filter((item) => {
@@ -45,14 +46,30 @@ function DeliveryDetailsRow(props) {
                     })
                     .map((item) => (
                       <div className={style.productBox}>
-                        <h4>{item.client.name}</h4>
-                        <h5>
-                          {item.client.street +
-                            " " +
-                            item.client.number +
-                            " " +
-                            item.client.city}
-                        </h5>
+                        <p>
+                          <strong>{item.client.name}</strong>
+                        </p>
+                      </div>
+                    ))}
+              </div>
+              <div className={style.details}>
+                <h5>Adres</h5>
+                {orders &&
+                  data.orders
+                    .filter((item) => {
+                      return JSON.parse(orders).includes(item.id);
+                    })
+                    .map((item) => (
+                      <div className={style.productBox}>
+                        <p>
+                          <strong>
+                            {item.client.street +
+                              " " +
+                              item.client.number +
+                              " " +
+                              item.client.city}
+                          </strong>
+                        </p>
                       </div>
                     ))}
               </div>
@@ -60,12 +77,21 @@ function DeliveryDetailsRow(props) {
                 <div className={style.optionsBox}>
                   {record["state"] === "Wysłano" && (
                     <button onClick={() => openWaybill(id)}>
-                      <p className={style.picklist}>List przewozowy</p>
+                      <FaTruck
+                        className={style.icon}
+                        style={{ fontSize: "18px" }}
+                      />
+                      <div className={style.tooltip}>
+                        <p style={{ whiteSpace: "nowrap" }}>List przewozowy</p>
+                      </div>
                     </button>
                   )}
 
                   <button onClick={() => openPicklist(id)}>
-                    <p className={style.picklist}>Lista kompletacyjna</p>
+                    <FaClipboardList className={style.icon} />
+                    <div className={style.tooltip}>
+                      <p>Pickinglist</p>
+                    </div>
                   </button>
                   {record["state"] === "Zlecone" && (
                     <button
@@ -110,6 +136,7 @@ function DeliveryDetailsRow(props) {
                       record["state"] === "Pakowanie" ||
                       record["state"] === "Wysłano" ||
                       record["state"] === "Dostarczono" ||
+                      record["state"] === "Zakończono" ||
                       !props.position
                         ? true
                         : false
@@ -120,6 +147,7 @@ function DeliveryDetailsRow(props) {
                         record["state"] === "Pakowanie" ||
                         record["state"] === "Wysłano" ||
                         record["state"] === "Dostarczono" ||
+                        record["state"] === "Zakończono" ||
                         !props.position
                           ? "none"
                           : "all",

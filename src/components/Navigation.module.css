@@ -2,10 +2,10 @@
   width: 17%;
   position: fixed;
   z-index: 12;
-  box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
-  -webkit-box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
-  border-radius: 0 15px 15px 0;
+  box-shadow: 0px 0px 4px -1px rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 0px 0px 4px -1px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0px 0px 4px -1px rgba(0, 0, 0, 0.25);
+  /* border-radius: 0 15px 15px 0; */
 }
 
 .container .menuContainer {
@@ -19,7 +19,7 @@
 
   transition: 0.5s;
   overflow: hidden;
-  border-radius: 0 15px 15px 0;
+  /* border-radius: 0 15px 15px 0; */
 }
 
 .menuContainer .menu {
@@ -32,8 +32,8 @@
 
 .menu .upperBox {
   width: 90%;
-  padding: 15px 0 5px;
-  border-bottom: 3px solid #000e4d;
+  padding: 14px 0 5px;
+  border-bottom: 2px solid #646e78;
 }
 
 .userPanel {

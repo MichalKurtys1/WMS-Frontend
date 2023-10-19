@@ -6,7 +6,12 @@ import {
   BsFillBoxSeamFill,
   BsCheckSquareFill,
 } from "react-icons/bs";
-import { FaListOl, FaPen, FaFileInvoiceDollar } from "react-icons/fa";
+import {
+  FaListOl,
+  FaPen,
+  FaFileInvoiceDollar,
+  FaClipboardList,
+} from "react-icons/fa";
 
 function DeliveryDetailsRow(props) {
   const {
@@ -27,7 +32,7 @@ function DeliveryDetailsRow(props) {
     <>
       {isClickedRow && allowExpand && type === "Orders" && (
         <tr className={style.detailsRow} key={id + "_1"}>
-          <td colspan="6" style={{ padding: 0 }}>
+          <td colspan={Object.keys(record).length + 1} style={{ padding: 0 }}>
             <div className={style.wrapper}>
               <div className={style.details}>
                 {products &&
@@ -87,7 +92,21 @@ function DeliveryDetailsRow(props) {
                   )}
                   {transportType === "personal" && (
                     <button onClick={() => openPicklist(id, products)}>
-                      <p className={style.picklist}>Lista kompletacyjna</p>
+                      <FaClipboardList className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p>Pickinglist</p>
+                      </div>
+                    </button>
+                  )}
+                  {transportType === "shipment" && (
+                    <button
+                      onClick={() => updateStateHandler(id, "Kompletowanie")}
+                      style={{ visibility: "hidden" }}
+                    >
+                      <FaListOl className={style.icon} />
+                      <div className={style.tooltip}>
+                        <p>Kompletowanie</p>
+                      </div>
                     </button>
                   )}
                   {transportType === "personal" &&

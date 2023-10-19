@@ -1,4 +1,3 @@
-import { FaAngleLeft } from "react-icons/fa";
 import style from "./SortingPage.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
@@ -6,6 +5,7 @@ import { useEffect, useState } from "react";
 import { GET_DELIVERY } from "../../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../../components/ErrorHandler";
 import Spinner from "../../../components/Spiner";
+import Header from "../../../components/Header";
 
 const SortingPage = () => {
   const navigate = useNavigate();
@@ -80,20 +80,7 @@ const SortingPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../../assets/logo.png")}
-          alt="logo"
-        />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/deliveries")}
-        >
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
       {loading && <Spinner />}
       {!loading && (

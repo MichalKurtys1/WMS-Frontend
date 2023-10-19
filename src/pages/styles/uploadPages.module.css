@@ -1,0 +1,128 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 17%;
+  width: 83%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.form {
+  font-family: "Roboto", sans-serif;
+  padding: 0 20px;
+}
+
+.form {
+  margin: 20px auto 0;
+  width: 50%;
+  border-radius: 10px;
+}
+
+.form h1 {
+  margin: 0;
+  color: #2d3640;
+}
+
+.form p {
+  margin: 0 0 35px 0;
+  color: #2d3640;
+}
+
+.form .inputBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.inputBox input[type="text"] {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 12px 10px;
+  width: 100%;
+  margin-bottom: 40px;
+  border-radius: 5px;
+  font-size: 22px;
+  color: #777777;
+}
+
+.inputBox input[type="text"]:focus {
+  outline: none;
+}
+
+.inputBox input[type="file"] {
+  border: none;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.35);
+  padding: 12px 10px;
+  width: 100%;
+  margin-bottom: 40px;
+  border-radius: 5px;
+  font-size: 22px;
+  color: #777777;
+}
+
+.inputBox input[type="file"]::file-selector-button {
+  border: none;
+  background-color: #ced3d9;
+  width: 25%;
+  height: 40px;
+  padding: 10px;
+  margin-right: 20px;
+  border-radius: 5px;
+  color: white;
+  font-size: 22px;
+  transition: 0.5s;
+}
+
+.inputBox input[type="file"]::file-selector-button:hover {
+  background-color: #b6babf;
+}
+
+.inputBox input[type="file"]:focus {
+  outline: none;
+}
+
+.error {
+  position: absolute;
+  font-size: 12px;
+  bottom: 22px;
+  left: 10px;
+  color: #f03a30;
+  font-weight: bold;
+}
+
+.form button {
+  display: block;
+  border: none;
+  background-color: #8097ff;
+  width: 50%;
+  height: 50px;
+  margin: 10px auto 40px;
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+  font-size: 22px;
+  transition: 0.5s;
+}
+
+.form button:hover {
+  background-color: #3054f2;
+}
+
+.icon {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.container .errorText {
+  color: #f03a30;
+  text-align: center;
+}

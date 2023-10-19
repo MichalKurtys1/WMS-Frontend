@@ -5,10 +5,11 @@
 }
 
 .wrapper .details {
-  width: 40%;
+  width: 30%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  position: relative;
   border-right: 1px solid #ced3d9;
   min-height: 70px;
 }
@@ -25,20 +26,20 @@
   border: none;
 }
 
-.details .productBox h4 {
-  display: block;
-  min-width: 40%;
-  text-align: left;
+.details h5 {
+  position: absolute;
+  font-size: 12px;
+  font-weight: normal;
   margin: 0;
-  font-size: 16px;
+  top: 2px;
+  left: 2px;
 }
 
-.details .productBox h5 {
+.details .productBox p {
   display: block;
-  min-width: 60%;
-  text-align: left;
+  width: 100%;
+  text-align: center;
   margin: 0;
-  font-weight: normal;
   font-size: 16px;
 }
 
@@ -81,6 +82,7 @@
   position: relative;
   background-color: #fff;
   border: none;
+  margin: 0 20px;
 }
 
 .optionsBox button:disabled .icon {

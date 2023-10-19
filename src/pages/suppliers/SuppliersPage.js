@@ -4,12 +4,13 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 import { DELETE_SUPPLIER } from "../../utils/apollo/apolloMutations";
 
-import style from "./SuppliersPage.module.css";
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
+import { FaUserPlus, FaCheck } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import Header from "../../components/Header";
 
 const SuppliersPage = () => {
   const navigate = useNavigate();
@@ -68,17 +69,7 @@ const SuppliersPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {successMsg && !error && (
         <div className={style.succes}>

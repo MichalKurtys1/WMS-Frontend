@@ -7,14 +7,20 @@ import {
   UPDATE_DELIVERY_STATE,
   UPDATE_DELIVERY_VALUES,
 } from "../../utils/apollo/apolloMutations";
-import style from "./DeliveriesPage.module.css";
+
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaAngleLeft, FaCheck } from "react-icons/fa";
+import { FaUserPlus, FaCheck } from "react-icons/fa";
 import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
+import Header from "../../components/Header";
+
+const format = ["supplier", "expectedDate", "date", "totalPrice", "state"];
+
+const titles = ["Dostawca", "Przewidywany termin", "Termin", "Cena", "Stan"];
 
 const DeliveriesPage = () => {
   const navigate = useNavigate();
@@ -27,6 +33,11 @@ const DeliveriesPage = () => {
   const [successMsg, setSuccessMsg] = useState(false);
   const [error, setError] = useState();
   const { position } = getAuth();
+  const [totalPriceAcces] = useState(
+    position === "Menadżder" || position === "Admin" || position === "Księgowy"
+      ? true
+      : false
+  );
 
   const { data, refetch, loading } = useQuery(GET_DELIVERIES, {
     onError: (error) => setError(error),
@@ -49,7 +60,7 @@ const DeliveriesPage = () => {
     if (location.state) {
       refetch();
     }
-  }, [location.state, refetch]);
+  }, [location.state, location.pathname, refetch]);
 
   useEffect(() => {
     if (location.state && location.state.products) {
@@ -140,17 +151,7 @@ const DeliveriesPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {successMsg && !error && (
         <div className={style.succes}>
@@ -186,10 +187,17 @@ const DeliveriesPage = () => {
                   date: item.date ? dateToPolish(item.date) : "-",
                   expectedDate: dateToPolish(item.expectedDate),
                   supplier: item.supplier.name,
+                  totalPrice: item.totalPrice.toFixed(0) + " zł",
                 };
               })}
-              format={["supplier", "expectedDate", "date", "state"]}
-              titles={["Dostawca", "Przewidywany termin", "Termin", "Stan"]}
+              format={
+                totalPriceAcces
+                  ? format
+                  : format.filter((x) => x !== "totalPrice")
+              }
+              titles={
+                totalPriceAcces ? titles : titles.filter((x) => x !== "Cena")
+              }
               allowExpand={true}
               type={"Delivery"}
               position={position === "Magazynier" ? false : true}

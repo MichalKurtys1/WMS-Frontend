@@ -43,8 +43,20 @@ const TableRow = (props) => {
       <tr className={style.tr} key={props.id} onClick={clickRowHandler}>
         {props.keys.map((value) => {
           if (value === "id") return null;
+          if (value === "state") {
+            return (
+              <td style={{ width: "15%" }} key={`${props.id}-${value}`}>
+                {props.record[value] || "-"}
+              </td>
+            );
+          }
           return (
-            <td key={`${props.id}-${value}`}>{props.record[value] || "-"}</td>
+            <td key={`${props.id}-${value}`}>
+              {props.record[value] ||
+                (!props.record[value] && Number.isInteger(props.record[value])
+                  ? "0"
+                  : "-")}
+            </td>
           );
         })}
         {!props.allowExpand && (
@@ -54,11 +66,11 @@ const TableRow = (props) => {
                 <BsThreeDotsVertical />
                 {isClicked && (
                   <div className={style.options}>
-                    <BsFillTriangleFill className={style.triangleIcon} />
                     <div
                       className={style.option}
                       onClick={() => props.editHandler(props.id)}
                     >
+                      <BsFillTriangleFill className={style.triangleIcon} />
                       <FaPen className={style.icon} />
                       <p>Edytuj</p>
                     </div>

@@ -1,16 +1,15 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
 
-import style from "./StockPage.module.css";
+import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import { FaAngleLeft } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import Header from "../../components/Header";
 
 const StockPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState();
   const { data, refetch, loading } = useQuery(GET_STOCKS, {
@@ -24,17 +23,7 @@ const StockPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/"} />
       <ErrorHandler error={error} />
       {loading && <Spinner />}
       {data && data.stocks && (
@@ -63,6 +52,7 @@ const StockPage = () => {
                 "totalQuantity",
                 "availableStock",
                 "ordered",
+                "preOrdered",
               ]}
               titles={[
                 "Kod",
@@ -71,6 +61,7 @@ const StockPage = () => {
                 "Razem",
                 "Dostępne",
                 "Zamówiono",
+                "Pre Order",
               ]}
               details={false}
               options={true}

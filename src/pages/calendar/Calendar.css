@@ -31,10 +31,6 @@
   transition: 0.5s;
 }
 
-/* .react-calendar__navigation__label__labelText:hover {
-  color: #3054f2;
-} */
-
 .react-calendar__month-view__weekdays__weekday {
   text-align: center;
   font-weight: bold;

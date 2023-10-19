@@ -1,5 +1,4 @@
-import { FaAngleLeft } from "react-icons/fa";
-import style from "./OrdersUploadPage.module.css";
+import style from "../styles/uploadPages.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
 import {
@@ -9,6 +8,7 @@ import {
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Spinner from "../../components/Spiner";
+import Header from "../../components/Header";
 
 const OrdersUploadPage = () => {
   const navigate = useNavigate();
@@ -28,14 +28,7 @@ const OrdersUploadPage = () => {
     UPDATE_ORDER_STATE,
     {
       onError: (error) => setError(error),
-      onCompleted: () => {
-        setError(false);
-        navigate("/orders", {
-          state: {
-            update: true,
-          },
-        });
-      },
+      onCompleted: () => setError(false),
     }
   );
 
@@ -49,37 +42,41 @@ const OrdersUploadPage = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     setError(null);
+    if (
+      nameInputValue === "" ||
+      nameInputValue === null ||
+      selectedFile === null
+    )
+      return;
 
-    await orderFileUpload({
+    orderFileUpload({
       variables: {
         file: selectedFile,
         name: nameInputValue,
         fileUploadId: deilveryId,
         date: new Date(),
       },
-    });
-
-    await updateOrdersState({
-      variables: {
-        updateOrderStateId: deilveryId,
-        state: "Zakończono",
-      },
+    }).then((data) => {
+      if (!data.data) return;
+      updateOrdersState({
+        variables: {
+          updateOrderStateId: deilveryId,
+          state: "Zakończono",
+        },
+      }).then((data) => {
+        if (!data.data) return;
+        navigate("/orders", {
+          state: {
+            update: true,
+          },
+        });
+      });
     });
   };
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/orders")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/orders"} />
       <ErrorHandler error={error} />
       {(uploadLoading || stateLoading) && <Spinner />}
       {!uploadLoading && !stateLoading && (

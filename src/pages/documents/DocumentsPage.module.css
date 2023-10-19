@@ -10,41 +10,6 @@
   z-index: 1;
 }
 
-.logoImg {
-  position: absolute;
-  top: 10px;
-  right: 50px;
-  width: 120px;
-  height: 45px;
-  object-fit: cover;
-}
-
-.titileBox {
-  width: 95%;
-  margin: 0 auto;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #646e78;
-}
-
-.returnBox {
-  display: flex;
-  align-items: center;
-  color: #2d3640;
-}
-
-.returnBox .icon {
-  margin: 20px 0 10px;
-  font-size: 20px;
-}
-.returnBox p {
-  font-weight: bold;
-  font-family: "Roboto";
-  font-size: 20px;
-  margin: 20px 0 10px;
-}
-
-/* --------- */
-
 .container main {
   width: 55%;
   margin: 0 auto;
@@ -135,17 +100,16 @@
 
 /*  */
 
-.files h2 {
-  color: #2d3640;
-  font-size: 30px;
-  margin: 20px 0 10px;
-  font-family: "Roboto", sans-serif;
+.files {
+  margin: 30px 0;
 }
 
 .files .groupBox h3 {
   padding-bottom: 5px;
-  border-bottom: 2px solid #646e78;
-  color: #646e78;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 10px;
+  color: #2d3640;
   font-size: 23px;
   margin: 10px 0 10px;
   font-family: "Roboto", sans-serif;
@@ -161,7 +125,7 @@
 .groupBox .filesBox {
   width: 90%;
   display: flex;
-  margin: 15px auto;
+  margin: 20px auto;
 }
 
 .filesBox .wrapper {
@@ -191,7 +155,7 @@
 .wrapper .upperBox p {
   margin: 0;
   color: #646e78;
-  font-size: 24px;
+  font-size: 22px;
   font-family: "Roboto", sans-serif;
 }
 
@@ -229,19 +193,4 @@
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   align-self: flex-start;
-}
-
-.spinnerBox {
-  position: relative;
-  background-color: #000;
-  opacity: 0.3;
-  margin-top: 150px;
-}
-
-.spinner {
-  position: absolute;
-  z-index: 11;
-  top: 80%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }

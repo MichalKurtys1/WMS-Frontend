@@ -1,4 +1,3 @@
-import { FaAngleLeft } from "react-icons/fa";
 import style from "./ShippingDetails.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation, useQuery } from "@apollo/client";
@@ -17,6 +16,7 @@ import {
 } from "../../../utils/apollo/apolloQueries";
 import { pdf } from "@react-pdf/renderer";
 import ShippmentPDF from "../../PDFs/ShippmentPDF";
+import Header from "../../../components/Header";
 
 const ShippingDetails = () => {
   const navigate = useNavigate();
@@ -181,20 +181,7 @@ const ShippingDetails = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../../assets/logo.png")}
-          alt="logo"
-        />
-        <div
-          className={style.returnBox}
-          onClick={() => navigate("/deliveries")}
-        >
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/shipping"} />
       <ErrorHandler error={error} />
       {loading && <Spinner />}
       {data && (
@@ -204,10 +191,10 @@ const ShippingDetails = () => {
             {data &&
               products.map((item) => (
                 <div className={style.productBox}>
+                  <p>{item.product}</p>
                   <p>
                     <strong>{item.quantity}x</strong> {item.unit}
                   </p>
-                  <p>{item.product}</p>
                   <input
                     type="number"
                     placeholder="Waga"

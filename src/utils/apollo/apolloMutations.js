@@ -682,6 +682,7 @@ export const UPDATE_DELIVERY_VALUES = gql`
 export const UPDATE_STOCK = gql`
   mutation Mutation(
     $updateStockId: String!
+    $preOrdered: Float
     $productId: ID
     $totalQuantity: Float
     $availableStock: Float
@@ -689,6 +690,7 @@ export const UPDATE_STOCK = gql`
   ) {
     updateStock(
       id: $updateStockId
+      preOrdered: $preOrdered
       productId: $productId
       totalQuantity: $totalQuantity
       availableStock: $availableStock
@@ -696,9 +698,11 @@ export const UPDATE_STOCK = gql`
     ) {
       id
       productId
+      code
       totalQuantity
       availableStock
       ordered
+      preOrdered
     }
   }
 `;

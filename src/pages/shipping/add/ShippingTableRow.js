@@ -51,18 +51,22 @@ const ShippingTableRow = (props) => {
       </tr>
       {isClickedRow && (
         <tr className={style.detailsRow} key={props.id + "_1"}>
-          <td colspan="6">
-            {props.products &&
-              JSON.parse(JSON.parse(props.products)).map((item) => (
-                <div className={style.productBox}>
-                  <h4>{item.product}</h4>
-                  <div className={style.numbersBox}>
-                    <p>
-                      <strong>{item.quantity}x</strong> {item.unit}
-                    </p>
-                  </div>
-                </div>
-              ))}
+          <td colspan="6" style={{ padding: 0 }}>
+            <div className={style.wrapper}>
+              <div className={style.details}>
+                {props.products &&
+                  JSON.parse(JSON.parse(props.products)).map((item) => (
+                    <div className={style.productBox}>
+                      <h4>{item.product}</h4>
+                      <div className={style.numbersBox}>
+                        <p>
+                          <strong>{item.quantity}x</strong> {item.unit}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
           </td>
         </tr>
       )}

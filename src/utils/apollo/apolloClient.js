@@ -1,6 +1,5 @@
 import {
   ApolloClient,
-  // HttpLink,
   ApolloLink,
   InMemoryCache,
   concat,

@@ -5,7 +5,7 @@ import PageNotFound from "./pages/errors/PageNotFound";
 import CalendarPage from "./pages/calendar/CalendarPage";
 import EmployeePage from "./pages/employee/EmployeePage";
 import RootLayout from "./components/RootLayout";
-import EmployeeAddPage from "./pages/employee/add/EmployeeAddPage";
+import EmployeeAddPage from "./pages/employee/EmployeeAddPage";
 import {
   AdmMenKsiMagPermissionCheck,
   AdmMenKsiMagPrzPermissionCheck,
@@ -15,23 +15,23 @@ import {
   KsiPermissionCheck,
 } from "./utils/auth";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
-import EmployeeEditPage from "./pages/employee/edit/EmployeeEditPage";
+import EmployeeEditPage from "./pages/employee/EmployeeEditPage";
 import ClientsPage from "./pages/clients/ClientsPage";
-import ClientsAddPage from "./pages/clients/add/ClientsAddPage";
-import ClientsEditPage from "./pages/clients/edit/ClientsEditPage";
-import SuppliersAddPage from "./pages/suppliers/add/SuppliersAddPage";
-import SuppliersEditPage from "./pages/suppliers/edit/SuppliersEditPage";
+import ClientsAddPage from "./pages/clients/ClientsAddPage";
+import ClientsEditPage from "./pages/clients/ClientsEditPage";
+import SuppliersAddPage from "./pages/suppliers/SuppliersAddPage";
+import SuppliersEditPage from "./pages/suppliers/SuppliersEditPage";
 import SuppliersDetailsPage from "./pages/suppliers/details/SuppliersDetailsPage";
 import SuppliersPage from "./pages/suppliers/SuppliersPage";
 import DeliveriesPage from "./pages/deliveries/DeliveriesPage";
-import DeliveriesAddPage from "./pages/deliveries/add/DeliveriesAddPage";
-import DeliveriesEditPage from "./pages/deliveries/edit/DeliveriesEditPage";
+import DeliveriesAddPage from "./pages/deliveries/DeliveriesAddPage";
+import DeliveriesEditPage from "./pages/deliveries/DeliveriesEditPage";
 import ProductsPage from "./pages/products/ProductsPage";
-import ProductsAddPage from "./pages/products/add/ProductsAddPage";
-import ProductEditPage from "./pages/products/edit/ProductEditPage";
+import ProductsAddPage from "./pages/products/ProductsAddPage";
+import ProductEditPage from "./pages/products/ProductEditPage";
 import OrdersPage from "./pages/orders/OrdersPage";
-import OrdersAddPage from "./pages/orders/add/OrdersAddPage";
-import OrdersEditPage from "./pages/orders/edit/OrdersEditPage";
+import OrdersAddPage from "./pages/orders/OrdersAddPage";
+import OrdersEditPage from "./pages/orders/OrdersEditPage";
 import StockPage from "./pages/stock/StockPage";
 import SortingPage from "./pages/deliveries/sorting/SortingPage";
 import ShippingDetails from "./pages/shipping/shippingDetails/ShippingDetails";
