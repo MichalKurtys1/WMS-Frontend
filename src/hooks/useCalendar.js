@@ -3,12 +3,9 @@ import {
   GET_DELIVERIES,
   GET_ORDERS,
   GET_ORDER_SHIPMENTS,
-} from "../../utils/apollo/apolloQueries";
+} from "../utils/apollo/apolloQueries";
 import { useMutation, useQuery } from "@apollo/client";
-import {
-  ADD_CALENDAR,
-  DELETE_CALENDAR,
-} from "../../utils/apollo/apolloMutations";
+import { ADD_CALENDAR, DELETE_CALENDAR } from "../utils/apollo/apolloMutations";
 import { useState } from "react";
 import { useEffect } from "react";
 

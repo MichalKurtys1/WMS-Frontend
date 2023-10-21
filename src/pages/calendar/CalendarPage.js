@@ -8,8 +8,8 @@ import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import { getAuth } from "../../context";
 import Spinner from "../../components/Spiner";
-import { useCalendar } from "./useCalendar";
 import Header from "../../components/Header";
+import { useCalendar } from "../../hooks/useCalendar";
 
 const CalendarPage = () => {
   const [value, setValue] = useState();

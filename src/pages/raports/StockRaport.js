@@ -82,7 +82,7 @@ const StockRaport = ({ timeScope }) => {
       finishedDeliveries: 0,
     };
     orders.orders.forEach((element) => {
-      if (element.state === "Zamówiono") {
+      if (element.state === "Zamówiono" || element.state === "Pre Order") {
         tempData.startedOrders += 1;
       } else if (element.state === "Zakończono") {
         tempData.finishedOrders += 1;
