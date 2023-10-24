@@ -31,3 +31,35 @@
 .succes p {
   font-family: "Roboto", sans-serif;
 }
+
+@media (min-width: 1800px) {
+  .succes {
+    width: 30%;
+  }
+}
+
+@media (max-width: 1400px) {
+  .succes {
+    width: 45%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .succes {
+    width: 50%;
+  }
+
+  .succes .checkIcon {
+    font-size: 16px;
+  }
+
+  .succes .iconCancel {
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+  }
+
+  .succes p {
+    font-size: 14px;
+  }
+}

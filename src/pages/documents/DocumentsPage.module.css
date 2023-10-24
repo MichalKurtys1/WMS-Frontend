@@ -182,3 +182,67 @@
   font-family: "Roboto", sans-serif;
   align-self: flex-start;
 }
+
+@media (min-width: 1680px) {
+  .menu input[type="text"] {
+    width: 35%;
+  }
+
+  .selectBox {
+    width: 35%;
+  }
+
+  .container main {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1280px) {
+  .container main {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .container main {
+    width: 70%;
+    margin: 0 auto;
+  }
+  .container main h1 {
+    font-size: 30px;
+  }
+  .selectBox .select {
+    font-size: 16px;
+  }
+  .selectBox::after {
+    width: 10px;
+    height: 7px;
+  }
+  .menu input[type="text"] {
+    font-size: 16px;
+  }
+  .menu button .icon {
+    font-size: 26px;
+  }
+  .files .groupBox h3 {
+    font-size: 20px;
+  }
+  .image {
+    width: 40px;
+    height: 40px;
+  }
+  .filesBox .wrapper h5 {
+    font-size: 12px;
+  }
+  .wrapper .upperBox p {
+    font-size: 20px;
+  }
+  .wrapper .upperBox button {
+    font-size: 18px;
+  }
+  .date {
+    font-size: 12px;
+  }
+}

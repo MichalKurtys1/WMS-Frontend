@@ -11,13 +11,15 @@ import {
 
 import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaCheck } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
 import ShipmentPopup from "./ShipmentPopup/ShipmentPopup";
 import Header from "../../components/Header";
+import DeletePopup from "../../components/DeletePopup";
+import SuccessMsg from "../../components/SuccessMsg";
+import Loading from "../../components/Loading";
+import StatePopup from "../../components/StatePopup";
 
 const format = [
   "orderID",
@@ -217,15 +219,13 @@ const OrdersPage = () => {
 
   return (
     <div className={style.container}>
-      <Header path={"/orders"} />
+      <Header path={"/"} />
       <ErrorHandler error={error} />
-      {successMsg && (
-        <div className={style.succes}>
-          <FaCheck className={style.checkIcon} />
-          <p>Zamówienie usunięte pomyślnie</p>
-        </div>
-      )}
-      {(loading || loadingStocks) && !error && <Spinner />}
+      <SuccessMsg
+        msg={"Zamówienie usunięte pomyślnie"}
+        state={successMsg && !error}
+      />
+      <Loading state={(loading || loadingStocks) && !error} />
       {data && data.orders && !shipmentPopupOpen && (
         <main>
           <div className={style.optionPanel}>
@@ -275,31 +275,18 @@ const OrdersPage = () => {
       <ShipmentPopup
         shipmentPopupOpen={shipmentPopupOpen}
         transportTypeHandler={transportTypeHandler}
+        closeHandler={() => setShipmentPopupOpen(false)}
       />
-      {popupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczone zamówienie z systemu?"
-          }
-          button2={"Usuń"}
-          button1={"Anuluj"}
-          button1Action={() => setPopupIsOpen(false)}
-          button2Action={deleteHandler}
-        />
-      )}
-      {statePopupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że tego chcesz? Tego procesu nie da się odwrócić."
-          }
-          button2={"Potwierdź"}
-          button1={"Anuluj"}
-          button1Action={() => {
-            setStatePopupIsOpen(false);
-          }}
-          button2Action={updateState}
-        />
-      )}
+      <DeletePopup
+        refuseAction={() => setPopupIsOpen(false)}
+        confirmAction={deleteHandler}
+        state={popupIsOpen}
+      />
+      <StatePopup
+        refuseAction={() => setStatePopupIsOpen(false)}
+        confirmAction={updateState}
+        state={statePopupIsOpen}
+      />
     </div>
   );
 };

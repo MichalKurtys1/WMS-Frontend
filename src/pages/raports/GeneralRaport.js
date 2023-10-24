@@ -10,11 +10,10 @@ import {
 } from "../../utils/apollo/apolloQueries";
 import ErrorHandler from "../../components/ErrorHandler";
 import { useEffect } from "react";
-import Spinner from "../../components/Spiner";
-import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveBar } from "@nivo/bar";
 import { IoIosWarning } from "react-icons/io";
 import { BsX } from "react-icons/bs";
+import Loading from "../../components/Loading";
 
 const GeneralRaport = ({ timeScope }) => {
   const [generalResults, setGeneralResults] = useState([]);
@@ -24,7 +23,6 @@ const GeneralRaport = ({ timeScope }) => {
     expenses: 0,
     bilans: 0,
   });
-  const [generalData, setGeneralData] = useState([]);
   const [error, setError] = useState();
   const { data: orders, loading } = useQuery(GET_ORDERS, {
     onError: (error) => setError(error),
@@ -86,7 +84,7 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += order.totalPrice;
+        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
       }
     });
 
@@ -98,17 +96,10 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += deliveries.totalPrice;
+        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
       }
     });
-    const bilans = initialData.map((item) => {
-      return {
-        x: item.x,
-        y: +item.Przychody - +item.Wydatki,
-      };
-    });
 
-    setGeneralData([{ id: "bilans", data: bilans }]);
     setGeneralResults(initialData);
     setSumData({
       ...sumData,
@@ -147,7 +138,7 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += order.totalPrice;
+        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
       }
     });
 
@@ -161,18 +152,10 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += deliveries.totalPrice;
+        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
       }
     });
 
-    const bilans = dataArray.map((item) => {
-      return {
-        x: item.x,
-        y: +item.Przychody - +item.Wydatki,
-      };
-    });
-
-    setGeneralData([{ id: "bilans", data: bilans }]);
     setGeneralResults(dataArray);
     setSumData({
       ...sumData,
@@ -205,7 +188,7 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += order.totalPrice;
+        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
       }
     });
 
@@ -219,18 +202,10 @@ const GeneralRaport = ({ timeScope }) => {
 
       if (matchingDataPoint) {
         totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += deliveries.totalPrice;
+        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
       }
     });
 
-    const bilans = months.map((item) => {
-      return {
-        x: item.x,
-        y: +item.Przychody - +item.Wydatki,
-      };
-    });
-
-    setGeneralData([{ id: "bilans", data: bilans }]);
     setGeneralResults(months);
     setSumData({
       ...sumData,
@@ -279,7 +254,7 @@ const GeneralRaport = ({ timeScope }) => {
   return (
     <div className={style.container}>
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       {isOpen && (
         <div className={style.warning}>
           <BsX className={style.cancel} onClick={() => setIsOpen(false)} />
@@ -296,7 +271,6 @@ const GeneralRaport = ({ timeScope }) => {
           </div>
         </div>
       )}
-
       <div className={style.sumBox}>
         <div
           className={style.sum}
@@ -327,278 +301,178 @@ const GeneralRaport = ({ timeScope }) => {
       </div>
       <div className={style.reports}>
         {timeScope === "Tydzień" && (
-          <>
-            <ResponsiveBar
-              data={generalResults}
-              keys={["Wydatki", "Przychody"]}
-              indexBy="x"
-              margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
-              padding={0.3}
-              groupMode="grouped"
-              valueScale={{ type: "linear" }}
-              indexScale={{ type: "band", round: true }}
-              colors={{ scheme: "nivo" }}
-              defs={[
-                {
-                  id: "dots",
-                  type: "patternDots",
-                  background: "inherit",
-                  color: "#38bcb2",
-                  size: 4,
-                  padding: 1,
-                  stagger: true,
+          <ResponsiveBar
+            data={generalResults}
+            keys={["Wydatki", "Przychody"]}
+            indexBy="x"
+            margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
+            padding={0.3}
+            groupMode="grouped"
+            valueScale={{ type: "linear" }}
+            indexScale={{ type: "band", round: true }}
+            colors={{ scheme: "nivo" }}
+            defs={[
+              {
+                id: "dots",
+                type: "patternDots",
+                background: "inherit",
+                color: "#38bcb2",
+                size: 4,
+                padding: 1,
+                stagger: true,
+              },
+              {
+                id: "lines",
+                type: "patternLines",
+                background: "inherit",
+                color: "#eed312",
+                rotation: -45,
+                lineWidth: 6,
+                spacing: 10,
+              },
+            ]}
+            fill={[
+              {
+                match: {
+                  id: "fries",
                 },
-                {
-                  id: "lines",
-                  type: "patternLines",
-                  background: "inherit",
-                  color: "#eed312",
-                  rotation: -45,
-                  lineWidth: 6,
-                  spacing: 10,
+                id: "dots",
+              },
+              {
+                match: {
+                  id: "sandwich",
                 },
-              ]}
-              fill={[
-                {
-                  match: {
-                    id: "fries",
-                  },
-                  id: "dots",
-                },
-                {
-                  match: {
-                    id: "sandwich",
-                  },
-                  id: "lines",
-                },
-              ]}
-              borderColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              axisTop={null}
-              axisRight={null}
-              axisBottom={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: "country",
-                legendPosition: "middle",
-                legendOffset: 32,
-              }}
-              axisLeft={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: "food",
-                legendPosition: "middle",
-                legendOffset: -40,
-              }}
-              labelSkipWidth={12}
-              labelSkipHeight={12}
-              labelTextColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              role="application"
-              ariaLabel="Nivo bar chart demo"
-              barAriaLabel={(e) =>
-                e.id + ": " + e.formattedValue + " in country: " + e.indexValue
-              }
-            />
-            <div className={style.bilandBox}>
-              <ResponsiveLine
-                data={generalData}
-                colors={["#ff0000"]}
-                margin={{ top: 160, right: 140, bottom: 120, left: 140 }}
-                xScale={{ type: "point" }}
-                yScale={{
-                  type: "linear",
-                  min: "auto",
-                  max: "auto",
-                  stacked: true,
-                  reverse: false,
-                }}
-                curve="basis"
-                yFormat=" >-.2f"
-                axisTop={null}
-                axisRight={null}
-                axisBottom={null}
-                axisLeft={null}
-                enableGridX={false}
-                enableGridY={false}
-                enablePoints={false}
-                pointSize={10}
-                pointColor={{ theme: "background" }}
-                pointBorderWidth={2}
-                pointBorderColor={{ from: "serieColor" }}
-                pointLabelYOffset={-12}
-                enableCrosshair={false}
-                useMesh={false}
-              />
-            </div>
-          </>
+                id: "lines",
+              },
+            ]}
+            borderColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "",
+              legendPosition: "middle",
+              legendOffset: 32,
+            }}
+            axisLeft={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Zł",
+              legendPosition: "middle",
+              legendOffset: -40,
+            }}
+            labelSkipWidth={12}
+            labelSkipHeight={12}
+            labelTextColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            role="application"
+            ariaLabel="Nivo bar chart demo"
+            barAriaLabel={(e) =>
+              e.id + ": " + e.formattedValue + " in country: " + e.indexValue
+            }
+          />
         )}
         {timeScope === "Miesiąc" && (
-          <>
-            {" "}
-            <ResponsiveBar
-              data={generalResults}
-              keys={["Wydatki", "Przychody"]}
-              indexBy="x"
-              margin={{ top: 50, right: 50, bottom: 60, left: 50 }}
-              padding={0.3}
-              groupMode="grouped"
-              valueScale={{ type: "linear" }}
-              indexScale={{ type: "band", round: true }}
-              colors={{ scheme: "nivo" }}
-              borderColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              axisTop={null}
-              axisRight={null}
-              axisBottom={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 52,
-                tickValues: "every 4 days",
-                legend: "",
-                legendPosition: "middle",
-                legendOffset: 32,
-              }}
-              axisLeft={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: "Zł",
-                legendPosition: "middle",
-                legendOffset: -40,
-              }}
-              labelSkipWidth={12}
-              labelSkipHeight={12}
-              labelTextColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              role="application"
-              ariaLabel="Nivo bar chart demo"
-              barAriaLabel={(e) =>
-                e.id + ": " + e.formattedValue + " in country: " + e.indexValue
-              }
-            />
-            <div className={style.bilandBox}>
-              <ResponsiveLine
-                data={generalData}
-                colors={["#ff0000"]}
-                margin={{ top: 160, right: 65, bottom: 120, left: 65 }}
-                xScale={{ type: "point" }}
-                yScale={{
-                  type: "linear",
-                  min: "auto",
-                  max: "auto",
-                  stacked: true,
-                  reverse: false,
-                }}
-                curve="basis"
-                yFormat=" >-.2f"
-                axisTop={null}
-                axisRight={null}
-                axisBottom={null}
-                axisLeft={null}
-                enableGridX={false}
-                enableGridY={false}
-                enablePoints={false}
-                pointSize={10}
-                pointColor={{ theme: "background" }}
-                pointBorderWidth={2}
-                pointBorderColor={{ from: "serieColor" }}
-                pointLabelYOffset={-12}
-                enableCrosshair={false}
-                useMesh={false}
-              />
-            </div>
-          </>
+          <ResponsiveBar
+            data={generalResults}
+            keys={["Wydatki", "Przychody"]}
+            indexBy="x"
+            margin={{ top: 50, right: 50, bottom: 60, left: 50 }}
+            padding={0.3}
+            groupMode="grouped"
+            valueScale={{ type: "linear" }}
+            indexScale={{ type: "band", round: true }}
+            colors={{ scheme: "nivo" }}
+            borderColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 52,
+              tickValues: "every 4 days",
+              legend: "",
+              legendPosition: "middle",
+              legendOffset: 32,
+            }}
+            axisLeft={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Zł",
+              legendPosition: "middle",
+              legendOffset: -40,
+            }}
+            labelSkipWidth={12}
+            labelSkipHeight={12}
+            labelTextColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            role="application"
+            ariaLabel="Nivo bar chart demo"
+            barAriaLabel={(e) =>
+              e.id + ": " + e.formattedValue + " in country: " + e.indexValue
+            }
+          />
         )}
         {timeScope === "Rok" && (
-          <>
-            <ResponsiveBar
-              data={generalResults}
-              keys={["Wydatki", "Przychody"]}
-              indexBy="x"
-              margin={{ top: 50, right: 50, bottom: 60, left: 50 }}
-              padding={0.3}
-              groupMode="grouped"
-              valueScale={{ type: "linear" }}
-              indexScale={{ type: "band", round: true }}
-              colors={{ scheme: "nivo" }}
-              borderColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              axisTop={null}
-              axisRight={null}
-              axisBottom={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 52,
-                tickValues: "every 4 days",
-                legend: "",
-                legendPosition: "middle",
-                legendOffset: 32,
-              }}
-              axisLeft={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: "Zł",
-                legendPosition: "middle",
-                legendOffset: -40,
-              }}
-              labelSkipWidth={12}
-              labelSkipHeight={12}
-              labelTextColor={{
-                from: "color",
-                modifiers: [["darker", 1.6]],
-              }}
-              role="application"
-              ariaLabel="Nivo bar chart demo"
-              barAriaLabel={(e) =>
-                e.id + ": " + e.formattedValue + " in country: " + e.indexValue
-              }
-            />
-            <div className={style.bilandBox}>
-              <ResponsiveLine
-                data={generalData}
-                colors={["#ff0000"]}
-                margin={{ top: 160, right: 80, bottom: 140, left: 100 }}
-                xScale={{ type: "point" }}
-                yScale={{
-                  type: "linear",
-                  min: "auto",
-                  max: "auto",
-                  stacked: true,
-                  reverse: false,
-                }}
-                curve="basis"
-                yFormat=" >-.2f"
-                axisTop={null}
-                axisRight={null}
-                axisBottom={null}
-                axisLeft={null}
-                enableGridX={false}
-                enableGridY={false}
-                enablePoints={false}
-                pointSize={10}
-                pointColor={{ theme: "background" }}
-                pointBorderWidth={2}
-                pointBorderColor={{ from: "serieColor" }}
-                pointLabelYOffset={-12}
-                enableCrosshair={false}
-                useMesh={false}
-              />
-            </div>
-          </>
+          <ResponsiveBar
+            data={generalResults}
+            keys={["Wydatki", "Przychody"]}
+            indexBy="x"
+            margin={{ top: 50, right: 50, bottom: 60, left: 50 }}
+            padding={0.3}
+            groupMode="grouped"
+            valueScale={{ type: "linear" }}
+            indexScale={{ type: "band", round: true }}
+            colors={{ scheme: "nivo" }}
+            borderColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 52,
+              tickValues: "every 4 days",
+              legend: "",
+              legendPosition: "middle",
+              legendOffset: 32,
+            }}
+            axisLeft={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Zł",
+              legendPosition: "middle",
+              legendOffset: -40,
+            }}
+            labelSkipWidth={12}
+            labelSkipHeight={12}
+            labelTextColor={{
+              from: "color",
+              modifiers: [["darker", 1.6]],
+            }}
+            role="application"
+            ariaLabel="Nivo bar chart demo"
+            barAriaLabel={(e) =>
+              e.id + ": " + e.formattedValue + " in country: " + e.indexValue
+            }
+          />
         )}
       </div>
     </div>

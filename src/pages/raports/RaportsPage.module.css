@@ -79,5 +79,39 @@
   color: #424d58;
   font-size: 24px;
   font-weight: bold;
+  padding: 10px 0;
   margin: 0;
+}
+
+@media (min-width: 1600px) {
+  .timeScope {
+    position: relative;
+    width: 15%;
+  }
+}
+
+@media (max-width: 1300px) {
+  .menu {
+    width: 80%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .menu {
+    width: 90%;
+  }
+
+  .menu h1 {
+    font-size: 32px;
+  }
+  .menu .raportsNavigation .icon {
+    font-size: 26px;
+  }
+
+  .menu .raportsNavigation p {
+    font-size: 20px;
+  }
+  .select {
+    font-size: 20px;
+  }
 }

@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import { GET_PRODUCTS, GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 import { useQuery, useMutation } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
-import { selectValidator } from "../../utils/inputValidators";
+import { selectValidator, textValidator } from "../../utils/inputValidators";
 
 import style from "../styles/ordDelAddEditPages.module.css";
 import Input from "../../components/Input";
 import Select from "../../components/Select";
 import ProductList from "./ProductsList";
-import Spinner from "../../components/Spiner";
 import ErrorHandler from "../../components/ErrorHandler";
 import { ADD_DELIVERY } from "../../utils/apollo/apolloMutations";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
+import { BiErrorAlt } from "react-icons/bi";
 
 const DeliveriesAddPage = () => {
   const location = useLocation();
@@ -147,7 +148,7 @@ const DeliveriesAddPage = () => {
     <div className={style.container}>
       <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
-      {(loadingSuppliers || loadingProducts) && !error && <Spinner />}
+      <Loading state={(loadingSuppliers || loadingProducts) && !error} />
       {(!loadingSuppliers || !loadingProducts) && (
         <main>
           <Form
@@ -174,6 +175,7 @@ const DeliveriesAddPage = () => {
                       <Input
                         name="date"
                         type="date"
+                        validator={textValidator}
                         fieldName="date"
                         min={getCurrentDateTime()}
                         width="90%"
@@ -203,6 +205,7 @@ const DeliveriesAddPage = () => {
                 <div className={style.productContainer}>
                   {submitError && (
                     <div className={style.error}>
+                      <BiErrorAlt className={style.icon} />
                       <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
                     </div>
                   )}

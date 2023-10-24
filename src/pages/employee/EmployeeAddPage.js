@@ -10,13 +10,13 @@ import {
 
 import style from "../styles/addEditPages.module.css";
 import Input from "../../components/Input";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import { FaPlus } from "react-icons/fa";
 import { ADD_EMPLOYEE } from "../../utils/apollo/apolloMutations";
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const positonList = [
   { name: "Wybierz Stanowisko" },
@@ -58,7 +58,7 @@ const EmployeeAddPage = () => {
     <div className={style.container}>
       <Header path={"/employees"} />
       <ErrorHandler error={error} />
-      {loading && !error && <Spinner />}
+      <Loading state={loading && !error} />
       {!loading && (
         <main>
           <Form

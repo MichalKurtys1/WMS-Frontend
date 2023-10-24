@@ -17,8 +17,8 @@
   top: 5%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 100px;
-  color: #f03a30;
+  font-size: 90px;
+  color: #30b2f2;
 }
 
 .popup h2 {
@@ -82,8 +82,8 @@
 .popup .yesBtn {
   position: relative;
   color: white;
-  background-color: #f03a30;
-  border: 2px solid #f03a30;
+  background-color: #30b2f2;
+  border: 2px solid #30b2f2;
   border-radius: 10px;
   width: 55%;
   padding: 15px;
@@ -103,7 +103,7 @@
   border-radius: 10px;
   transition: 0.5s;
   visibility: hidden;
-  color: #f03a30;
+  color: #30b2f2;
 }
 
 .popup .yesBtn:hover h3 {
@@ -111,7 +111,7 @@
 }
 
 .popup .yesBtn:hover .yesIcon {
-  background-color: #ff8680;
+  background-color: #80d5ff;
   visibility: visible;
 }
 

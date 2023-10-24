@@ -63,3 +63,49 @@
   color: #f03a30;
   text-align: center;
 }
+
+@media (min-width: 1680px) {
+  .container main {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1800px) {
+  .container main {
+    width: 45%;
+  }
+}
+
+@media (max-width: 1366px) {
+  .container main {
+    width: 60%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container main {
+    width: 70%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .container main {
+    width: 80%;
+  }
+  .form h1 {
+    font-size: 30px;
+  }
+
+  .form p {
+    font-size: 16px;
+  }
+
+  .form button {
+    font-size: 16px;
+    height: 45px;
+    margin-bottom: 50px;
+  }
+  .icon {
+    font-size: 12px;
+  }
+}

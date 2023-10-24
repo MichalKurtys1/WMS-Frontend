@@ -6,11 +6,12 @@ import { DELETE_SUPPLIER } from "../../utils/apollo/apolloMutations";
 
 import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaCheck } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import DeletePopup from "../../components/DeletePopup";
+import SuccessMsg from "../../components/SuccessMsg";
+import Loading from "../../components/Loading";
 
 const SuppliersPage = () => {
   const navigate = useNavigate();
@@ -71,13 +72,11 @@ const SuppliersPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {successMsg && !error && (
-        <div className={style.succes}>
-          <FaCheck className={style.checkIcon} />
-          <p>Dostawca usunięty pomyślnie</p>
-        </div>
-      )}
-      {loading && <Spinner />}
+      <SuccessMsg
+        msg={"Dostawca usunięty pomyślnie"}
+        state={successMsg && !error}
+      />
+      <Loading state={loading && !error} />
       {data && data.suppliers && (
         <main>
           <div className={style.optionPanel}>
@@ -112,17 +111,11 @@ const SuppliersPage = () => {
           </div>
         </main>
       )}
-      {popupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
-          }
-          button2={"Usuń"}
-          button1={"Anuluj"}
-          button1Action={() => setPopupIsOpen(false)}
-          button2Action={deleteHandler}
-        />
-      )}
+      <DeletePopup
+        refuseAction={() => setPopupIsOpen(false)}
+        confirmAction={deleteHandler}
+        state={popupIsOpen}
+      />
     </div>
   );
 };

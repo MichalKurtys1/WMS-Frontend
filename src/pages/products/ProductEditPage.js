@@ -10,11 +10,11 @@ import { GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 
 import style from "../styles/addEditPages.module.css";
 import Input from "../../components/Input";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import { selectValidator, textValidator } from "../../utils/inputValidators";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const unitItemsList = [
   { name: "Wybierz jednostkę" },
@@ -109,7 +109,9 @@ const ProductEditPage = () => {
     <div className={style.container}>
       <Header path={"/products"} />
       <ErrorHandler error={error} />
-      {(loading || updateLoading || loadingSuppliers) && !error && <Spinner />}
+      <Loading
+        state={(loading || updateLoading || loadingSuppliers) && !error}
+      />
       {data && (
         <main>
           <Form

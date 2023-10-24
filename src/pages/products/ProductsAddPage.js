@@ -8,10 +8,10 @@ import { selectValidator, textValidator } from "../../utils/inputValidators";
 
 import style from "../styles/addEditPages.module.css";
 import Input from "../../components/Input";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const unitItemsList = [
   { name: "Wybierz jednostkę" },
@@ -73,7 +73,7 @@ const ProductsAddPage = () => {
     <div className={style.container}>
       <Header path={"/products"} />
       <ErrorHandler error={error} />
-      {(loading || loadingSuppliers) && !error && <Spinner />}
+      <Loading state={(loading || loadingSuppliers) && !error} />
       {(!loading || !loadingSuppliers) && (
         <main>
           <Form

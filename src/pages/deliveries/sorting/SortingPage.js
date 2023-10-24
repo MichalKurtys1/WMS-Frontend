@@ -4,8 +4,8 @@ import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_DELIVERY } from "../../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../../components/ErrorHandler";
-import Spinner from "../../../components/Spiner";
 import Header from "../../../components/Header";
+import Loading from "../../../components/Loading";
 
 const SortingPage = () => {
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const SortingPage = () => {
     <div className={style.container}>
       <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       {!loading && (
         <div className={style.detailsBox}>
           <h1>Dostarczony asortyment</h1>

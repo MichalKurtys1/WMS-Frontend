@@ -6,8 +6,8 @@ import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
 import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const StockPage = () => {
   const location = useLocation();
@@ -25,7 +25,7 @@ const StockPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       {data && data.stocks && (
         <main>
           <div className={style.optionPanel}>

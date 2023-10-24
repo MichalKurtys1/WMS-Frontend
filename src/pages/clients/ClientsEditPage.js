@@ -11,10 +11,10 @@ import {
 
 import style from "../styles/addEditPages.module.css";
 import Input from "../../components/Input";
-import Spinner from "../../components/Spiner";
 import { FaPen } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const ClientsEditPage = () => {
   const location = useLocation();
@@ -69,7 +69,7 @@ const ClientsEditPage = () => {
     <div className={style.container}>
       <Header path={"/clients"} />
       <ErrorHandler error={error} />
-      {(loading || updateLoading) && <Spinner />}
+      <Loading state={(loading || updateLoading) && !error} />
       {data && (
         <main>
           <Form

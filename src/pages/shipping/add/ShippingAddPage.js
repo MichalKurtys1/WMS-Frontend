@@ -3,8 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router";
 
 import style from "./ShippingAddPage.module.css";
-import Spinner from "../../../components/Spiner";
-import { FaAngleLeft } from "react-icons/fa";
+import Header from "../../../components/Header";
 import React, { useEffect, useState } from "react";
 import ErrorHandler from "../../../components/ErrorHandler";
 import ShippingTable from "./ShippingTable";
@@ -18,6 +17,7 @@ import {
 import { ADD_ORDERS_SHIPMENT } from "../../../utils/apollo/apolloMutations";
 import Select from "../../../components/Select";
 import Input from "../../../components/Input";
+import Loading from "../../../components/Loading";
 
 const plateNumbersList = [
   { name: "Wybierz nr. Rejestracyjny" },
@@ -150,20 +150,14 @@ const ShippingAddPage = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.titileBox}>
-        <img
-          className={style.logoImg}
-          src={require("../../../assets/logo.png")}
-          alt="logo"
-        />
-        <div className={style.returnBox} onClick={() => navigate("/shipping")}>
-          <FaAngleLeft className={style.icon} />
-          <p>Powrót</p>
-        </div>
-      </div>
+      <Header path={"/shipping"} />
       <ErrorHandler error={error} />
-      {(loading || loadingOrders || loadingShippings || loadingStocks) &&
-        !error && <Spinner />}
+      <Loading
+        state={
+          (loading || loadingOrders || loadingShippings || loadingStocks) &&
+          !error
+        }
+      />
       {!loading &&
         !loadingOrders &&
         !loadingShippings &&

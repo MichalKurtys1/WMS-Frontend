@@ -3,7 +3,6 @@ import Input from "../../components/Input";
 import style from "./LoginForm.module.css";
 import { useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
-import Spinner from "../../components/Spiner";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../context/auth";
 import { useEffect } from "react";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import { emailValidator, passwordValidator } from "../../utils/inputValidators";
 import { LOGIN } from "../../utils/apollo/apolloMutations";
+import Loading from "../../components/Loading";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -52,13 +52,7 @@ const LoginForm = () => {
       render={({ handleSubmit, invalid }) => (
         <form className={style.form} onSubmit={handleSubmit}>
           <ErrorHandler error={error} width={"100%"} />
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
-            </div>
-          )}
+          <Loading state={loading} />
           {!loading && (
             <>
               <h1>Logowanie do systemu</h1>
@@ -74,14 +68,14 @@ const LoginForm = () => {
                   type="text"
                   fieldName="Email"
                   validator={emailValidator}
-                  width="90%"
+                  width="100%"
                 />
                 <Input
                   name="Hasło"
                   type="password"
                   fieldName="Password"
                   validator={passwordValidator}
-                  width="90%"
+                  width="100%"
                 />
                 <button disabled={invalid} type="submit">
                   Zaloguj

@@ -7,9 +7,9 @@ import CalendarTile from "./CalendarTile";
 import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import { getAuth } from "../../context";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
 import { useCalendar } from "../../hooks/useCalendar";
+import Loading from "../../components/Loading";
 
 const CalendarPage = () => {
   const [value, setValue] = useState();
@@ -166,7 +166,7 @@ const CalendarPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {!data && loading && <Spinner />}
+      <Loading state={!data && loading} />
       {data && events && (
         <>
           <div className={style.calendarContainer}>

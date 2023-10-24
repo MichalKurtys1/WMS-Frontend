@@ -7,7 +7,7 @@ import {
   GET_PRODUCTS,
   GET_STOCKS,
 } from "../../utils/apollo/apolloQueries";
-import { selectValidator } from "../../utils/inputValidators";
+import { selectValidator, textValidator } from "../../utils/inputValidators";
 
 import style from "../styles/ordDelAddEditPages.module.css";
 import Input from "../../components/Input";
@@ -21,8 +21,9 @@ import {
 } from "../../utils/apollo/apolloMutations";
 import OrderPDF from "../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
+import { BiErrorAlt } from "react-icons/bi";
 
 const OrdersAddPage = () => {
   const navigate = useNavigate();
@@ -167,7 +168,6 @@ const OrdersAddPage = () => {
   };
 
   const onSubmit = (values) => {
-    setSumbitLoading(true);
     const incompleteProducts = productList.filter(
       (item) =>
         item.product === null ||
@@ -184,7 +184,7 @@ const OrdersAddPage = () => {
             item.product
         )[0].availableStock < parseInt(item.quantity)
     );
-    if (incompleteProducts.length > 0 || submitError) {
+    if (incompleteProducts.length > 0) {
       setSubmitError(true);
       return;
     }
@@ -201,7 +201,7 @@ const OrdersAddPage = () => {
         +item.quantity * +product.pricePerUnit * 1.4 +
         +item.quantity * +product.pricePerUnit * 1.4 * 0.23;
     });
-    console.log(error);
+
     addOrder({
       variables: {
         clientId: values.client,
@@ -261,7 +261,18 @@ const OrdersAddPage = () => {
   return (
     <div className={style.container}>
       <Header path={"/orders"} />
-      {sumbitLoading && !error && <Spinner />}
+      <Loading
+        state={
+          (sumbitLoading ||
+            loadingClients ||
+            loadingProducts ||
+            loadingStock ||
+            uploadLoading ||
+            addLoading ||
+            updateLoading) &&
+          !error
+        }
+      />
       <ErrorHandler error={error} />
       {(!loadingClients ||
         !loadingProducts ||
@@ -299,6 +310,7 @@ const OrdersAddPage = () => {
                           name="date"
                           type="date"
                           fieldName="date"
+                          validator={textValidator}
                           min={getCurrentDateTime()}
                           width="90%"
                           margin={true}
@@ -326,6 +338,7 @@ const OrdersAddPage = () => {
                   <div className={style.productContainer}>
                     {submitError && (
                       <div className={style.error}>
+                        <BiErrorAlt className={style.icon} />
                         <p>
                           Uzupełnij wszystkie produkty lub usuń niepotrzebne.
                         </p>

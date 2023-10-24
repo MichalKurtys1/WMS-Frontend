@@ -9,7 +9,6 @@ import {
   UPDATE_SHIPMENT_STATE,
 } from "../../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../../components/ErrorHandler";
-import Spinner from "../../../components/Spiner";
 import {
   GET_ORDERS,
   GET_ORDER_SHIPMENTS,
@@ -17,6 +16,7 @@ import {
 import { pdf } from "@react-pdf/renderer";
 import ShippmentPDF from "../../PDFs/ShippmentPDF";
 import Header from "../../../components/Header";
+import Loading from "../../../components/Loading";
 
 const ShippingDetails = () => {
   const navigate = useNavigate();
@@ -183,7 +183,7 @@ const ShippingDetails = () => {
     <div className={style.container}>
       <Header path={"/shipping"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       {data && (
         <div className={style.detailsBox}>
           <h1>Dane przesyłki</h1>

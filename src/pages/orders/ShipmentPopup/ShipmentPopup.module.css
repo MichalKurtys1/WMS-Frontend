@@ -5,6 +5,13 @@
   text-align: center;
 }
 
+.icon {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  font-size: 50px;
+}
+
 .popup .buttons {
   display: flex;
   align-items: center;
@@ -37,4 +44,32 @@
   color: #2d3640;
   font-family: "Roboto";
   font-weight: 500;
+}
+
+@media (min-width: 1800px) {
+  .popup h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .icon {
+    right: 40px;
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .buttons button {
+    width: 25%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .icon {
+    top: 12%;
+  }
+  .buttons button {
+    width: 30%;
+  }
 }

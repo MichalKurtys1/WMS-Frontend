@@ -15,7 +15,7 @@
 .sumBox .sum {
   user-select: none;
   width: 25%;
-  height: 12vh;
+  height: 6vw;
   margin-top: 20px;
   padding: 10px;
   border-radius: 10px;
@@ -65,4 +65,46 @@
   display: block;
   width: 100%;
   margin: 5px 0 0;
+}
+
+@media (max-width: 1280px) {
+  .container {
+    width: 60vw;
+  }
+  .reports {
+    width: 60vw;
+  }
+  .sumBox .sum p {
+    font-size: 14px;
+  }
+  .sumBox .sum h2 {
+    font-size: 30px;
+  }
+  .sum .wrapper span {
+    font-size: 12px;
+  }
+  .sum .wrapper h3 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .container {
+    width: 70vw;
+  }
+  .reports {
+    width: 60vw;
+  }
+  .sumBox .sum p {
+    font-size: 12px;
+  }
+  .sumBox .sum h2 {
+    font-size: 26px;
+  }
+  .sum .wrapper span {
+    font-size: 11px;
+  }
+  .sum .wrapper h3 {
+    font-size: 24px;
+  }
 }

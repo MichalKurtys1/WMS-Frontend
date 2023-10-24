@@ -8,9 +8,9 @@ import {
 } from "../../utils/apollo/apolloQueries";
 import ErrorHandler from "../../components/ErrorHandler";
 import { useEffect } from "react";
-import Spinner from "../../components/Spiner";
 import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveBar } from "@nivo/bar";
+import Loading from "../../components/Loading";
 
 const OrdersRaport = ({ timeScope }) => {
   const [ordersResults, setOrdersResults] = useState([]);
@@ -92,7 +92,7 @@ const OrdersRaport = ({ timeScope }) => {
         });
         earned += order.totalPrice;
         matchingDataPoint.y += 1;
-        matchingDataPoint.v += order.totalPrice;
+        matchingDataPoint.v += +order.totalPrice.toFixed(0);
         sum++;
       }
     });
@@ -152,7 +152,7 @@ const OrdersRaport = ({ timeScope }) => {
         });
         earned += order.totalPrice;
         matchingDataPoint.y += 1;
-        matchingDataPoint.v += order.totalPrice;
+        matchingDataPoint.v += +order.totalPrice.toFixed(0);
         sum++;
       }
     });
@@ -206,7 +206,7 @@ const OrdersRaport = ({ timeScope }) => {
         });
         earned += order.totalPrice;
         matchingDataPoint.y += 1;
-        matchingDataPoint.v += order.totalPrice;
+        matchingDataPoint.v += +order.totalPrice.toFixed(0);
         sum++;
       }
     });
@@ -237,7 +237,7 @@ const OrdersRaport = ({ timeScope }) => {
   return (
     <div className={style.container}>
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       <div className={style.sumBox}>
         <div
           className={style.sum}

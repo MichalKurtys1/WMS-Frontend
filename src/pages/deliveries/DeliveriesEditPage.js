@@ -16,12 +16,13 @@ import { selectValidator } from "../../utils/inputValidators";
 import { dateToInput } from "../../utils/dateFormatters";
 
 import style from "../styles/ordDelAddEditPages.module.css";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import Input from "../../components/Input";
 import ProductList from "./ProductsList";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
+import { BiErrorAlt } from "react-icons/bi";
 
 const DeliveriesEditPage = () => {
   const location = useLocation();
@@ -252,8 +253,12 @@ const DeliveriesEditPage = () => {
     <div className={style.container}>
       <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
-      {(loadingSuppliers || loadingProducts || loading || updateLoading) &&
-        !error && <Spinner />}
+      <Loading
+        state={
+          (loadingSuppliers || loadingProducts || loading || updateLoading) &&
+          !error
+        }
+      />
       {data && deliveryData && (
         <main>
           <Form
@@ -306,6 +311,7 @@ const DeliveriesEditPage = () => {
                 <div className={style.productContainer}>
                   {submitError && (
                     <div className={style.error}>
+                      <BiErrorAlt className={style.icon} />
                       <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
                     </div>
                   )}

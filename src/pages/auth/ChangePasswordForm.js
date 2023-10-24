@@ -3,7 +3,7 @@ import Input from "../../components/Input";
 import style from "./ChangePasswordForm.module.css";
 import { useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
-import Spinner from "../../components/Spiner";
+import Loading from "../../components/Loading";
 import { useState } from "react";
 import { getAuth } from "../../context/index";
 import ErrorHandler from "../../components/ErrorHandler";
@@ -39,13 +39,7 @@ const ChangePasswordForm = () => {
       render={({ handleSubmit, invalid }) => (
         <form className={style.form} onSubmit={handleSubmit}>
           <ErrorHandler error={error} width={"100%"} />
-          {loading && (
-            <div className={style.spinnerBox}>
-              <div className={style.spinner}>
-                <Spinner />
-              </div>
-            </div>
-          )}
+          <Loading state={loading} />
           {!loading && (
             <>
               <h1>Zmiana hasła</h1>
@@ -64,18 +58,21 @@ const ChangePasswordForm = () => {
                   type="password"
                   fieldName="oldPassword"
                   validator={passwordValidator}
+                  width={"100%"}
                 />
                 <Input
                   name="Nowe hasło"
                   type="password"
                   fieldName="newPassword"
                   validator={passwordValidator}
+                  width={"100%"}
                 />
                 <Input
                   name="Powtórz nowe hasło"
                   type="password"
                   fieldName="newPasswordRepeat"
                   validator={passwordValidator}
+                  width={"100%"}
                 />
                 <button disabled={invalid} type="submit">
                   Zmień

@@ -6,11 +6,12 @@ import { DELETE_CLIENT } from "../../utils/apollo/apolloMutations";
 
 import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaCheck } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import DeletePopup from "../../components/DeletePopup";
+import SuccessMsg from "../../components/SuccessMsg";
+import Loading from "../../components/Loading";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
@@ -63,13 +64,11 @@ const ClientsPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
-      {successMsg && !error && (
-        <div className={style.succes}>
-          <FaCheck className={style.checkIcon} />
-          <p>Klient usunięty pomyślnie</p>
-        </div>
-      )}
+      <Loading state={loading} />
+      <SuccessMsg
+        msg={"Klient usunięty pomyślnie"}
+        state={successMsg && !error}
+      />
       {data && data.clients && (
         <main>
           <div className={style.optionPanel}>
@@ -112,17 +111,11 @@ const ClientsPage = () => {
           </div>
         </main>
       )}
-      {popupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć zaznaczonego klienta z systemu?"
-          }
-          button1={"Anuluj"}
-          button2={"Usuń"}
-          button1Action={() => setPopupIsOpen(false)}
-          button2Action={deleteHandler}
-        />
-      )}
+      <DeletePopup
+        refuseAction={() => setPopupIsOpen(false)}
+        confirmAction={deleteHandler}
+        state={popupIsOpen}
+      />
     </div>
   );
 };

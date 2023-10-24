@@ -11,7 +11,7 @@
 }
 
 .form p {
-  margin: 0 0 15px 0;
+  margin: 0 0 25px 0;
   color: #000e4d;
 }
 
@@ -20,6 +20,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .form button {
@@ -61,4 +63,31 @@
   text-align: center;
   color: #f03a30;
   font-weight: bold;
+}
+
+@media (max-width: 1380px) {
+  .form {
+    min-width: 55%;
+  }
+  .form .inputBox {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1280px) {
+  .form {
+    min-width: 60%;
+  }
+  .form .inputBox {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1150px) {
+  .form {
+    min-width: 70%;
+  }
+  .form .inputBox {
+    width: 90%;
+  }
 }

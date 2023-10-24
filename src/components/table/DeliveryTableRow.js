@@ -64,6 +64,14 @@ function DeliveryDetailsRow(props) {
                 <div className={style.optionsBox}>
                   <button
                     onClick={() => updateStateHandler(id, "Odebrano")}
+                    disabled={
+                      record["state"] === "Odebrano" ||
+                      record["state"] === "Posortowano" ||
+                      record["state"] === "Rozlokowano" ||
+                      record["state"] === "Zakończono"
+                        ? true
+                        : false
+                    }
                     style={{
                       pointerEvents:
                         record["state"] === "Odebrano" ||

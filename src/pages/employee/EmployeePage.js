@@ -8,11 +8,11 @@ import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
 import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context";
 import Header from "../../components/Header";
 import SuccessMsg from "../../components/SuccessMsg";
 import DeletePopup from "../../components/DeletePopup";
+import Loading from "../../components/Loading";
 
 const EmployeePage = () => {
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ const EmployeePage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       <SuccessMsg
         msg={"Pracownik usunięty pomyślnie"}
         state={successMsg && !error}

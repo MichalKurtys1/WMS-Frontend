@@ -10,10 +10,10 @@ import {
 
 import style from "../styles/addEditPages.module.css";
 import Input from "../../components/Input";
-import Spinner from "../../components/Spiner";
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const SuppliersAddPage = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const SuppliersAddPage = () => {
     <div className={style.container}>
       <Header path={"/suppliers"} />
       <ErrorHandler error={error} />
-      {loading && !error && <Spinner />}
+      <Loading state={loading && !error} />
       {!loading && (
         <main>
           <Form

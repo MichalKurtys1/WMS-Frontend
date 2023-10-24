@@ -6,12 +6,13 @@ import { DELETE_PRODUCT } from "../../utils/apollo/apolloMutations";
 
 import style from "../styles/tablePages.module.css";
 import Table from "../../components/table/Table";
-import PopUp from "../../components/PopUp";
-import { FaUserPlus, FaCheck } from "react-icons/fa";
+import DeletePopup from "../../components/DeletePopup";
+import { FaUserPlus } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import { getAuth } from "../../context/index";
 import Header from "../../components/Header";
+import SuccessMsg from "../../components/SuccessMsg";
+import Loading from "../../components/Loading";
 
 const ProductsPage = () => {
   const location = useLocation();
@@ -65,13 +66,11 @@ const ProductsPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {successMsg && (
-        <div className={style.succes}>
-          <FaCheck className={style.checkIcon} />
-          <p>Produkt usunięty pomyślnie</p>
-        </div>
-      )}
-      {loading && !error && <Spinner />}
+      <SuccessMsg
+        msg={"Produkt usunięty pomyślnie"}
+        state={successMsg && !error}
+      />
+      <Loading state={loading && !error} />
       {data && data.products && (
         <main>
           <div className={style.optionPanel}>
@@ -119,17 +118,11 @@ const ProductsPage = () => {
           </div>
         </main>
       )}
-      {popupIsOpen && (
-        <PopUp
-          message={
-            "Czy jesteś pewien, że chcesz usunąć usunąć ten produkt z systemu?"
-          }
-          button2={"Usuń"}
-          button1={"Anuluj"}
-          button1Action={() => setPopupIsOpen(false)}
-          button2Action={deleteHandler}
-        />
-      )}
+      <DeletePopup
+        refuseAction={() => setPopupIsOpen(false)}
+        confirmAction={deleteHandler}
+        state={popupIsOpen}
+      />
     </div>
   );
 };

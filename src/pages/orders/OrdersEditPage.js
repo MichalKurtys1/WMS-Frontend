@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { dateToInput } from "../../utils/dateFormatters";
-import { selectValidator } from "../../utils/inputValidators";
+import { selectValidator, textValidator } from "../../utils/inputValidators";
 import {
   GET_ORDER,
   ORDER_FILE_UPLOAD,
@@ -17,7 +17,6 @@ import {
 } from "../../utils/apollo/apolloQueries";
 
 import style from "../styles/ordDelAddEditPages.module.css";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import Input from "../../components/Input";
 import ProductList from "./ProductsList";
@@ -25,6 +24,8 @@ import ErrorHandler from "../../components/ErrorHandler";
 import OrderPDF from "../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
+import { BiErrorAlt } from "react-icons/bi";
 
 const OrdersEditPage = () => {
   const location = useLocation();
@@ -316,15 +317,19 @@ const OrdersEditPage = () => {
     <div className={style.container}>
       <Header path={"/orders"} />
       <ErrorHandler error={error} />
-      {(loadingClients ||
-        loadingProducts ||
-        loading ||
-        updateLoading ||
-        loadingUpdateStocks ||
-        loadingUploadFile ||
-        loadingStocks) &&
-        sumbitLoading &&
-        !error && <Spinner />}
+      <Loading
+        state={
+          (loadingClients ||
+            loadingProducts ||
+            loading ||
+            updateLoading ||
+            loadingUpdateStocks ||
+            loadingUploadFile ||
+            loadingStocks) &&
+          sumbitLoading &&
+          !error
+        }
+      />
       {data && deliveryData && stocks && (
         <main>
           <Form
@@ -352,6 +357,7 @@ const OrdersEditPage = () => {
                         name="date"
                         type="date"
                         fieldName="date"
+                        validator={textValidator}
                         min={getCurrentDateTime()}
                         width="90%"
                         margin={true}
@@ -377,6 +383,7 @@ const OrdersEditPage = () => {
                 <div className={style.productContainer}>
                   {submitError && (
                     <div className={style.error}>
+                      <BiErrorAlt className={style.icon} />
                       <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
                     </div>
                   )}

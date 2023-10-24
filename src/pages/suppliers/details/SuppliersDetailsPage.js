@@ -3,9 +3,9 @@ import style from "./SuppliersDetailsPage.module.css";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_SUPPLIER } from "../../../utils/apollo/apolloMutations";
-import Spinner from "../../../components/Spiner";
 import ErrorHandler from "../../../components/ErrorHandler";
 import Header from "../../../components/Header";
+import Loading from "../../../components/Loading";
 
 const SuppliersDetailsPage = () => {
   const location = useLocation();
@@ -33,7 +33,7 @@ const SuppliersDetailsPage = () => {
     <div className={style.container}>
       <Header path={"/suppliers"} />
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       {data && (
         <div className={style.supplierBox}>
           <h1>{data.name}</h1>

@@ -9,9 +9,9 @@ import {
   GET_STOCKS,
 } from "../../utils/apollo/apolloQueries";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import chroma from "chroma-js";
 import { ResponsiveBar } from "@nivo/bar";
+import Loading from "../../components/Loading";
 
 const StockRaport = ({ timeScope }) => {
   const [error, setError] = useState();
@@ -243,7 +243,7 @@ const StockRaport = ({ timeScope }) => {
   return (
     <div className={style.container}>
       <ErrorHandler error={error} />
-      {loading && <Spinner />}
+      <Loading state={loading && !error} />
       <div className={style.sumBox}>
         <div className={style.sum}>
           <p>

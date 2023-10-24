@@ -138,17 +138,80 @@
   transform: translate(-50%, -50%);
 }
 
-.spinnerBox {
-  position: relative;
-  background-color: #fff;
-  width: 100%;
-  height: 100%;
+@media (min-width: 1600px) {
+  .eventContainer .addBox {
+    width: 80%;
+  }
 }
 
-.spinner {
-  position: absolute;
-  z-index: 11;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+@media (min-width: 1800px) {
+  .calendarContainer {
+    width: 45%;
+  }
+  .eventBox {
+    width: 45%;
+  }
+  .eventContainer .addBox input[type="time"] {
+    width: 17%;
+    height: 35px;
+  }
+
+  .eventContainer .addBox input[type="text"] {
+    height: 35px;
+  }
+  .eventContainer .addBox button {
+    height: 51px;
+    width: 51px;
+  }
+}
+
+@media (min-width: 1900px) {
+  .calendarContainer {
+    width: 40%;
+  }
+  .eventBox {
+    width: 45%;
+  }
+}
+
+@media (max-width: 1440px) {
+  .calendarContainer {
+    width: 60%;
+  }
+  .eventBox {
+    width: 60%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .calendarContainer {
+    width: 80%;
+  }
+  .eventBox {
+    width: 80%;
+  }
+  .eventContainer .addBox input[type="time"] {
+    font-size: 18px;
+  }
+
+  .eventContainer .addBox input[type="text"] {
+    font-size: 18px;
+  }
+  .eventBox .event h3 {
+    font-size: 16px;
+  }
+
+  .eventBox .event p {
+    font-size: 16px;
+  }
+  .eventBox h2 {
+    font-size: 22px;
+  }
+  .eventBox .plusIcon {
+    font-size: 16px;
+  }
+
+  .eventBox .minusIcon {
+    font-size: 16px;
+  }
 }

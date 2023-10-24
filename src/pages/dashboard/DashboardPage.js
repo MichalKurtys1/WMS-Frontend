@@ -3,10 +3,10 @@ import { useCalendar } from "../../hooks/useCalendar";
 import style from "./DashboardPage.module.css";
 import { getAuth } from "../../context";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import { BsExclamationTriangleFill } from "react-icons/bs";
 import { useQuery } from "@apollo/client";
 import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
+import Loading from "../../components/Loading";
 
 const DashboardPage = () => {
   const { error, loading, data } = useCalendar();
@@ -225,7 +225,7 @@ const DashboardPage = () => {
   return (
     <div className={style.container}>
       <ErrorHandler error={error} />
-      {!data && loading && <Spinner />}
+      <Loading state={!data && loading && !error} />
       <div className={style.leftBox}>
         <div className={style.upperBox}>
           <img src={require("../../assets/logo_small.png")} alt={"logo"} />

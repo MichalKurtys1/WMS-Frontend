@@ -7,8 +7,8 @@ import {
 } from "../../utils/apollo/apolloMutations";
 import { useState } from "react";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const OrdersUploadPage = () => {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ const OrdersUploadPage = () => {
     <div className={style.container}>
       <Header path={"/orders"} />
       <ErrorHandler error={error} />
-      {(uploadLoading || stateLoading) && <Spinner />}
+      <Loading state={(uploadLoading || stateLoading) && !error} />
       {!uploadLoading && !stateLoading && (
         <main>
           <form className={style.form} onSubmit={submitHandler}>

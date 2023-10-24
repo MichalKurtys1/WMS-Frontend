@@ -93,6 +93,7 @@
   position: absolute;
   bottom: 0;
   z-index: 5;
+  top: 100%;
   left: 50%;
   transform: translate(-50%, 80%);
   visibility: hidden;
@@ -148,4 +149,16 @@
 .optionsBox .picklist:hover {
   background-color: #3054f2;
   /* color: white; */
+}
+
+@media (max-width: 1100px) {
+  .optionsBox button .iconReverse {
+    font-size: 18px;
+  }
+  .optionsBox button .icon {
+    font-size: 18px;
+  }
+  .optionsBox button .tooltip p {
+    font-size: 12px;
+  }
 }

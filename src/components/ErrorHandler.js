@@ -11,6 +11,9 @@ const ErrorHandler = ({ error, width }) => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState();
 
+  // temporary
+  // console.log("Error: " + error);
+
   useEffect(() => {
     if (error && error.message) {
       setErrorMsg(error.message || "UNDEFINED_ERROR");

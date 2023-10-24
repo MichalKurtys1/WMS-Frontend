@@ -14,12 +14,12 @@ import {
 } from "../../utils/inputValidators";
 
 import style from "../styles/addEditPages.module.css";
-import Spinner from "../../components/Spiner";
 import Select from "../../components/Select";
 import Input from "../../components/Input";
 import { FaPen } from "react-icons/fa";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const positonList = [
   { name: "Wybierz Stanowisko" },
@@ -81,7 +81,7 @@ const EmployeeEditPage = () => {
     <div className={style.container}>
       <Header path={"/employees"} />
       <ErrorHandler error={error} />
-      {(loading || updateLoading) && <Spinner />}
+      <Loading state={(loading || updateLoading) && !error} />
       {data && (
         <main>
           <Form

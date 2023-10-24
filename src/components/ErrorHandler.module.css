@@ -32,3 +32,35 @@
   font-size: 30px;
   margin-right: 10px;
 }
+
+@media (min-width: 1800px) {
+  .errorBox {
+    width: 30%;
+  }
+}
+
+@media (max-width: 1400px) {
+  .errorBox {
+    width: 45%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .errorBox {
+    width: 60%;
+  }
+
+  .errorBox .checkIcon {
+    font-size: 16px;
+  }
+
+  .errorBox .iconCancel {
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+  }
+
+  .errorBox p {
+    font-size: 14px;
+  }
+}

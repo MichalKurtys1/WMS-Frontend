@@ -10,8 +10,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_FILES } from "../../utils/apollo/apolloQueries";
 import { FILE_DELETE, FILE_DOWNLOAD } from "../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../components/ErrorHandler";
-import Spinner from "../../components/Spiner";
 import Header from "../../components/Header";
+import Loading from "../../components/Loading";
 
 const dataFiltering = (data, category, searchValue, filterValue) => {
   let temporaryData = data.files;
@@ -120,7 +120,7 @@ const DocumentsPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      {(!results && loading) || (downloading && <Spinner />)}
+      <Loading state={(!results && loading) || downloading} />
       {results && !downloading && (
         <main>
           <h1>Dokumenty</h1>

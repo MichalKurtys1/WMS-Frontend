@@ -1,61 +1,3 @@
-.container {
-  position: absolute;
-  top: 0;
-  left: 17%;
-  width: 83%;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 0;
-  background-color: #fff;
-  z-index: 1;
-}
-
-.logoImg {
-  position: absolute;
-  top: 10px;
-  right: 50px;
-  width: 120px;
-  height: 45px;
-  object-fit: cover;
-}
-
-.titileBox {
-  width: 95%;
-  margin: 0 auto;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #646e78;
-}
-
-.returnBox {
-  display: flex;
-  align-items: center;
-  color: #2d3640;
-}
-
-.returnBox .icon {
-  margin: 20px 0 10px;
-  font-size: 20px;
-}
-.returnBox p {
-  font-weight: bold;
-  font-family: "Roboto";
-  font-size: 20px;
-  margin: 20px 0 10px;
-}
-
-.container main {
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 20px auto;
-  width: 55%;
-  padding-bottom: 20px;
-  border-radius: 10px;
-}
-
-/* ss */
-
 .supplierBox {
   width: 50%;
   margin: 0 auto;
@@ -95,4 +37,32 @@
   font-weight: 500;
   font-size: 24px;
   margin: 5px;
+}
+
+@media (max-width: 1450px) {
+  .supplierBox {
+    width: 60%;
+  }
+}
+
+@media (max-width: 1280px) {
+  .supplierBox {
+    width: 65%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .supplierBox {
+    width: 70%;
+  }
+  .supplierBox h1 {
+    font-size: 30px;
+  }
+  .supplierBox .dataBox h2 {
+    font-size: 16px;
+  }
+
+  .supplierBox .dataBox p {
+    font-size: 18px;
+  }
 }
