@@ -91,3 +91,12 @@
     width: 90%;
   }
 }
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .form {
+    min-width: 85%;
+  }
+  .form .inputBox {
+    width: 90%;
+  }
+}

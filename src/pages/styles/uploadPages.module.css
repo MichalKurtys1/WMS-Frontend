@@ -163,3 +163,14 @@
     font-size: 16px;
   }
 }
+
+@media (max-width: 750px) and (orientation: portrait) {
+  .form {
+    width: 80%;
+  }
+}
+@media (max-width: 855px) and (orientation: landscape) {
+  .form {
+    width: 80%;
+  }
+}

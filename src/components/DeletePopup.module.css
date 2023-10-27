@@ -158,3 +158,31 @@
     padding: 10px;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .popup {
+    width: 50vw;
+    height: 40vw;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .popup {
+    width: 65vw;
+    height: 50vw;
+  }
+}
+
+@media (max-width: 550px) and (orientation: portrait) {
+  .popup {
+    width: 75vw;
+    height: 55vw;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .popup {
+    width: 50vw;
+    height: 40vw;
+  }
+}

@@ -73,3 +73,21 @@
     width: 30%;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .icon {
+    top: 5%;
+  }
+  .buttons button {
+    width: 35%;
+  }
+}
+
+@media (max-width: 769px) and (orientation: portrait) {
+  .icon {
+    top: 9%;
+  }
+  .buttons button {
+    width: 35%;
+  }
+}

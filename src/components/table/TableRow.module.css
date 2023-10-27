@@ -160,3 +160,36 @@
   margin: 5px;
   width: 33%;
 }
+
+@media (max-width: 1280px) {
+  .options {
+    right: 30px;
+  }
+
+  .options .option {
+    justify-content: flex-start;
+    width: 90px;
+  }
+
+  .triangleIcon {
+    transform: translateY(-50%) rotate(90deg);
+    left: inherit;
+    right: 5px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .triangleIcon {
+    font-size: 6px;
+  }
+  .options .option {
+    width: 70px;
+  }
+  .option .icon {
+    font-size: 12px;
+  }
+
+  .option p {
+    font-size: 12px;
+  }
+}

@@ -4,6 +4,13 @@
   margin: 0 auto;
 }
 
+.reports {
+  position: relative;
+  height: 50vh;
+  width: 70vw;
+  margin: 0 auto;
+}
+
 .tooltip {
   display: flex;
   align-items: center;
@@ -118,5 +125,43 @@
   }
   .sumBox .sum h2 {
     font-size: 26px;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .container {
+    width: 95%;
+  }
+  .reports {
+    height: 30vh;
+    width: 95vw;
+  }
+}
+
+@media (max-height: 1100px) and (orientation: portrait) {
+  .reports {
+    height: 35vh;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .sumBox {
+    width: 95%;
+  }
+  .sumBox .sum {
+    height: 8vw;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .sumBox {
+    width: 95%;
+  }
+  .sumBox .sum {
+    height: 8vw;
+  }
+  .reports {
+    height: 55vh;
+    width: 95%;
   }
 }

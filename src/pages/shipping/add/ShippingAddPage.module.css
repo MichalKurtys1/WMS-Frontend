@@ -90,3 +90,15 @@
     height: 45px;
   }
 }
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .container main {
+    width: 95%;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .container main {
+    width: 95%;
+  }
+}

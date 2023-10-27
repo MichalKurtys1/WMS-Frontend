@@ -215,3 +215,21 @@
     font-size: 16px;
   }
 }
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .calendarContainer {
+    width: 95%;
+  }
+  .eventBox {
+    width: 95%;
+  }
+}
+
+@media (max-width: 850px) and (orientation: landscape) {
+  .calendarContainer {
+    width: 95%;
+  }
+  .eventBox {
+    width: 95%;
+  }
+}

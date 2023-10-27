@@ -93,3 +93,60 @@
     font-size: 30px;
   }
 }
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .detailsBox {
+    width: 95%;
+  }
+  .detailsBox .productBox input {
+    font-size: 13px;
+  }
+  .detailsBox .productBox p {
+    font-size: 14px;
+  }
+  .detailsBox .sendBtn {
+    font-size: 18px;
+  }
+
+  .detailsBox h1 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .detailsBox {
+    width: 95%;
+  }
+  .detailsBox .productBox input {
+    font-size: 12px;
+  }
+  .detailsBox .productBox p {
+    font-size: 13px;
+  }
+  .detailsBox .sendBtn {
+    font-size: 18px;
+  }
+
+  .detailsBox h1 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .detailsBox {
+    width: 95%;
+  }
+  .detailsBox .productBox input {
+    font-size: 13px;
+  }
+  .detailsBox .productBox p {
+    font-size: 14px;
+  }
+  .detailsBox .sendBtn {
+    font-size: 18px;
+  }
+
+  .detailsBox h1 {
+    font-size: 26px;
+  }
+}

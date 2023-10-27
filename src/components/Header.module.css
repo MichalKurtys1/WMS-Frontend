@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding-bottom: 10px;
   border-bottom: 2px solid #646e78;
+  user-select: none;
 }
 
 .logoImg {
@@ -43,5 +44,15 @@
     right: 30px;
     width: 110px;
     height: 40px;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .returnBox {
+    margin-left: 35px;
+  }
+  .titileBox {
+    width: 98%;
+    margin: 5px auto 0;
   }
 }

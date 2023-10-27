@@ -143,3 +143,42 @@
     margin-right: 10px;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .form .basicInfoBox {
+    width: 75%;
+  }
+  .productContainer {
+    width: 85%;
+  }
+  .productData {
+    width: 85%;
+    margin: 20px auto 10px;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .form .basicInfoBox {
+    width: 85%;
+  }
+  .productContainer {
+    width: 95%;
+  }
+  .productData {
+    width: 95%;
+    margin: 20px auto 10px;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .form .basicInfoBox {
+    width: 85%;
+  }
+  .productContainer {
+    width: 95%;
+  }
+  .productData {
+    width: 95%;
+    margin: 20px auto 10px;
+  }
+}

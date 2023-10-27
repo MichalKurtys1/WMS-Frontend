@@ -291,82 +291,86 @@ const StockRaport = ({ timeScope }) => {
           </div>
         </div>
       </div>
-      <ResponsivePie
-        data={results}
-        colors={results.map((key) => key["idColor"])}
-        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
-        innerRadius={0.5}
-        padAngle={0.7}
-        cornerRadius={3}
-        activeOuterRadiusOffset={8}
-        borderWidth={1}
-        borderColor={{
-          from: "color",
-          modifiers: [["darker", 0.2]],
-        }}
-        arcLinkLabelsSkipAngle={10}
-        arcLinkLabelsTextColor="#333333"
-        arcLinkLabelsThickness={2}
-        arcLinkLabelsColor={{ from: "color" }}
-        arcLabelsSkipAngle={10}
-        arcLabelsTextColor={{
-          from: "color",
-          modifiers: [["darker", 2]],
-        }}
-        defs={[
-          patternDotsDef("dots", {
-            background: "inherit",
-            color: "#f5f5f5",
-          }),
-          patternLinesDef("lines", {
-            background: "inherit",
-            color: "#f5f5f5",
-          }),
-        ]}
-        fill={[
-          { match: (item) => item.id.includes("- Dostępne"), id: "dots" },
-          { match: (item) => item.id.includes("- Zamówione"), id: "lines" },
-        ]}
-      />
-      <ResponsiveBar
-        data={stockData}
-        keys={["Dostarczone", "Wysłane", "Bilans"]}
-        indexBy="product"
-        layout="horizontal"
-        margin={{ top: 50, right: 50, bottom: 50, left: 150 }}
-        padding={0.3}
-        valueScale={{ type: "linear" }}
-        indexScale={{ type: "band", round: true }}
-        colors={{ scheme: "blues" }}
-        borderColor={{
-          from: "color",
-          modifiers: [["darker", 1.6]],
-        }}
-        axisTop={null}
-        axisRight={null}
-        axisBottom={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: "Bilans",
-          legendPosition: "middle",
-          legendOffset: 32,
-        }}
-        axisLeft={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: "Produkty",
-          legendPosition: "middle",
-          legendOffset: -40,
-        }}
-        labelSkipWidth={12}
-        labelSkipHeight={12}
-        labelTextColor={{
-          from: "color",
-          modifiers: [["darker", 1.6]],
-        }}
-      />
+      <div className={style.reports}>
+        <ResponsivePie
+          data={results}
+          colors={results.map((key) => key["idColor"])}
+          margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+          innerRadius={0.5}
+          padAngle={0.7}
+          cornerRadius={3}
+          activeOuterRadiusOffset={8}
+          borderWidth={1}
+          borderColor={{
+            from: "color",
+            modifiers: [["darker", 0.2]],
+          }}
+          arcLinkLabelsSkipAngle={10}
+          arcLinkLabelsTextColor="#333333"
+          arcLinkLabelsThickness={2}
+          arcLinkLabelsColor={{ from: "color" }}
+          arcLabelsSkipAngle={10}
+          arcLabelsTextColor={{
+            from: "color",
+            modifiers: [["darker", 2]],
+          }}
+          defs={[
+            patternDotsDef("dots", {
+              background: "inherit",
+              color: "#f5f5f5",
+            }),
+            patternLinesDef("lines", {
+              background: "inherit",
+              color: "#f5f5f5",
+            }),
+          ]}
+          fill={[
+            { match: (item) => item.id.includes("- Dostępne"), id: "dots" },
+            { match: (item) => item.id.includes("- Zamówione"), id: "lines" },
+          ]}
+        />
+      </div>
+      <div className={style.reports}>
+        <ResponsiveBar
+          data={stockData}
+          keys={["Dostarczone", "Wysłane", "Bilans"]}
+          indexBy="product"
+          layout="horizontal"
+          margin={{ top: 50, right: 50, bottom: 50, left: 150 }}
+          padding={0.3}
+          valueScale={{ type: "linear" }}
+          indexScale={{ type: "band", round: true }}
+          colors={{ scheme: "blues" }}
+          borderColor={{
+            from: "color",
+            modifiers: [["darker", 1.6]],
+          }}
+          axisTop={null}
+          axisRight={null}
+          axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: "Bilans",
+            legendPosition: "middle",
+            legendOffset: 32,
+          }}
+          axisLeft={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: "Produkty",
+            legendPosition: "middle",
+            legendOffset: -40,
+          }}
+          labelSkipWidth={12}
+          labelSkipHeight={12}
+          labelTextColor={{
+            from: "color",
+            modifiers: [["darker", 1.6]],
+          }}
+        />
+      </div>
     </div>
   );
 };

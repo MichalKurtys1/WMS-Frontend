@@ -145,6 +145,8 @@
   padding-left: 5px;
 }
 
+/* Responsivity Desktop */
+
 @media (min-width: 1800px) {
   .container {
     width: 15%;
@@ -192,5 +194,97 @@
 @media (max-width: 1024px) {
   .upperBox {
     padding: 5px 0;
+  }
+}
+
+/* Tablet menu */
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .container {
+    width: 35%;
+  }
+  .backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 40;
+    width: 65%;
+    height: 100vh;
+  }
+  .barsContainer {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    z-index: 40;
+  }
+  .xIcon {
+    font-size: 35px;
+    color: #2d3640;
+  }
+  .barsIcon {
+    font-size: 30px;
+    color: #2d3640;
+  }
+  .upperBox {
+    width: 95%;
+    padding: 14px 0 5px;
+  }
+
+  .userPanel {
+    width: 80%;
+    margin-left: 45px;
+  }
+}
+
+@media (max-width: 750px) and (orientation: portrait) {
+  .container {
+    width: 40%;
+  }
+  .backdrop {
+    width: 60%;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .container {
+    width: 45%;
+  }
+  .backdrop {
+    width: 55%;
+  }
+}
+
+@media (max-width: 590px) and (orientation: portrait) {
+  .container {
+    width: 50%;
+  }
+  .backdrop {
+    width: 50%;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .container {
+    width: 25%;
+  }
+  .linkBox h2 {
+    font-size: 18px;
+  }
+
+  .iconS {
+    font-size: 26px;
+  }
+
+  .linkContainer .link h3 {
+    font-size: 16px;
+  }
+
+  .userIcon {
+    font-size: 28px;
+  }
+  .userPanel h4 {
+    font-size: 16px;
   }
 }

@@ -157,3 +157,25 @@
     height: 7px;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .productBox {
+    height: 16vh;
+  }
+}
+
+@media (max-height: 1100px) and (orientation: portrait) {
+  .productBox {
+    height: 20vh;
+  }
+}
+@media (max-height: 850px) and (orientation: portrait) {
+  .productBox {
+    height: 22vh;
+  }
+}
+@media (max-height: 550px) and (orientation: landscape) {
+  .productBox {
+    height: 34vh;
+  }
+}

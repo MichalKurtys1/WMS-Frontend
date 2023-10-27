@@ -30,3 +30,10 @@
     width: 76%;
   }
 }
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .container {
+    left: 25%;
+    width: 75%;
+  }
+}

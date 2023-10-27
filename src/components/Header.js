@@ -12,9 +12,9 @@ const Header = ({ path }) => {
         src={require("./../assets/logo.png")}
         alt="logo"
       />
-      <div className={style.returnBox} onClick={() => navigate(path)}>
-        <FaAngleLeft className={style.icon} />
-        <p>Powrót</p>
+      <div className={style.returnBox}>
+        <FaAngleLeft className={style.icon} onClick={() => navigate(path)} />
+        <p onClick={() => navigate(path)}>Powrót</p>
       </div>
     </div>
   );

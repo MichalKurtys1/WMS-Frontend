@@ -60,3 +60,21 @@
     font-size: 12px;
   }
 }
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .table thead th {
+    font-size: 11px;
+  }
+  .table tbody td {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .table thead th {
+    font-size: 11px;
+  }
+  .table tbody td {
+    font-size: 10px;
+  }
+}

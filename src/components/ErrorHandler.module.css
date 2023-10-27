@@ -64,3 +64,21 @@
     font-size: 14px;
   }
 }
+
+@media (max-width: 750px) and (orientation: portrait) {
+  .errorBox {
+    width: 80%;
+  }
+}
+
+@media (max-width: 550px) and (orientation: portrait) {
+  .errorBox {
+    width: 85%;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .errorBox {
+    width: 80%;
+  }
+}

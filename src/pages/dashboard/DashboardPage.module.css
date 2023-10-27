@@ -318,3 +318,58 @@
     width: 33%;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .upperBox img {
+    margin-left: 30px;
+  }
+  .rightBox {
+    width: 35%;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .container {
+    flex-direction: column;
+  }
+  .upperBox img {
+    margin-left: 0;
+  }
+  .leftBox {
+    width: 85%;
+    margin: 0 auto;
+  }
+  .rightBox {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    min-height: 200px;
+    position: relative;
+  }
+  .rightBox h3 {
+    width: 80%;
+  }
+}
+
+@media (max-width: 850px) and (orientation: landscape) {
+  .container {
+    flex-direction: column;
+  }
+  .upperBox img {
+    margin-left: 0;
+  }
+  .leftBox {
+    width: 85%;
+    margin: 0 auto;
+  }
+  .rightBox {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    min-height: 200px;
+    position: relative;
+  }
+  .rightBox h3 {
+    width: 80%;
+  }
+}

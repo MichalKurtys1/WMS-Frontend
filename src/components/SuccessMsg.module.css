@@ -63,3 +63,21 @@
     font-size: 14px;
   }
 }
+
+@media (max-width: 750px) and (orientation: portrait) {
+  .succes {
+    width: 80%;
+  }
+}
+
+@media (max-width: 550px) and (orientation: portrait) {
+  .succes {
+    width: 85%;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .succes {
+    width: 80%;
+  }
+}

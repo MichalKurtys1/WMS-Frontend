@@ -179,3 +179,47 @@
     font-size: 30px;
   }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .container {
+    width: 95%;
+  }
+  .reports {
+    height: 30vh;
+    width: 95vw;
+  }
+}
+
+@media (max-height: 1100px) and (orientation: portrait) {
+  .reports {
+    height: 35vh;
+  }
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .warning {
+    width: 95%;
+  }
+  .sumBox {
+    width: 95%;
+  }
+  .sumBox .sum {
+    height: 8vw;
+  }
+}
+
+@media (max-width: 855px) and (orientation: landscape) {
+  .warning {
+    width: 95%;
+  }
+  .sumBox {
+    width: 95%;
+  }
+  .sumBox .sum {
+    height: 8vw;
+  }
+  .reports {
+    height: 55vh;
+    width: 95%;
+  }
+}
