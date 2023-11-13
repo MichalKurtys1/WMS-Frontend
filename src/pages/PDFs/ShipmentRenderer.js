@@ -1,15 +1,14 @@
 import { PDFViewer } from "@react-pdf/renderer";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ShippmentPDF from "./ShippmentPDF";
 
 const ShipmentRenderer = () => {
-  const [deliveryData, setDeliveryData] = useState([]);
+  const [shippingData, setShippingData] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem("shippingData")) {
-      setDeliveryData(JSON.parse(localStorage.getItem("shippingData")));
-      console.log(JSON.parse(localStorage.getItem("shippingData")));
+      setShippingData(JSON.parse(localStorage.getItem("shippingData")));
+      localStorage.removeItem("shippingData");
     }
   }, []);
 
@@ -24,9 +23,9 @@ const ShipmentRenderer = () => {
         left: "-1%",
       }}
     >
-      {deliveryData.length !== 0 && (
-        <PDFViewer width={"100%"} height={"100%"} d>
-          <ShippmentPDF shipment={deliveryData} />
+      {shippingData.length !== 0 && (
+        <PDFViewer width={"100%"} height={"100%"}>
+          <ShippmentPDF shippingData={shippingData} />
         </PDFViewer>
       )}
     </div>

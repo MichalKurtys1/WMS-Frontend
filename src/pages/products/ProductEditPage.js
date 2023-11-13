@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   GET_PRODUCT,
   UPDATE_PRODUCT,
@@ -78,6 +78,7 @@ const ProductEditPage = () => {
   }, [getProduct, location.state.userId]);
 
   const onSubmit = (values) => {
+    if (!data) return;
     updateProduct({
       variables: {
         updateProductId: data.id,
@@ -99,6 +100,7 @@ const ProductEditPage = () => {
   };
 
   const getSupplierHandler = () => {
+    if (!data) return;
     const supplier = suppliersData.suppliers.filter(
       (item) => item.id === data.supplierId
     );
@@ -129,6 +131,7 @@ const ProductEditPage = () => {
                       validator={selectValidator}
                       options={options}
                       initVal={getSupplierHandler()}
+                      name={"Wybierz Dostawcę"}
                     />
                   </div>
                   <Input
@@ -148,7 +151,7 @@ const ProductEditPage = () => {
                     initVal={data.type}
                   />
                   <Input
-                    name="Pojemoność"
+                    name="Pojemność"
                     type="text"
                     fieldName="capacity"
                     validator={textValidator}
@@ -161,6 +164,7 @@ const ProductEditPage = () => {
                       validator={selectValidator}
                       options={unitItemsList}
                       initVal={data.unit}
+                      name={"Wybierz Jednostkę"}
                     />
                   </div>
                   <Input
@@ -176,6 +180,7 @@ const ProductEditPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     Edytuj
                   </button>

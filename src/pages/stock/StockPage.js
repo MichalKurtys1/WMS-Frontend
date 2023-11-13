@@ -1,5 +1,4 @@
-import { useLocation } from "react-router";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_STOCKS } from "../../utils/apollo/apolloQueries";
 
@@ -8,6 +7,8 @@ import Table from "../../components/table/Table";
 import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "../../../node_modules/react-router-dom/dist/index";
 
 const StockPage = () => {
   const location = useLocation();
@@ -29,7 +30,10 @@ const StockPage = () => {
       {data && data.stocks && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Spis towarów</h1>
+            <div className={style.header}>
+              <h1>Spis towarów</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
           </div>
           <div className={style.tableBox}>
             <Table

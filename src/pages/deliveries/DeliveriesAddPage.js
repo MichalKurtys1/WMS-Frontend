@@ -1,8 +1,7 @@
 import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
-import { GET_PRODUCTS, GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 import { useQuery, useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { selectValidator, textValidator } from "../../utils/inputValidators";
 
 import style from "../styles/ordDelAddEditPages.module.css";
@@ -14,6 +13,7 @@ import { ADD_DELIVERY } from "../../utils/apollo/apolloMutations";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { BiErrorAlt } from "react-icons/bi";
+import { GET_PRODUCTS_SUPPLIERS } from "../../utils/apollo/apolloMultipleQueries";
 
 const DeliveriesAddPage = () => {
   const location = useLocation();
@@ -26,11 +26,7 @@ const DeliveriesAddPage = () => {
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+  const { data, loading } = useQuery(GET_PRODUCTS_SUPPLIERS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -40,7 +36,7 @@ const DeliveriesAddPage = () => {
   });
 
   useEffect(() => {
-    if (data && !loadingSuppliers) {
+    if (data && !loading) {
       setOptions([
         { name: "Wybierz Dostawcę", value: null },
         ...data.suppliers.map((item) => ({
@@ -49,7 +45,7 @@ const DeliveriesAddPage = () => {
         })),
       ]);
     }
-  }, [data, loadingSuppliers]);
+  }, [data, loading]);
 
   const deleteHandler = ({ id }) => {
     setProductList((prevList) => prevList.filter((item) => item.id !== id));
@@ -114,7 +110,7 @@ const DeliveriesAddPage = () => {
 
     let totalPrice = 0;
     productList.forEach((item) => {
-      const product = products.products.find(
+      const product = data.products.find(
         (products) =>
           item.product.includes(products.name) &&
           item.product.includes(products.type) &&
@@ -148,8 +144,8 @@ const DeliveriesAddPage = () => {
     <div className={style.container}>
       <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
-      <Loading state={(loadingSuppliers || loadingProducts) && !error} />
-      {(!loadingSuppliers || !loadingProducts) && (
+      <Loading state={loading && !error} />
+      {!loading && (
         <main>
           <Form
             onSubmit={onSubmit}
@@ -163,6 +159,7 @@ const DeliveriesAddPage = () => {
                   <div className={style.inputBox}>
                     <div className={style.input}>
                       <Select
+                        name={"Wybierz Dostawcę"}
                         fieldName="supplier"
                         validator={selectValidator}
                         initVal={
@@ -194,6 +191,7 @@ const DeliveriesAddPage = () => {
                       style={{
                         backgroundColor: invalid ? "#B6BABF" : null,
                       }}
+                      data-testid="SubmitBtn"
                     >
                       Dalej
                     </button>
@@ -211,8 +209,8 @@ const DeliveriesAddPage = () => {
                   )}
                   <ProductList
                     productList={productList}
-                    products={products}
-                    loadingProducts={loadingProducts}
+                    products={data}
+                    loadingProducts={loading}
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}
                     changeUnitHandler={changeUnitHandler}

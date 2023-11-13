@@ -1,12 +1,7 @@
 import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
-import {
-  GET_CLIENTS,
-  GET_PRODUCTS,
-  GET_STOCKS,
-} from "../../utils/apollo/apolloQueries";
+import { useLocation, useNavigate } from "react-router-dom";
 import { selectValidator, textValidator } from "../../utils/inputValidators";
 
 import style from "../styles/ordDelAddEditPages.module.css";
@@ -17,13 +12,13 @@ import ErrorHandler from "../../components/ErrorHandler";
 import {
   ADD_ORDER,
   ORDER_FILE_UPLOAD,
-  UPDATE_STOCK,
 } from "../../utils/apollo/apolloMutations";
 import OrderPDF from "../PDFs/OrderPDF";
 import { pdf } from "@react-pdf/renderer";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { BiErrorAlt } from "react-icons/bi";
+import { GET_CLIENTS_STOCK_PRODUCTS } from "../../utils/apollo/apolloMultipleQueries";
 
 const OrdersAddPage = () => {
   const navigate = useNavigate();
@@ -37,23 +32,11 @@ const OrdersAddPage = () => {
       ? location.state.savedData.products
       : [{ id: 0, product: null, unit: null, quantity: null }]
   );
-  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: stocks, loading: loadingStock } = useQuery(GET_STOCKS, {
+  const { data, loading } = useQuery(GET_CLIENTS_STOCK_PRODUCTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
   const [addOrder, { loading: addLoading }] = useMutation(ADD_ORDER, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [updateStock, { loading: updateLoading }] = useMutation(UPDATE_STOCK, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -84,7 +67,7 @@ const OrdersAddPage = () => {
         address: "ul. Cicha 2 Bydgoszcz",
         nip: "NIP: 1112233444",
       },
-      productsInfo: products,
+      productsInfo: data,
       products: productList,
     };
     const blob = await pdf(<OrderPDF deliveryData={order} />).toBlob();
@@ -115,7 +98,7 @@ const OrdersAddPage = () => {
 
     const serializedDelivery = JSON.stringify(order);
     localStorage.setItem("deliveryData", serializedDelivery);
-    window.open("http://localhost:3000/pdf/order", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/order", "_blank", "noopener");
 
     setSumbitLoading(false);
 
@@ -127,7 +110,7 @@ const OrdersAddPage = () => {
   };
 
   useEffect(() => {
-    if (data && !loadingClients) {
+    if (data && !loading) {
       setOptions([
         { name: "Wybierz Klienta", value: null },
         ...data.clients.map((item) => ({
@@ -136,7 +119,7 @@ const OrdersAddPage = () => {
         })),
       ]);
     }
-  }, [data, loadingClients]);
+  }, [data, loading]);
 
   const addProductInputCounter = () => {
     setProductList((prevList) => [
@@ -178,7 +161,7 @@ const OrdersAddPage = () => {
         item.unit === "Wybierz jednostkę" ||
         item.unit === undefined ||
         item.quantity === "" ||
-        products.products.filter(
+        data.products.filter(
           (option) =>
             option.name + " " + option.type + " " + option.capacity ===
             item.product
@@ -191,7 +174,7 @@ const OrdersAddPage = () => {
 
     let totalPrice = 0;
     productList.forEach((item) => {
-      const product = products.products.find(
+      const product = data.products.find(
         (products) =>
           item.product.includes(products.name) &&
           item.product.includes(products.type) &&
@@ -216,29 +199,7 @@ const OrdersAddPage = () => {
         values.date,
         data.clients.filter((item) => item.name === values.client)[0]
       );
-
-      productList.forEach((item) => {
-        const stock = stocks.stocks.filter(
-          (stock) =>
-            item.product.includes(stock.product.name) &&
-            item.product.includes(stock.product.type) &&
-            item.product.includes(stock.product.capacity)
-        );
-        let newValue = parseInt(stock[0].preOrdered) + parseInt(item.quantity);
-
-        if (newValue < 0) {
-          setError("SERVER_ERROR");
-          return;
-        }
-        updateStock({
-          variables: {
-            updateStockId: stock[0].id,
-            preOrdered: newValue,
-          },
-        });
-      });
     });
-
     setSubmitError(false);
   };
 
@@ -251,7 +212,6 @@ const OrdersAddPage = () => {
   };
 
   const getSupplierHandler = () => {
-    console.log(data.clients);
     const supplier = data.clients.filter(
       (item) => item.name === location.state.savedData.supplierId
     );
@@ -263,104 +223,90 @@ const OrdersAddPage = () => {
       <Header path={"/orders"} />
       <Loading
         state={
-          (sumbitLoading ||
-            loadingClients ||
-            loadingProducts ||
-            loadingStock ||
-            uploadLoading ||
-            addLoading ||
-            updateLoading) &&
-          !error
+          (sumbitLoading || loading || uploadLoading || addLoading) && !error
         }
       />
       <ErrorHandler error={error} />
-      {(!loadingClients ||
-        !loadingProducts ||
-        !loadingStock ||
-        uploadLoading ||
-        addLoading ||
-        updateLoading) &&
-        data && (
-          <main>
-            <Form
-              onSubmit={onSubmit}
-              render={({ handleSubmit, invalid }) => (
-                <form className={style.form} onSubmit={handleSubmit}>
-                  <div className={style.basicInfoBox}>
-                    <h1>Dodawanie zamównienia</h1>
-                    <div className={style.basicData}>
-                      <p>Dane podstawowe</p>
+      {(!loading || uploadLoading || addLoading) && data && (
+        <main>
+          <Form
+            onSubmit={onSubmit}
+            render={({ handleSubmit, invalid }) => (
+              <form className={style.form} onSubmit={handleSubmit}>
+                <div className={style.basicInfoBox}>
+                  <h1>Dodawanie zamównienia</h1>
+                  <div className={style.basicData}>
+                    <p>Dane podstawowe</p>
+                  </div>
+                  <div className={style.inputBox}>
+                    <div className={style.input}>
+                      <Select
+                        name={"Wybierz Klienta"}
+                        fieldName="client"
+                        validator={selectValidator}
+                        initVal={
+                          location.state && location.state.savedData.supplierId
+                            ? getSupplierHandler()
+                            : null
+                        }
+                        options={options || []}
+                      />
                     </div>
-                    <div className={style.inputBox}>
-                      <div className={style.input}>
-                        <Select
-                          fieldName="client"
-                          validator={selectValidator}
-                          initVal={
-                            location.state &&
-                            location.state.savedData.supplierId
-                              ? getSupplierHandler()
-                              : null
-                          }
-                          options={options || []}
-                        />
-                      </div>
-                      <div className={style.input}>
-                        <Input
-                          name="date"
-                          type="date"
-                          fieldName="date"
-                          validator={textValidator}
-                          min={getCurrentDateTime()}
-                          width="90%"
-                          margin={true}
-                          initVal={
-                            location.state !== null
-                              ? location.state.savedData.date
-                              : null
-                          }
-                        />
-                      </div>
-                      <button
-                        disabled={invalid}
-                        type="submit"
-                        style={{
-                          backgroundColor: invalid ? "#B6BABF" : null,
-                        }}
-                      >
-                        Dalej
-                      </button>
+                    <div className={style.input}>
+                      <Input
+                        name="date"
+                        type="date"
+                        fieldName="date"
+                        validator={textValidator}
+                        min={getCurrentDateTime()}
+                        width="90%"
+                        margin={true}
+                        initVal={
+                          location.state !== null
+                            ? location.state.savedData.date
+                            : null
+                        }
+                      />
                     </div>
+                    <button
+                      disabled={invalid}
+                      type="submit"
+                      style={{
+                        backgroundColor: invalid ? "#B6BABF" : null,
+                      }}
+                      data-testid="SubmitBtn"
+                    >
+                      Dalej
+                    </button>
                   </div>
-                  <div className={style.productData}>
-                    <p>Produkty</p>
-                  </div>
-                  <div className={style.productContainer}>
-                    {submitError && (
-                      <div className={style.error}>
-                        <BiErrorAlt className={style.icon} />
-                        <p>
-                          Uzupełnij wszystkie produkty lub usuń niepotrzebne.
-                        </p>
-                      </div>
-                    )}
-                    <ProductList
-                      productList={productList}
-                      products={products}
-                      stocks={stocks}
-                      loadingProducts={loadingProducts}
-                      deleteHandler={deleteHandler}
-                      changeProductHandler={changeProductHandler}
-                      changeUnitHandler={changeUnitHandler}
-                      quantityUnitHandler={changeQuantityHandler}
-                      addProductInputCounter={addProductInputCounter}
-                    />
-                  </div>
-                </form>
-              )}
-            />
-          </main>
-        )}
+                </div>
+                <div className={style.productData}>
+                  <p>Produkty</p>
+                </div>
+                <div className={style.productContainer}>
+                  {submitError && (
+                    <div className={style.error}>
+                      <BiErrorAlt className={style.icon} />
+                      <p>Uzupełnij wszystkie produkty lub usuń niepotrzebne.</p>
+                    </div>
+                  )}
+                  <ProductList
+                    productList={productList}
+                    products={data}
+                    stocks={data}
+                    loadingProducts={loading}
+                    deleteHandler={deleteHandler}
+                    changeProductHandler={changeProductHandler}
+                    changeUnitHandler={changeUnitHandler}
+                    quantityUnitHandler={changeQuantityHandler}
+                    addProductInputCounter={addProductInputCounter}
+                  />
+                </div>
+              </form>
+            )}
+          />
+        </main>
+      )}
     </div>
   );
 };

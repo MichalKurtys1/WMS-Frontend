@@ -1,6 +1,6 @@
 import { Form } from "react-final-form";
 import { useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   GET_EMPLOYEE,
@@ -57,6 +57,7 @@ const EmployeeEditPage = () => {
   }, [getEmployee, location.state.userId]);
 
   const onSubmit = (values) => {
+    if (!data) return;
     updateEmployee({
       variables: {
         updateUserId: data.id,
@@ -136,6 +137,7 @@ const EmployeeEditPage = () => {
                   />
                   <div className={style.selectBox}>
                     <Select
+                      name="Wybierz Stanowisko"
                       fieldName="position"
                       validator={selectValidator}
                       initVal={data.position}
@@ -147,6 +149,7 @@ const EmployeeEditPage = () => {
                     disabled={invalid}
                     type="submit"
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     <FaPen className={style.icon} />
                     Edytuj

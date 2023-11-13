@@ -1,29 +1,19 @@
-import style from "../styles/uploadPages.module.css";
+import style from "./UploadPage.module.css";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
-import {
-  ORDER_FILE_UPLOAD,
-  UPDATE_DELIVERY_STATE,
-} from "../../utils/apollo/apolloMutations";
 import { useState } from "react";
-import ErrorHandler from "../../components/ErrorHandler";
-import Header from "../../components/Header";
-import Loading from "../../components/Loading";
+import ErrorHandler from "./ErrorHandler";
+import Header from "./Header";
+import Loading from "./Loading";
+import { ORDER_FILE_UPLOAD } from "../utils/apollo/apolloMutations";
 
-const DeliveriesUploadPage = () => {
+const UploadPage = ({ type }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState();
   const [deilveryId] = useState(location.state.deliveryId || null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [nameInputValue, setNameInputValue] = useState(null);
-  const [updateDeliveryState, { loading: stateLoading }] = useMutation(
-    UPDATE_DELIVERY_STATE,
-    {
-      onError: (error) => setError(error),
-      onCompleted: () => setError(false),
-    }
-  );
   const [orderFileUpload, { loading: uploadLoading }] = useMutation(
     ORDER_FILE_UPLOAD,
     {
@@ -51,28 +41,20 @@ const DeliveriesUploadPage = () => {
       },
     }).then((data) => {
       if (!data.data) return;
-      updateDeliveryState({
-        variables: {
-          updateStateId: deilveryId,
-          state: "Zakończono",
+      navigate(type, {
+        state: {
+          update: true,
         },
-      }).then((data) => {
-        if (!data.data) return;
-        navigate("/deliveries", {
-          state: {
-            update: true,
-          },
-        });
       });
     });
   };
 
   return (
     <div className={style.container}>
-      <Header path={"/deliveries"} />
+      <Header path={type} />
       <ErrorHandler error={error} />
-      <Loading state={(uploadLoading || stateLoading) && !error} />
-      {!uploadLoading && !stateLoading && (
+      <Loading state={uploadLoading && !error} />
+      {!uploadLoading && (
         <main>
           <form className={style.form} onSubmit={submitHandler}>
             <h1>Przesyłanie faktury</h1>
@@ -103,4 +85,4 @@ const DeliveriesUploadPage = () => {
   );
 };
 
-export default DeliveriesUploadPage;
+export default UploadPage;

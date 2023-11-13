@@ -1,6 +1,6 @@
 import { Form } from "react-final-form";
 import { useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GET_CLIENT, UPDATE_CLIENT } from "../../utils/apollo/apolloMutations";
 import {
@@ -44,6 +44,7 @@ const ClientsEditPage = () => {
   }, [getClient, location.state.clientId]);
 
   const onSubmit = (values) => {
+    if (!data) return;
     updateClient({
       variables: {
         updateClientId: data.id,
@@ -141,6 +142,7 @@ const ClientsEditPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     <FaPen className={style.icon} />
                     Edytuj

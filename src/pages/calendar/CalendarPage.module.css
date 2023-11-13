@@ -9,6 +9,12 @@
   margin: 10px 0;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .eventBox {
   width: 50%;
   margin: 0 auto;
@@ -26,6 +32,13 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+}
+
+.eventWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .eventBox .event {
@@ -55,6 +68,8 @@
   font-size: 18px;
   color: #646e78;
   transition: 0.5s;
+  border: none;
+  background-color: transparent;
 }
 
 .eventBox .minusIcon {
@@ -62,6 +77,8 @@
   font-size: 18px;
   color: #646e78;
   transition: 0.5s;
+  border: none;
+  background-color: transparent;
 }
 
 .eventBox .minusIcon:hover {

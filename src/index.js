@@ -10,9 +10,7 @@ import ReactDOM from "react-dom";
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Provider store={store}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
+      <App />
     </Provider>
   </ApolloProvider>,
   document.getElementById("root")

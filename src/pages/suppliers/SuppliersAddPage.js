@@ -1,6 +1,6 @@
 import { Form } from "react-final-form";
 import { useMutation } from "@apollo/client";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ADD_SUPPLIER } from "../../utils/apollo/apolloMutations";
 import {
   emailValidator,
@@ -130,6 +130,7 @@ const SuppliersAddPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     Dodaj
                   </button>

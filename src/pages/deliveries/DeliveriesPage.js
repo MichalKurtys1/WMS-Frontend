@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_DELIVERIES } from "../../utils/apollo/apolloQueries";
@@ -19,6 +19,7 @@ import DeletePopup from "../../components/DeletePopup";
 import SuccessMsg from "../../components/SuccessMsg";
 import Loading from "../../components/Loading";
 import StatePopup from "../../components/StatePopup";
+import RefreshBtn from "../../components/RefreshBtn";
 
 const format = ["supplier", "expectedDate", "date", "totalPrice", "state"];
 
@@ -40,7 +41,6 @@ const DeliveriesPage = () => {
       ? true
       : false
   );
-
   const { data, refetch, loading } = useQuery(GET_DELIVERIES, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
@@ -62,7 +62,7 @@ const DeliveriesPage = () => {
     if (location.state) {
       refetch();
     }
-  }, [location.state, location.pathname, refetch]);
+  }, [location.state, refetch]);
 
   useEffect(() => {
     if (location.state && location.state.products) {
@@ -73,22 +73,13 @@ const DeliveriesPage = () => {
         },
       }).then((data) => {
         if (!data.data) return;
-        updateDeliveryState({
-          variables: {
-            updateStateId: location.state.deliveryId,
-            state: "Posortowano",
-          },
-        }).then((data) => {
-          if (!data.data) return;
-          refetch();
-          navigate(location.pathname, {});
-        });
+        refetch();
+        navigate(location.pathname, {});
       });
     }
   }, [
     updateDeliveryValues,
     location.state,
-    updateDeliveryState,
     location.pathname,
     navigate,
     refetch,
@@ -163,7 +154,10 @@ const DeliveriesPage = () => {
       {data && data.deliveries && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Dostawy</h1>
+            <div className={style.header}>
+              <h1>Dostawy</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             {position !== "Magazynier" && (
               <div
                 className={style.addOption}

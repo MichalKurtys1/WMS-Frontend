@@ -109,6 +109,7 @@ const ClientsAddPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     <FaPlus className={style.icon} />
                     Dodaj

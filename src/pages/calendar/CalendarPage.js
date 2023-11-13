@@ -8,101 +8,61 @@ import { dateToPolish } from "../../utils/dateFormatters";
 import ErrorHandler from "../../components/ErrorHandler";
 import { getAuth } from "../../context";
 import Header from "../../components/Header";
-import { useCalendar } from "../../hooks/useCalendar";
 import Loading from "../../components/Loading";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_FORMATED_CALENDAR } from "../../utils/apollo/apolloMultipleQueries";
+import {
+  ADD_CALENDAR,
+  DELETE_CALENDAR,
+} from "../../utils/apollo/apolloMutations";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "react-router-dom";
 
 const CalendarPage = () => {
+  const location = useLocation();
   const [value, setValue] = useState();
-  const [activeEvent, setActiveEvent] = useState([]);
+  const [activeEvent, setActiveEvent] = useState({ events: null, date: null });
   const [addIsOpen, setAddIsOpen] = useState(false);
   const [timeValue, setTimeValue] = useState();
   const [eventValue, setEventValue] = useState();
   const { position } = getAuth();
-  const { error, loading, data, addEvent, deleteEvent, refetch } =
-    useCalendar();
+  const [error, setError] = useState();
   const [events, setEvents] = useState();
+  const { data, refetch, loading } = useQuery(GET_FORMATED_CALENDAR, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [addEvent] = useMutation(ADD_CALENDAR, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
+  const [deleteEvent] = useMutation(DELETE_CALENDAR, {
+    onError: (error) => setError(error),
+    onCompleted: () => setError(false),
+  });
 
   useEffect(() => {
-    let results = [];
-    if (
-      data &&
-      data.deliveries &&
-      data.orders &&
-      data.calendar &&
-      data.shipments &&
-      position !== "Przewoźnik"
-    ) {
-      let deli = data.deliveries
-        .map((item) => {
-          if (item.state !== "Zakończono") {
-            return {
-              date: +item.expectedDate - 24 * 60 * 60 * 1000,
-              time: "--:--",
-              event: "Dostawa " + item.supplier.name,
-            };
-          } else {
-            return null;
-          }
-        })
-        .filter((item) => item !== null && Object.keys(item).length !== 0);
-      let orde = data.orders
-        .map((item) => {
-          if (item.state !== "Zakończono") {
-            return {
-              date: +item.expectedDate - 24 * 60 * 60 * 1000,
-              time: "--:--",
-              event: "Zamówienie " + item.client.name,
-            };
-          } else {
-            return null;
-          }
-        })
-        .filter((item) => item !== null && Object.keys(item).length !== 0);
-      let ship = data.shipments
-        .map((item) => {
-          if (item.state !== "Zakończono") {
-            return {
-              date: (
-                new Date(item.deliveryDate).getTime() -
-                24 * 60 * 60 * 1000
-              ).toString(),
-              time: "--:--",
-              event: "Wysyłka " + item.employee,
-            };
-          } else {
-            return null;
-          }
-        })
-        .filter((item) => item !== null && Object.keys(item).length !== 0);
-      let cale = data.calendar;
-      results = cale.concat(orde, deli, ship);
-      setEvents(results);
+    if (location.state) {
+      refetch();
     }
-    if (data && data.shipments && data.calendar && position === "Przewoźnik") {
-      let ship = data.shipments.map((item) => {
-        return {
-          date: (
-            new Date(item.deliveryDate).getTime() -
-            24 * 60 * 60 * 1000
-          ).toString(),
-          time: "--:--",
-          event: "Wysyłka " + item.employee,
-        };
-      });
-      let cale = data.calendar;
-      results = cale.concat(ship);
-      setEvents(results);
+  }, [location.state, refetch]);
+
+  useEffect(() => {
+    if (data && position !== "Przewoźnik") {
+      setEvents(data.formatedCalendar.standardData);
+    }
+    if (data && position === "Przewoźnik") {
+      setEvents(data.formatedCalendar.carrierData);
     }
   }, [data, position]);
 
   const addHandler = (e) => {
     e.preventDefault();
+    if (!timeValue || !eventValue) return;
+
     addEvent({
       variables: {
-        date:
-          activeEvent.length > 0
-            ? activeEvent[0].date.toString()
-            : activeEvent.toString(),
+        date: activeEvent.date.toString(),
         time: timeValue.toString(),
         event: eventValue.toString(),
       },
@@ -110,23 +70,29 @@ const CalendarPage = () => {
       if (!data.data) return;
       setAddIsOpen(false);
       refetch();
-      if (activeEvent.length > 0) {
-        setActiveEvent((prev) => [
-          ...prev,
-          {
-            date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
-            time: timeValue,
-            event: eventValue,
-          },
-        ]);
+      if (activeEvent.events) {
+        setActiveEvent({
+          date: activeEvent.date,
+          events: [
+            ...activeEvent.events,
+            {
+              date: activeEvent.date,
+              time: timeValue,
+              event: eventValue,
+            },
+          ],
+        });
       } else {
-        setActiveEvent([
-          {
-            date: activeEvent.length > 0 ? activeEvent[0].date : activeEvent,
-            time: timeValue,
-            event: eventValue,
-          },
-        ]);
+        setActiveEvent({
+          events: [
+            {
+              date: activeEvent.date,
+              time: timeValue,
+              event: eventValue,
+            },
+          ],
+          date: activeEvent.date,
+        });
       }
     });
   };
@@ -140,25 +106,27 @@ const CalendarPage = () => {
       if (!data.data) return;
       setAddIsOpen(false);
       refetch();
-      setEvents((prev) => [...prev.filter((item) => item.id !== id)]);
-      if (activeEvent.length > 0) {
-        setActiveEvent((prev) => [...prev.filter((item) => item.id !== id)]);
-      } else {
-        setActiveEvent([]);
-      }
+      setEvents((prev) =>
+        prev ? [...prev.filter((item) => item.id !== id)] : prev
+      );
+      setActiveEvent({
+        events: activeEvent.events.filter((item) => item.id !== id),
+        date: activeEvent.date,
+      });
     });
   };
 
   const dayClickHandler = (date) => {
-    const filteredEvents = events.filter(
+    setActiveEvent({ events: null, date: null });
+    const filteredEvents = events?.filter(
       (event) =>
         new Date(+event.date).toISOString().split("T")[0] ===
         new Date(date.getTime()).toISOString().split("T")[0]
     );
-    if (filteredEvents.length === 0) {
-      setActiveEvent(date.getTime());
+    if (filteredEvents.length === 0 || !filteredEvents) {
+      setActiveEvent({ events: null, date: date.getTime() });
     } else {
-      setActiveEvent(filteredEvents);
+      setActiveEvent({ events: filteredEvents, date: date.getTime() });
     }
   };
 
@@ -166,11 +134,14 @@ const CalendarPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      <Loading state={!data && loading} />
+      <Loading state={loading && !error} />
       {data && events && (
         <>
           <div className={style.calendarContainer}>
-            <h1>Kalendarz</h1>
+            <div className={style.header}>
+              <h1>Kalendarz</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             <Calendar
               onChange={setValue}
               value={value}
@@ -184,23 +155,27 @@ const CalendarPage = () => {
               )}
             />
           </div>
-          {activeEvent.length > 0 && (
+          {activeEvent.events && (
             <div className={style.eventBox}>
               <h2>
-                {dateToPolish(activeEvent[0].date)
+                {dateToPolish(activeEvent.date)
                   .split(" ")
                   .slice(0, 3)
                   .join(" ")}{" "}
-                <FaPlus
+                <button
                   className={style.plusIcon}
                   onClick={() => setAddIsOpen(!addIsOpen)}
-                />
+                  data-testid="PlusBtn"
+                >
+                  <FaPlus />
+                </button>
               </h2>
               <div className={style.eventContainer}>
                 {addIsOpen && (
                   <form className={style.addBox} onSubmit={addHandler}>
                     <input
                       type="time"
+                      placeholder="godzina"
                       onChange={(e) => setTimeValue(e.target.value)}
                       required
                     />
@@ -210,42 +185,52 @@ const CalendarPage = () => {
                       onChange={(e) => setEventValue(e.target.value)}
                       required
                     />
-                    <button type="submit">
+                    <button type="submit" data-testid="SubmitBtn">
                       <FaCheck className={style.addIcon} />
                     </button>
                   </form>
                 )}
-                {activeEvent.map((event) => (
-                  <>
+                {activeEvent.events.map((event) => (
+                  <div className={style.eventWrapper} key={event.event}>
                     <div className={style.event}>
                       <h3>{event.time}</h3>
                       <p>{event.event}</p>
                     </div>
                     {event.time !== "--:--" && (
-                      <FaMinus
+                      <button
                         className={style.minusIcon}
                         onClick={() => deleteHandler(event.id)}
-                      />
+                        data-testid="DeleteBtn"
+                      >
+                        <FaMinus />
+                      </button>
                     )}
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
           )}
-          {typeof activeEvent === "number" && (
+          {!activeEvent.events && activeEvent.date && (
             <div className={style.eventBox}>
               <h2>
-                {dateToPolish(activeEvent).split(" ").slice(0, 3).join(" ")}{" "}
-                <FaPlus
+                {dateToPolish(activeEvent.date)
+                  .split(" ")
+                  .slice(0, 3)
+                  .join(" ")}{" "}
+                <button
                   className={style.plusIcon}
                   onClick={() => setAddIsOpen(!addIsOpen)}
-                />
+                  data-testid="PlusBtn"
+                >
+                  <FaPlus />
+                </button>
               </h2>
               <div className={style.eventContainer}>
                 {addIsOpen && (
                   <div className={style.addBox}>
                     <input
                       type="time"
+                      placeholder="godzina"
                       onChange={(e) => setTimeValue(e.target.value)}
                     />
                     <input
@@ -253,7 +238,7 @@ const CalendarPage = () => {
                       placeholder="Wydarzenie"
                       onChange={(e) => setEventValue(e.target.value)}
                     />
-                    <button onClick={addHandler}>
+                    <button onClick={addHandler} data-testid="SubmitBtn">
                       <FaCheck className={style.addIcon} />
                     </button>
                   </div>

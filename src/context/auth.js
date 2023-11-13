@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { decryptData, encryptData } from "../utils/dataEncryption";
 
 const initialState = {
-  isLoggedIn: localStorage.getItem("token") ? true : false,
-  token: localStorage.getItem("token") || null,
-  expiresIn: localStorage.getItem("expiresIn") || null,
-  name: localStorage.getItem("name") || null,
-  position: localStorage.getItem("position") || null,
+  isLoggedIn: decryptData("token"),
+  token: decryptData("token"),
+  expiresIn: decryptData("expiresIn"),
+  name: decryptData("name"),
+  position: decryptData("position"),
 };
 
 const authSlice = createSlice({
@@ -18,10 +19,10 @@ const authSlice = createSlice({
       state.expiresIn = action.payload.expiresIn;
       state.name = action.payload.name;
       state.position = action.payload.position;
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("expiresIn", action.payload.expiresIn);
-      localStorage.setItem("name", action.payload.name);
-      localStorage.setItem("position", action.payload.position);
+      encryptData("token", action.payload.token);
+      encryptData("expiresIn", action.payload.expiresIn);
+      encryptData("name", action.payload.name);
+      encryptData("position", action.payload.position);
     },
     logOut(state, action) {
       state.isLoggedIn = false;

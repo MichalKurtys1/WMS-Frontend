@@ -11,7 +11,7 @@ const Loading = ({ state }) => {
   return (
     <>
       {isLoading && (
-        <div className={style.wrapper}>
+        <div className={style.wrapper} data-testid="LoadingComponent">
           <div className={style.spinnerBox}>
             <div className={style.spinner}>
               <div className={style.container}>

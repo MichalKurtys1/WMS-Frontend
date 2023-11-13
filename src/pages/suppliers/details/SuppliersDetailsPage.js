@@ -20,13 +20,9 @@ const SuppliersDetailsPage = () => {
       variables: {
         getSupplierId: location.state.userId,
       },
-    })
-      .then((data) => {
-        setData(data.data.getSupplier);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((data) => {
+      setData(data.data.getSupplier);
+    });
   }, [getSupplier, location.state.userId]);
 
   return (

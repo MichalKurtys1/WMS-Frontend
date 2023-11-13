@@ -11,7 +11,7 @@
   top: 10px;
   left: 10px;
   width: 200px;
-  height: 70px;
+  height: 90px;
   object-fit: cover;
 }
 
@@ -44,6 +44,13 @@
   opacity: 0.5;
 }
 
+@media (max-width: 1024px) {
+  .logoImg {
+    width: 140px;
+    height: 70px;
+  }
+}
+
 @media (max-width: 1024px) and (orientation: portrait) {
   .container {
     width: 100%;
@@ -71,10 +78,19 @@
   .formBox {
     width: 90%;
   }
+  .logoImg {
+    width: 100px;
+    height: 40px;
+  }
 }
 
 @media (max-width: 550px) and (orientation: portrait) {
   .formBox {
     width: 95%;
+  }
+
+  .logoImg {
+    width: 100px;
+    height: 40px;
   }
 }

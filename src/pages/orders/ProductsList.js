@@ -1,8 +1,7 @@
 import { FaPlus } from "react-icons/fa";
 import style from "../styles/productsList.module.css";
 import { BsTrashFill } from "react-icons/bs";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const ProductList = ({
   productList,
@@ -83,7 +82,7 @@ const ProductList = ({
     <>
       {stocks &&
         productList.map((item) => (
-          <div className={style.productBox}>
+          <div className={style.productBox} data-testid="productBox">
             <BsTrashFill
               className={style.trashIcon}
               onClick={() => deleteHandler(item)}
@@ -91,6 +90,7 @@ const ProductList = ({
             <div className={style.selectBox}>
               <div className={style.selectBox}>
                 <select
+                  placeholder="Wybierz produkt"
                   defaultValue={item.product}
                   className={style.select}
                   onChange={(event) =>
@@ -113,6 +113,7 @@ const ProductList = ({
               <div className={style.selectBox}>
                 <div className={style.selectBox}>
                   <select
+                    placeholder="Wybierz jednostkę"
                     defaultValue={item.unit}
                     className={style.select}
                     disabled={
@@ -159,7 +160,11 @@ const ProductList = ({
             )}
           </div>
         ))}
-      <div className={style.productBox} onClick={addProductInputCounter}>
+      <div
+        className={style.productBox}
+        onClick={addProductInputCounter}
+        data-testid="addBtn"
+      >
         <FaPlus className={style.plusIcon} />
       </div>
     </>

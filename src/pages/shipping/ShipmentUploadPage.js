@@ -61,7 +61,7 @@ const ShipmentUploadPage = () => {
       if (!data.data) return;
       updateShipmentState({
         variables: {
-          updateOrderShipmentStateId: deilveryId,
+          updateShipmentStateId: deilveryId,
           state: "Zakończono",
         },
       }).then((data) => {

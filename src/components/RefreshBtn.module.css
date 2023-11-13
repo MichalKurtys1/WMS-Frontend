@@ -1,0 +1,21 @@
+.refreshBtn {
+  border: none;
+  background-color: transparent;
+  font-size: 30px;
+  color: #2d3640;
+}
+
+.refreshBtn:hover {
+  cursor: pointer;
+  color: #3054f2;
+}
+
+.refreshIcon {
+  font-size: 30px;
+  color: #2d3640;
+  transition: 0.5s;
+}
+
+.refreshIcon:hover {
+  color: #3054f2;
+}

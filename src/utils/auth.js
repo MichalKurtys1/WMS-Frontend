@@ -5,7 +5,7 @@ export function checkToken() {
   const { token } = getAuth();
 
   if (token) {
-    return token;
+    return true;
   } else {
     return redirect("/login");
   }
@@ -16,13 +16,13 @@ export function KsiPermissionCheck() {
   if (position === "Księgowy") {
     return redirect("/");
   }
-  return position;
+  return true;
 }
 
 export function AdmMenPermissionCheck() {
   const { position } = getAuth();
   if (position === "Admin" || position === "Menadżer") {
-    return position;
+    return true;
   }
   return redirect("/");
 }
@@ -34,7 +34,7 @@ export function AdmMenKsiPermissionCheck() {
     position === "Menadżer" ||
     position === "Księgowy"
   ) {
-    return position;
+    return true;
   }
   return redirect("/");
 }
@@ -47,7 +47,7 @@ export function AdmMenKsiMagPermissionCheck() {
     position === "Księgowy" ||
     position === "Magazynier"
   ) {
-    return position;
+    return true;
   }
   return redirect("/");
 }
@@ -61,7 +61,7 @@ export function AdmMenKsiMagPrzPermissionCheck() {
     position === "Magazynier" ||
     position === "Przewoźnik"
   ) {
-    return position;
+    return true;
   }
   return redirect("/");
 }

@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_CLIENTS } from "../../utils/apollo/apolloQueries";
 import { DELETE_CLIENT } from "../../utils/apollo/apolloMutations";
@@ -12,6 +12,8 @@ import Header from "../../components/Header";
 import DeletePopup from "../../components/DeletePopup";
 import SuccessMsg from "../../components/SuccessMsg";
 import Loading from "../../components/Loading";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "react-router-dom";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
@@ -64,7 +66,7 @@ const ClientsPage = () => {
     <div className={style.container}>
       <Header path={"/"} />
       <ErrorHandler error={error} />
-      <Loading state={loading} />
+      <Loading state={loading && !error} />
       <SuccessMsg
         msg={"Klient usunięty pomyślnie"}
         state={successMsg && !error}
@@ -72,7 +74,10 @@ const ClientsPage = () => {
       {data && data.clients && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Klienci</h1>
+            <div className={style.header}>
+              <h1>Klienci</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             <div
               className={style.addOption}
               on

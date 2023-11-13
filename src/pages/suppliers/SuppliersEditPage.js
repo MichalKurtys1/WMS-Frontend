@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   GET_SUPPLIER,
   UPDATE_SUPPLIER,
@@ -50,6 +50,7 @@ const SuppliersEditPage = () => {
   }, [getSupplier, location.state.supplierId]);
 
   const onSubmit = (values) => {
+    if (!data) return;
     updateSupplier({
       variables: {
         updateSupplierId: data.id,
@@ -165,6 +166,7 @@ const SuppliersEditPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     <FaPen className={style.icon} />
                     Edytuj

@@ -115,6 +115,7 @@ const TableRow = (props) => {
         deleteHandler={props.deleteHandler}
         record={props.record}
         position={props.position}
+        selectedRowHandler={props.selectedRowHandler}
       />
       <OrderTableRow
         isClickedRow={isClickedRow}
@@ -129,6 +130,7 @@ const TableRow = (props) => {
         position={props.position}
         transportType={props.transportType}
         openPicklist={props.openPicklist}
+        selectedRowHandler={props.selectedRowHandler}
       />
       <ShipmentTableRow
         isClickedRow={isClickedRow}
@@ -144,6 +146,7 @@ const TableRow = (props) => {
         position={props.position}
         openPicklist={props.openPicklist}
         openWaybill={props.openWaybill}
+        selectedRowHandler={props.selectedRowHandler}
       />
     </>
   );

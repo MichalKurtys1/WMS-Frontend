@@ -42,7 +42,7 @@
 .popup .buttons button p {
   font-size: 22px;
   color: #2d3640;
-  font-family: "Roboto";
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
 }
 

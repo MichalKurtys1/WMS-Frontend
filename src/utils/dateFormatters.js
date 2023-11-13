@@ -1,4 +1,8 @@
 export const dateToPolish = (givenDate) => {
+  if (!givenDate || isNaN(parseInt(givenDate))) {
+    return "Błędna data";
+  }
+
   const date = new Date(parseInt(givenDate));
   const options = {
     year: "numeric",
@@ -10,6 +14,10 @@ export const dateToPolish = (givenDate) => {
 };
 
 export const dateToInput = (givenDate) => {
+  if (!givenDate || isNaN(parseInt(givenDate))) {
+    return "Błędna data";
+  }
+
   const date = new Date(parseInt(givenDate));
   return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
     .toString()

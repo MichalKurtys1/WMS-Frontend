@@ -1,4 +1,3 @@
-import { Font } from "@react-pdf/renderer";
 import {
   Page,
   Text,
@@ -6,99 +5,9 @@ import {
   Document,
   StyleSheet,
   Image,
+  Font,
 } from "@react-pdf/renderer";
-import { useState } from "react";
 import { dateToInput, dateToPolish } from "../../utils/dateFormatters";
-
-// const stylesRow = StyleSheet.create({
-//   row100: {
-//     margin: "auto",
-//     width: "100%",
-//     flexDirection: "row",
-//     borderWidth: 1,
-//     borderBottomWidth: 0,
-//     borderRightWidth: 0,
-//     borderColor: "#646e78",
-//   },
-//   rowlast: {
-//     margin: "auto",
-//     width: "100%",
-//     borderBottom: 1,
-//     borderColor: "#646e78",
-//   },
-//   row100Last: {
-//     margin: "auto",
-//     width: "100%",
-//     flexDirection: "row",
-//     borderWidth: 1,
-//     borderRightWidth: 0,
-//     borderColor: "#646e78",
-//   },
-//   col50: {
-//     width: "50%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   col: {
-//     width: "12.5%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   col5: {
-//     width: "5%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   col10: {
-//     width: "10%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   col7: {
-//     width: "22.5%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   colSum: {
-//     width: "25%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   colSum20: {
-//     width: "20%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-//   colSum40: {
-//     width: "40%",
-//     margin: "auto",
-//     borderStyle: "solid",
-//     flexDirection: "row",
-//     borderRight: 1,
-//     borderColor: "#646e78",
-//   },
-// });
 
 const styles = StyleSheet.create({
   container: {
@@ -279,8 +188,7 @@ const pageStyles = StyleSheet.create({
   },
 });
 
-const OrderPDF = (props) => {
-  const [picklistData] = useState(props.picklistData);
+const PicklistPDF = ({ picklistData }) => {
   let index = 0;
 
   return (
@@ -361,4 +269,4 @@ const OrderPDF = (props) => {
   );
 };
 
-export default OrderPDF;
+export default PicklistPDF;

@@ -108,6 +108,7 @@ const EmployeeAddPage = () => {
                   />
                   <div className={style.selectBox}>
                     <Select
+                      name="Wybierz Stanowisko"
                       fieldName="position"
                       validator={selectValidator}
                       options={positonList}
@@ -118,6 +119,7 @@ const EmployeeAddPage = () => {
                     disabled={invalid}
                     type="submit"
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     <FaPlus className={style.icon} />
                     Dodaj

@@ -1,6 +1,11 @@
-import { Font } from "@react-pdf/renderer";
-import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import { useState } from "react";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
 
 const stylesText = StyleSheet.create({
   text1: {
@@ -236,12 +241,10 @@ const pageStyles = StyleSheet.create({
   },
 });
 
-const ShippmentPDF = (props) => {
-  const [shippingData] = useState(props.shipment);
-
+const ShippmentPDF = ({ shippingData }) => {
   return (
     <Document
-      title={`Dostawa/${shippingData[0].deliveryDate}/${
+      title={`Dostawa/${shippingData[0].deliveryDate || ""}/${
         Math.floor(Math.random() * (10 - 1 + 1)) + 1
       }`}
     >

@@ -1,7 +1,6 @@
 import { PDFViewer } from "@react-pdf/renderer";
 import OrderPDF from "./OrderPDF";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const OrderRenderer = () => {
   const [deliveryData, setDeliveryData] = useState([]);
@@ -9,7 +8,7 @@ const OrderRenderer = () => {
   useEffect(() => {
     if (localStorage.getItem("deliveryData")) {
       setDeliveryData(JSON.parse(localStorage.getItem("deliveryData")));
-      console.log(JSON.parse(localStorage.getItem("deliveryData")));
+      localStorage.removeItem("deliveryData");
     }
   }, []);
 
@@ -25,7 +24,7 @@ const OrderRenderer = () => {
       }}
     >
       {deliveryData.length !== 0 && (
-        <PDFViewer width={"100%"} height={"100%"} d>
+        <PDFViewer width={"100%"} height={"100%"}>
           <OrderPDF deliveryData={deliveryData} />
         </PDFViewer>
       )}

@@ -29,7 +29,11 @@ const RaportsPage = () => {
       <div className={style.menu}>
         <h1>Raporty</h1>
         <div className={style.raportsNavigation}>
-          <FaAngleLeft className={style.icon} onClick={() => prev()} />
+          <FaAngleLeft
+            className={style.icon}
+            onClick={() => prev()}
+            data-testid="PrevBtn"
+          />
           <p>
             {raportType === 0
               ? "Ogólne"
@@ -39,12 +43,17 @@ const RaportsPage = () => {
               ? "Dostawy"
               : "Stan Magazynowy"}
           </p>
-          <FaAngleRight className={style.icon} onClick={() => next()} />
+          <FaAngleRight
+            className={style.icon}
+            onClick={() => next()}
+            data-testid="NextBtn"
+          />
         </div>
         <div className={style.timeScope}>
           <select
             className={style.select}
             onChange={(event) => setTimeScope(event.target.value)}
+            data-testid="TimescopeSelect"
           >
             <option>Tydzień</option>
             <option>Miesiąc</option>

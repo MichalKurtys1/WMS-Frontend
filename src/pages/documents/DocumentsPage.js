@@ -107,12 +107,7 @@ const DocumentsPage = () => {
 
   useEffect(() => {
     if (!data) return;
-
-    if (results) {
-      setResults(dataFiltering(data, category, searchValue, filterValue));
-    } else {
-      setResults(dataFiltering(data, category, searchValue, filterValue));
-    }
+    setResults(dataFiltering(data, category, searchValue, filterValue));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, searchValue, filterValue, data]);
 
@@ -131,7 +126,11 @@ const DocumentsPage = () => {
               onChange={searchValueChange}
             />
             <div className={style.selectBox}>
-              <select className={style.select} onChange={categoryValueChange}>
+              <select
+                className={style.select}
+                onChange={categoryValueChange}
+                data-testid="Select"
+              >
                 <option>Dostawy</option>
                 <option>Zamówienia</option>
                 <option>Listy Przewozowe</option>
@@ -139,7 +138,7 @@ const DocumentsPage = () => {
               </select>
             </div>
 
-            <button onClick={filterValueChange}>
+            <button onClick={filterValueChange} data-testid="SortBtn">
               {!filterValue ? (
                 <BsSortAlphaDownAlt className={style.icon} />
               ) : (
@@ -148,60 +147,66 @@ const DocumentsPage = () => {
             </button>
           </div>
           <div className={style.files}>
-            {results.map((group) => (
-              <div className={style.groupBox}>
-                <h3>{group.key}</h3>
-                <div>
-                  {group.value.map((file) => (
-                    <div className={style.filesBox}>
-                      {file.filename.includes(".pdf") && (
-                        <img
-                          src={require("../../assets/PDF_file_icon.png")}
-                          alt="pdf icon"
-                          className={style.image}
-                        />
-                      )}
-                      {file.filename.includes(".txt") && (
-                        <img
-                          src={require("../../assets/txt_file_icon.png")}
-                          alt="pdf icon"
-                          className={style.image}
-                        />
-                      )}
-                      {file.filename.includes(".docx") && (
-                        <img
-                          src={require("../../assets/docx_file_icon.png")}
-                          alt="pdf icon"
-                          className={style.image}
-                        />
-                      )}
+            {results.length !== 0 &&
+              results.map((group) => (
+                <div className={style.groupBox} key={group.key}>
+                  <h3>{group.key}</h3>
+                  <div key={group.key}>
+                    {group.value.map((file) => (
+                      <div className={style.filesBox}>
+                        {file.filename.includes(".pdf") && (
+                          <img
+                            src={require("../../assets/PDF_file_icon.png")}
+                            alt="pdf icon"
+                            className={style.image}
+                          />
+                        )}
+                        {file.filename.includes(".txt") && (
+                          <img
+                            src={require("../../assets/txt_file_icon.png")}
+                            alt="pdf icon"
+                            className={style.image}
+                          />
+                        )}
+                        {file.filename.includes(".docx") && (
+                          <img
+                            src={require("../../assets/docx_file_icon.png")}
+                            alt="pdf icon"
+                            className={style.image}
+                          />
+                        )}
 
-                      <div className={style.wrapper}>
-                        <div className={style.upperBox}>
-                          <p>{file.name}</p>
-                          <button>
-                            <BsEyeFill
-                              className={style.icon}
+                        <div className={style.wrapper}>
+                          <div className={style.upperBox}>
+                            <p>{file.name}</p>
+                            <button
+                              data-testid="DownloadBtn"
                               onClick={() =>
                                 downloadHandler(file.link, file.filename)
                               }
-                            />
-                          </button>
-                          <button>
-                            <BsTrashFill
-                              className={style.icon}
+                            >
+                              <BsEyeFill className={style.icon} />
+                            </button>
+                            <button
+                              data-testid="DeleteBtn"
                               onClick={() => deleteHandler(file.filename)}
-                            />
-                          </button>
+                            >
+                              <BsTrashFill className={style.icon} />
+                            </button>
+                          </div>
+                          <p className={style.date}>
+                            {file.date.split("T")[0]}
+                          </p>
+                          <h5>{file.filename}</h5>
                         </div>
-                        <p className={style.date}>{file.date.split("T")[0]}</p>
-                        <h5>{file.filename}</h5>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            {results.length === 0 && (
+              <p className={style.textInfo}>Brak dokumentów tego typu</p>
+            )}
           </div>
         </main>
       )}

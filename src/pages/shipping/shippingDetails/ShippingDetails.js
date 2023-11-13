@@ -3,32 +3,28 @@ import { useLocation, useNavigate } from "react-router";
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import {
-  GET_ORDER,
   ORDER_FILE_UPLOAD,
-  UPDATE_ORDERSHIPPMENT_WAYBILL,
-  UPDATE_SHIPMENT_STATE,
+  UPDATE_SHIPPMENT_WAYBILL,
+  FORMATTED_SHIPPING_DATA,
 } from "../../../utils/apollo/apolloMutations";
 import ErrorHandler from "../../../components/ErrorHandler";
-import {
-  GET_ORDERS,
-  GET_ORDER_SHIPMENTS,
-} from "../../../utils/apollo/apolloQueries";
 import { pdf } from "@react-pdf/renderer";
 import ShippmentPDF from "../../PDFs/ShippmentPDF";
 import Header from "../../../components/Header";
 import Loading from "../../../components/Loading";
+import { GET_ORDERS_SHIPMENTS } from "../../../utils/apollo/apolloMultipleQueries";
 
 const ShippingDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState();
-  const [data, setData] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
-  const [getOrder, { loading }] = useMutation(GET_ORDER, {
+  const [getFormattedData, { loading }] = useMutation(FORMATTED_SHIPPING_DATA, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: orderShipment } = useQuery(GET_ORDER_SHIPMENTS, {
+  const { data, loading: loadingData } = useQuery(GET_ORDERS_SHIPMENTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -36,55 +32,24 @@ const ShippingDetails = () => {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const [updateOrderShipmentWaybill] = useMutation(
-    UPDATE_ORDERSHIPPMENT_WAYBILL,
-    {
-      onError: (error) => setError(error),
-      onCompleted: () => setError(false),
-    }
-  );
-  const { data: orders } = useQuery(GET_ORDERS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [updateShipmentState] = useMutation(UPDATE_SHIPMENT_STATE, {
+  const [updateOrderShipmentWaybill] = useMutation(UPDATE_SHIPPMENT_WAYBILL, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
 
   useEffect(() => {
-    if (!orderShipment || !location.state) return;
+    if (!location.state) return;
 
-    const shipment = orderShipment.orderShipments.find(
-      (item) => item.id === location.state.deliveryId
-    );
-    setProducts([]);
-    setData([]);
-    JSON.parse(JSON.parse(shipment.orders)).forEach((item) => {
-      getOrder({
-        variables: {
-          getOrderId: item.id,
-        },
-      }).then((data) => {
-        if (!data.data) return;
-        setData((prevList) => [...prevList, data.data.getOrder]);
-        JSON.parse(JSON.parse(data.data.getOrder.products)).map((item) => {
-          return setProducts((prevList) => [
-            ...prevList,
-            {
-              orderId: data.data.getOrder.id,
-              id: prevList.length,
-              product: item.product,
-              unit: item.unit,
-              quantity: item.quantity,
-              delivered: 0,
-              damaged: 0,
-            },
-          ]);
-        });
-      });
+    getFormattedData({
+      variables: {
+        getFormattedDataId: location.state.deliveryId,
+      },
+    }).then((data) => {
+      if (!data.data) return;
+      setProducts(data.data.getFormattedData.products);
+      setOrders(data.data.getFormattedData.orders);
     });
-  }, [getOrder, location.state, orderShipment]);
+  }, [getFormattedData, location.state]);
 
   const modifyWeightValue = (id, value) => {
     setProducts((prevList) =>
@@ -95,7 +60,7 @@ const ShippingDetails = () => {
   };
 
   const openPdfHandler = async (shipping) => {
-    const blob = await pdf(<ShippmentPDF shipment={shipping} />).toBlob();
+    const blob = await pdf(<ShippmentPDF shippingData={shipping} />).toBlob();
     const generateRandomString = (length) => {
       const characters = "0123456789";
       let result = "";
@@ -117,13 +82,11 @@ const ShippingDetails = () => {
         fileUploadId: location.state.deliveryId,
         date: new Date(),
       },
-    }).catch((err) => {
-      console.log(err);
     });
 
     const serializedShipping = JSON.stringify(shipping);
     localStorage.setItem("shippingData", serializedShipping);
-    window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/shippment", "_blank", "noopener");
     navigate("/shipping", {
       state: {
         updated: true,
@@ -133,19 +96,18 @@ const ShippingDetails = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const shipment = orderShipment.orderShipments.find(
+    const shipment = data.shipments.find(
       (item) => item.id === location.state.deliveryId
     );
 
     let shipping = JSON.parse(JSON.parse(shipment.orders)).map((element) => {
-      let order = orders.orders.find((item) => item.id === element.id);
+      let order = data.orders.find((item) => item.id === element.id);
       let clientAddress =
         order.client.street +
         " " +
         order.client.number +
         " " +
         order.client.city;
-      console.log(order.products);
       let product = products.filter((item) => item.orderId === order.id);
 
       return {
@@ -163,19 +125,12 @@ const ShippingDetails = () => {
 
     updateOrderShipmentWaybill({
       variables: {
-        updateOrderShipmentWaybillId: location.state.deliveryId,
+        updateShipmentWaybillId: location.state.deliveryId,
         waybill: shipping,
       },
     }).then((data) => {
       if (!data.data) return;
-      updateShipmentState({
-        variables: {
-          updateOrderShipmentStateId: location.state.deliveryId,
-          state: "Wysłano",
-        },
-      }).then((data) => {
-        openPdfHandler(shipping);
-      });
+      openPdfHandler(shipping);
     });
   };
 
@@ -183,12 +138,12 @@ const ShippingDetails = () => {
     <div className={style.container}>
       <Header path={"/shipping"} />
       <ErrorHandler error={error} />
-      <Loading state={loading && !error} />
-      {data && (
+      <Loading state={(loading || loadingData) && !error} />
+      {orders && (
         <div className={style.detailsBox}>
           <h1>Dane przesyłki</h1>
           <form onSubmit={onSubmit}>
-            {data &&
+            {products &&
               products.map((item) => (
                 <div className={style.productBox}>
                   <p>{item.product}</p>
@@ -198,6 +153,8 @@ const ShippingDetails = () => {
                   <input
                     type="number"
                     placeholder="Waga"
+                    min={1}
+                    required
                     onChange={(event) =>
                       modifyWeightValue(item.id, event.target.value)
                     }

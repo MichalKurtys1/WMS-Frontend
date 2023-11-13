@@ -27,7 +27,7 @@ const NavigationLinkGroup = (props) => {
       </div>
       <div className={style.linkContainer}>
         {props.links.map((item) => (
-          <div className={style.link}>
+          <div className={style.link} key={item.link}>
             <h3>
               <Link
                 to={item.link}

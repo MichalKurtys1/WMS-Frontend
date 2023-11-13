@@ -37,14 +37,13 @@ import SortingPage from "./pages/deliveries/sorting/SortingPage";
 import ShippingDetails from "./pages/shipping/shippingDetails/ShippingDetails";
 import ShippingPage from "./pages/shipping/ShippingPage";
 import ShippingAddPage from "./pages/shipping/add/ShippingAddPage";
-import OrdersUploadPage from "./pages/orders/OrdersUploadPage";
 import DocumentsPage from "./pages/documents/DocumentsPage";
 import OrderRenderer from "./pages/PDFs/OrderRenderer";
 import ShipmentRenderer from "./pages/PDFs/ShipmentRenderer";
-import DeliveriesUploadPage from "./pages/deliveries/DeliveriesUploadPage";
 import ShipmentUploadPage from "./pages/shipping/ShipmentUploadPage";
 import PicklistRenderer from "./pages/PDFs/PicklistRenderer";
 import RaportsPage from "./pages/raports/RaportsPage";
+import UploadPage from "./components/UploadPage";
 
 const router = createBrowserRouter([
   {
@@ -141,7 +140,7 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "upload",
-                    element: <OrdersUploadPage />,
+                    element: <UploadPage type={"/orders"} />,
                   },
                 ],
               },
@@ -163,7 +162,7 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "upload",
-                    element: <DeliveriesUploadPage />,
+                    element: <UploadPage type={"/deliveries"} />,
                   },
                 ],
               },

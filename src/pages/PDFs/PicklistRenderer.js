@@ -1,7 +1,6 @@
 import { PDFViewer } from "@react-pdf/renderer";
 import PicklistPDF from "./PicklistPDF";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const PicklistRenderer = () => {
   const [picklistData, setPicklistData] = useState([]);
@@ -9,7 +8,7 @@ const PicklistRenderer = () => {
   useEffect(() => {
     if (localStorage.getItem("picklistData")) {
       setPicklistData(JSON.parse(localStorage.getItem("picklistData")));
-      console.log(JSON.parse(localStorage.getItem("picklistData")));
+      localStorage.removeItem("picklistData");
     }
   }, []);
 
@@ -25,7 +24,7 @@ const PicklistRenderer = () => {
       }}
     >
       {picklistData.length !== 0 && (
-        <PDFViewer width={"100%"} height={"100%"} d>
+        <PDFViewer width={"100%"} height={"100%"}>
           <PicklistPDF picklistData={picklistData} />
         </PDFViewer>
       )}

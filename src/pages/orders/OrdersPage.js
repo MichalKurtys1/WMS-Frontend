@@ -1,8 +1,7 @@
-import { useLocation, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { dateToPolish } from "../../utils/dateFormatters";
-import { GET_ORDERS, GET_STOCKS } from "../../utils/apollo/apolloQueries";
 import {
   DELETE_ORDER,
   UPDATE_ORDER_STATE,
@@ -20,6 +19,9 @@ import DeletePopup from "../../components/DeletePopup";
 import SuccessMsg from "../../components/SuccessMsg";
 import Loading from "../../components/Loading";
 import StatePopup from "../../components/StatePopup";
+import { GET_ORDERS_STOCK } from "../../utils/apollo/apolloMultipleQueries";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "react-router-dom";
 
 const format = [
   "orderID",
@@ -39,8 +41,8 @@ const titles = [
 ];
 
 const OrdersPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
@@ -55,16 +57,10 @@ const OrdersPage = () => {
       ? true
       : false
   );
-
-  const { data, refetch, loading } = useQuery(GET_ORDERS, {
+  const { data, refetch, loading } = useQuery(GET_ORDERS_STOCK, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: stocks, loading: loadingStocks } = useQuery(GET_STOCKS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-
   const [deleteOrder] = useMutation(DELETE_ORDER, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
@@ -140,25 +136,10 @@ const OrdersPage = () => {
 
   const transportTypeHandler = (type) => {
     setShipmentPopupOpen(false);
-    if (type === "personal") {
-      updateOrdersTransportType({
-        variables: {
-          updateOrderTrasportTypeId: id,
-          transportType: type,
-        },
-      });
-    } else {
-      updateOrdersTransportType({
-        variables: {
-          updateOrderTrasportTypeId: id,
-          transportType: type,
-        },
-      });
-    }
-    updateOrdersState({
+    updateOrdersTransportType({
       variables: {
-        updateOrderStateId: id,
-        state: "Potwierdzono",
+        updateOrderTrasportTypeId: id,
+        transportType: type,
       },
     }).then((data) => {
       if (!data.data) return;
@@ -187,7 +168,7 @@ const OrdersPage = () => {
           orderID: data.orders.find((order) => order.id === id).orderID,
           orderDate: data.orders.find((order) => order.id === id).expectedDate,
           products: JSON.parse(JSON.parse(products)).map((item) => {
-            const stock = stocks.stocks.find(
+            const stock = data.stocks.find(
               (stock) =>
                 item.product.includes(stock.product.name) &&
                 item.product.includes(stock.product.type) &&
@@ -204,11 +185,9 @@ const OrdersPage = () => {
       ],
     };
 
-    console.log(picklist);
-
     const serializedDelivery = JSON.stringify(picklist);
     localStorage.setItem("picklistData", serializedDelivery);
-    window.open("http://localhost:3000/pdf/picklist", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/picklist", "_blank", "noopener");
 
     navigate("/orders", {
       state: {
@@ -225,11 +204,14 @@ const OrdersPage = () => {
         msg={"Zamówienie usunięte pomyślnie"}
         state={successMsg && !error}
       />
-      <Loading state={(loading || loadingStocks) && !error} />
+      <Loading state={loading && !error} />
       {data && data.orders && !shipmentPopupOpen && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Zamówienia</h1>
+            <div className={style.header}>
+              <h1>Zamówienia</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             {position !== "Magazynier" && (
               <div
                 className={style.addOption}

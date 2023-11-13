@@ -1,6 +1,6 @@
 import { Form } from "react-final-form";
 import { useMutation, useQuery } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { dateToInput } from "../../utils/dateFormatters";
 import { selectValidator, textValidator } from "../../utils/inputValidators";
@@ -8,13 +8,7 @@ import {
   GET_ORDER,
   ORDER_FILE_UPLOAD,
   UPDATE_ORDER,
-  UPDATE_STOCK,
 } from "../../utils/apollo/apolloMutations";
-import {
-  GET_CLIENTS,
-  GET_PRODUCTS,
-  GET_STOCKS,
-} from "../../utils/apollo/apolloQueries";
 
 import style from "../styles/ordDelAddEditPages.module.css";
 import Select from "../../components/Select";
@@ -26,6 +20,7 @@ import { pdf } from "@react-pdf/renderer";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { BiErrorAlt } from "react-icons/bi";
+import { GET_CLIENTS_STOCK_PRODUCTS } from "../../utils/apollo/apolloMultipleQueries";
 
 const OrdersEditPage = () => {
   const location = useLocation();
@@ -50,26 +45,7 @@ const OrdersEditPage = () => {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data, loading: loadingClients } = useQuery(GET_CLIENTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [updateStock, { loading: loadingUpdateStocks }] = useMutation(
-    UPDATE_STOCK,
-    {
-      onError: (error) => setError(error),
-      onCompleted: () => setError(false),
-    }
-  );
-  const {
-    data: stocks,
-    loading: loadingStocks,
-    refetch,
-  } = useQuery(GET_STOCKS, {
+  const { data, loading: loadingData } = useQuery(GET_CLIENTS_STOCK_PRODUCTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -82,7 +58,7 @@ const OrdersEditPage = () => {
   );
 
   useEffect(() => {
-    if (data && !loadingClients) {
+    if (data && !loadingData) {
       setOptions([
         { name: "Wybierz Klienta", value: null },
         ...data.clients.map((item) => ({
@@ -91,7 +67,7 @@ const OrdersEditPage = () => {
         })),
       ]);
     }
-  }, [data, loadingClients]);
+  }, [data, loadingData]);
 
   useEffect(() => {
     getOrder({ variables: { getOrderId: location.state.orderId } }).then(
@@ -163,7 +139,7 @@ const OrdersEditPage = () => {
         address: "ul. Cicha 2 Bydgoszcz",
         nip: "NIP: 1112233444",
       },
-      productsInfo: products,
+      productsInfo: data,
       products: productList,
     };
     const blob = await pdf(<OrderPDF deliveryData={order} />).toBlob();
@@ -194,7 +170,7 @@ const OrdersEditPage = () => {
 
     const serializedDelivery = JSON.stringify(order);
     localStorage.setItem("deliveryData", serializedDelivery);
-    window.open("http://localhost:3000/pdf/order", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/order", "_blank", "noopener");
 
     setSumbitLoading(false);
 
@@ -207,14 +183,13 @@ const OrdersEditPage = () => {
 
   const onSubmit = (values) => {
     setSumbitLoading(true);
-
     const state = productList.filter(
       (item) =>
         item.product === null ||
         item.quantity === null ||
         item.unit === null ||
         item.quantity === "" ||
-        products.products.filter(
+        data.products.filter(
           (option) =>
             option.name + " " + option.type + " " + option.capacity ===
             item.product
@@ -222,6 +197,7 @@ const OrdersEditPage = () => {
           parseInt(item.maxValue) <
           parseInt(item.quantity)
     );
+
     if (state.length > 0) {
       setSubmitError(true);
       return;
@@ -229,7 +205,7 @@ const OrdersEditPage = () => {
 
     let totalPrice = 0;
     productList.forEach((item) => {
-      const product = products.products.find(
+      const product = data.products.find(
         (products) =>
           item.product.includes(products.name) &&
           item.product.includes(products.type) &&
@@ -255,50 +231,12 @@ const OrdersEditPage = () => {
         values.date,
         data.clients.filter((item) => item.name === values.client)[0]
       );
-
-      JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
-        const stock = stocks.stocks.find(
-          (stock) =>
-            item.product.includes(stock.product.name) &&
-            item.product.includes(stock.product.type) &&
-            item.product.includes(stock.product.capacity)
-        );
-
-        let newValue = +stock.preOrdered - +item.quantity;
-
-        await updateStock({
-          variables: {
-            updateStockId: stock.id,
-            preOrdered: newValue,
-          },
-        });
-      });
-
-      refetch().then((newStock) => {
-        productList.forEach(async (item) => {
-          const stock = newStock.data.stocks.find(
-            (stock) =>
-              item.product.includes(stock.product.name) &&
-              item.product.includes(stock.product.type) &&
-              item.product.includes(stock.product.capacity)
-          );
-
-          let newValue = parseInt(stock.preOrdered) + parseInt(item.quantity);
-
-          await updateStock({
-            variables: {
-              updateStockId: stock.id,
-              preOrdered: newValue < 0 ? 0 : newValue,
-            },
-          });
-        });
-      });
     });
-
     setSubmitError(false);
   };
 
   const getSupplierHandler = () => {
+    if (!deliveryData) return;
     const client = data.clients.filter(
       (item) => item.id === deliveryData.clientId
     );
@@ -319,18 +257,12 @@ const OrdersEditPage = () => {
       <ErrorHandler error={error} />
       <Loading
         state={
-          (loadingClients ||
-            loadingProducts ||
-            loading ||
-            updateLoading ||
-            loadingUpdateStocks ||
-            loadingUploadFile ||
-            loadingStocks) &&
+          (loading || updateLoading || loadingUploadFile) &&
           sumbitLoading &&
           !error
         }
       />
-      {data && deliveryData && stocks && (
+      {data && deliveryData && data.stocks && (
         <main>
           <Form
             onSubmit={onSubmit}
@@ -344,6 +276,7 @@ const OrdersEditPage = () => {
                   <div className={style.inputBox}>
                     <div className={style.input}>
                       <Select
+                        name={"Wybierz Klienta"}
                         fieldName="client"
                         validator={selectValidator}
                         initVal={
@@ -372,6 +305,7 @@ const OrdersEditPage = () => {
                       style={{
                         backgroundColor: invalid ? "#B6BABF" : null,
                       }}
+                      data-testid="SubmitBtn"
                     >
                       Edytuj
                     </button>
@@ -389,15 +323,15 @@ const OrdersEditPage = () => {
                   )}
                   <ProductList
                     productList={productList}
-                    products={products}
-                    loadingProducts={loadingProducts}
+                    products={data}
+                    loadingProducts={loadingData}
                     submitError={submitError}
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}
                     changeUnitHandler={changeUnitHandler}
                     quantityUnitHandler={changeQuantityHandler}
                     addProductInputCounter={addProductInputCounter}
-                    stocks={stocks}
+                    stocks={data}
                   />
                 </div>
               </form>

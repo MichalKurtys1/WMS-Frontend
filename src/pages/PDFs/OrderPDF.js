@@ -1,4 +1,3 @@
-import { Font } from "@react-pdf/renderer";
 import {
   Page,
   Text,
@@ -6,8 +5,9 @@ import {
   Document,
   StyleSheet,
   Image,
+  Font,
 } from "@react-pdf/renderer";
-import { useState } from "react";
+import { getAuth } from "../../context/index";
 
 const stylesText = StyleSheet.create({
   text1: {
@@ -18,18 +18,18 @@ const stylesText = StyleSheet.create({
     width: "100%",
     backgroundColor: "#f5f5f5",
   },
+  text2: {
+    fontSize: 10,
+    padding: 5,
+    textAlign: "center",
+    width: "100%",
+  },
   text3: {
     fontSize: 11,
     padding: 5,
     textAlign: "center",
     width: "100%",
     backgroundColor: "#f5f5f5",
-  },
-  text2: {
-    fontSize: 10,
-    padding: 5,
-    textAlign: "center",
-    width: "100%",
   },
   text4: {
     fontSize: 10,
@@ -294,8 +294,8 @@ const pageStyles = StyleSheet.create({
   },
 });
 
-const OrderPDF = (props) => {
-  const [deliveryData] = useState(props.deliveryData);
+const OrderPDF = ({ deliveryData }) => {
+  const { name } = getAuth();
   let index = 0;
 
   const priceHandler = (name) => {
@@ -308,8 +308,7 @@ const OrderPDF = (props) => {
   const vatSum = () => {
     let totalVat = 0;
     deliveryData.products.map((item) => {
-      return (totalVat = totalVat +=
-        priceHandler(item.product) * +item.quantity * 0.23);
+      return (totalVat += priceHandler(item.product) * +item.quantity * 0.23);
     });
     return totalVat * (1.4).toFixed(2);
   };
@@ -317,8 +316,7 @@ const OrderPDF = (props) => {
   const priceSum = () => {
     let totalPrice = 0;
     deliveryData.products.map((item) => {
-      return (totalPrice = totalPrice +=
-        priceHandler(item.product) * item.quantity);
+      return (totalPrice += priceHandler(item.product) * item.quantity);
     });
     return totalPrice * (1.4).toFixed(2);
   };
@@ -448,56 +446,53 @@ const OrderPDF = (props) => {
                 <Text style={stylesText.text5}>Wartość brutto</Text>
               </View>
             </View>
-            {deliveryData &&
-              deliveryData.products.map((product) => (
-                <View style={stylesRow.row100}>
-                  <View style={stylesRow.col5}>
-                    <Text style={stylesText.text6}>{++index}.</Text>
-                  </View>
-                  <View style={stylesRow.col7}>
-                    <Text style={stylesText.text6}>{product.product}</Text>
-                  </View>
-                  <View style={stylesRow.col10}>
-                    <Text style={stylesText.text6}>{product.quantity}</Text>
-                  </View>
-                  <View style={stylesRow.col}>
-                    <Text style={stylesText.text6}>{product.unit}</Text>
-                  </View>
-                  <View style={stylesRow.col}>
-                    <Text style={stylesText.text6}>
-                      {priceHandler(product.product) * +product.quantity} zł
-                    </Text>
-                  </View>
-                  <View style={stylesRow.col}>
-                    <Text style={stylesText.text6}>23</Text>
-                  </View>
-                  <View style={stylesRow.col}>
-                    <Text style={stylesText.text6}>
-                      {(
-                        priceHandler(product.product) *
+            {deliveryData?.products.map((product) => (
+              <View style={stylesRow.row100}>
+                <View style={stylesRow.col5}>
+                  <Text style={stylesText.text6}>{++index}.</Text>
+                </View>
+                <View style={stylesRow.col7}>
+                  <Text style={stylesText.text6}>{product.product}</Text>
+                </View>
+                <View style={stylesRow.col10}>
+                  <Text style={stylesText.text6}>{product.quantity}</Text>
+                </View>
+                <View style={stylesRow.col}>
+                  <Text style={stylesText.text6}>{product.unit}</Text>
+                </View>
+                <View style={stylesRow.col}>
+                  <Text style={stylesText.text6}>
+                    {priceHandler(product.product) * +product.quantity} zł
+                  </Text>
+                </View>
+                <View style={stylesRow.col}>
+                  <Text style={stylesText.text6}>23</Text>
+                </View>
+                <View style={stylesRow.col}>
+                  <Text style={stylesText.text6}>
+                    {(
+                      priceHandler(product.product) *
+                      +product.quantity *
+                      1.4 *
+                      0.23
+                    ).toFixed(2)}{" "}
+                    zł
+                  </Text>
+                </View>
+                <View style={stylesRow.col}>
+                  <Text style={stylesText.text6}>
+                    {(
+                      +priceHandler(product.product) * +product.quantity * 1.4 +
+                      priceHandler(product.product) *
                         +product.quantity *
                         1.4 *
                         0.23
-                      ).toFixed(2)}{" "}
-                      zł
-                    </Text>
-                  </View>
-                  <View style={stylesRow.col}>
-                    <Text style={stylesText.text6}>
-                      {(
-                        +priceHandler(product.product) *
-                          +product.quantity *
-                          1.4 +
-                        priceHandler(product.product) *
-                          +product.quantity *
-                          1.4 *
-                          0.23
-                      ).toFixed(2)}{" "}
-                      zł
-                    </Text>
-                  </View>
+                    ).toFixed(2)}{" "}
+                    zł
+                  </Text>
                 </View>
-              ))}
+              </View>
+            ))}
 
             <View style={stylesRow.rowlast}></View>
           </View>
@@ -547,9 +542,7 @@ const OrderPDF = (props) => {
           <View style={styles.signatureBox}>
             <View style={styles.summaryBox}>
               <Text style={stylesText.text8}>Wystawił(a):</Text>
-              <Text style={stylesText.text9}>
-                {localStorage.getItem("name")}
-              </Text>
+              <Text style={stylesText.text9}>{name}</Text>
             </View>
             <View style={styles.summaryBox}>
               <Text style={stylesText.text8}>Odebrał(a):</Text>

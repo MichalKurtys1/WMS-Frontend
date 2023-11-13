@@ -1,7 +1,7 @@
-import { useLocation, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { GET_ORDER_SHIPMENTS } from "../../utils/apollo/apolloQueries";
+import { GET_SHIPMENTS } from "../../utils/apollo/apolloQueries";
 import {
   SHIPMENT_DELETE,
   UPDATE_SHIPMENT_STATE,
@@ -18,6 +18,8 @@ import Loading from "../../components/Loading";
 import SuccessMsg from "../../components/SuccessMsg";
 import StatePopup from "../../components/StatePopup";
 import DeletePopup from "../../components/DeletePopup";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "react-router-dom";
 
 const ShippingPage = () => {
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ const ShippingPage = () => {
   const [action, setAction] = useState();
   const { position } = getAuth();
   const [statePopupIsOpen, setStatePopupIsOpen] = useState(false);
-  const { data, refetch, loading } = useQuery(GET_ORDER_SHIPMENTS, {
+  const { data, refetch, loading } = useQuery(GET_SHIPMENTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
@@ -44,15 +46,17 @@ const ShippingPage = () => {
   });
 
   useEffect(() => {
-    refetch();
-  }, [location.state, location.pathname, refetch]);
+    if (location.state) {
+      refetch();
+    }
+  }, [location.state, refetch]);
 
   const deleteHandler = () => {
     setPopupIsOpen(false);
 
     deleteShipment({
       variables: {
-        deleteOrderShipmentId: selectedRow,
+        deleteShipmentId: selectedRow,
       },
     }).then((data) => {
       if (!data.data) return;
@@ -95,7 +99,7 @@ const ShippingPage = () => {
   const updateState = () => {
     updateShipmentState({
       variables: {
-        updateOrderShipmentStateId: id,
+        updateShipmentStateId: id,
         state: action,
       },
     }).then((data) => {
@@ -105,10 +109,10 @@ const ShippingPage = () => {
   };
 
   const openPicklist = (id) => {
-    const pickingList = data.orderShipments.find((item) => item.id === id);
+    const pickingList = data.shipments.find((item) => item.id === id);
     const serializedDelivery = pickingList.pickingList;
     localStorage.setItem("picklistData", serializedDelivery);
-    window.open("http://localhost:3000/pdf/picklist", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/picklist", "_blank", "noopener");
 
     navigate("/shipping", {
       state: {
@@ -118,11 +122,11 @@ const ShippingPage = () => {
   };
 
   const openWaybill = (id) => {
-    const serializedShipping = data.orderShipments.find(
+    const serializedShipping = data.shipments.find(
       (item) => item.id === id
     ).waybill;
     localStorage.setItem("shippingData", serializedShipping);
-    window.open("http://localhost:3000/pdf/shippment", "_blank", "noreferrer");
+    window.open("http://localhost:3000/pdf/shippment", "_blank", "noopener");
   };
 
   return (
@@ -134,10 +138,13 @@ const ShippingPage = () => {
         msg={"Wysyłka usunięta pomyślnie"}
         state={successMsg && !error}
       />
-      {data && data.orderShipments && (
+      {data && data.shipments && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Wysyłki</h1>
+            <div className={style.header}>
+              <h1>Wysyłki</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             <div
               className={style.addOption}
               onClick={() => navigate(`/shipping/add`)}
@@ -153,7 +160,7 @@ const ShippingPage = () => {
               deleteHandler={() => setPopupIsOpen(true)}
               selectedRowHandler={(id) => setSelectedRow(id)}
               updateStateHandler={updateStateHandler}
-              data={data.orderShipments.map((item) => {
+              data={data.shipments.map((item) => {
                 return {
                   ...item,
                   deliveryDate: item.deliveryDate

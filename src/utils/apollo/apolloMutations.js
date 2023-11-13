@@ -38,12 +38,6 @@ export const DELETE_ORDER = gql`
   }
 `;
 
-export const DELETE_TRANSFER = gql`
-  mutation Mutation($deleteTransferId: String!) {
-    deleteTransfer(id: $deleteTransferId)
-  }
-`;
-
 // add
 
 export const ADD_EMPLOYEE = gql`
@@ -220,95 +214,7 @@ export const ADD_ORDER = gql`
   }
 `;
 
-export const ADD_OPERATION = gql`
-  mutation Mutation($transfersId: ID, $ordersId: ID, $deliveriesId: ID) {
-    createOperation(
-      transfersId: $transfersId
-      ordersId: $ordersId
-      deliveriesId: $deliveriesId
-    ) {
-      id
-      deliveriesId
-      ordersId
-      transferId
-      stage
-      data
-    }
-  }
-`;
-
-export const ADD_LOCATION = gql`
-  mutation Mutation(
-    $operationId: ID!
-    $productId: ID!
-    $numberOfProducts: Float!
-    $posX: String!
-    $posY: String!
-  ) {
-    createLocation(
-      operationId: $operationId
-      productId: $productId
-      numberOfProducts: $numberOfProducts
-      posX: $posX
-      posY: $posY
-    ) {
-      id
-      productId
-      numberOfProducts
-      posX
-      posY
-      product {
-        id
-        supplierId
-        name
-        type
-        capacity
-        unit
-        pricePerUnit
-        availableStock
-      }
-    }
-  }
-`;
-
-export const ADD_TRANSFER = gql`
-  mutation Mutation($employee: String!, $date: String!, $data: JSON!) {
-    createTransfer(employee: $employee, date: $date, data: $data) {
-      id
-      employee
-      date
-      data
-      state
-    }
-  }
-`;
-
-export const ADD_SHIPPING = gql`
-  mutation Mutation(
-    $orderId: ID!
-    $totalWeight: String!
-    $palletSize: String!
-    $palletNumber: String!
-    $products: JSON!
-  ) {
-    createShipping(
-      orderId: $orderId
-      totalWeight: $totalWeight
-      palletSize: $palletSize
-      palletNumber: $palletNumber
-      products: $products
-    ) {
-      id
-      orderId
-      totalWeight
-      palletSize
-      palletNumber
-      products
-    }
-  }
-`;
-
-export const ADD_ORDERS_SHIPMENT = gql`
+export const ADD_SHIPMENT = gql`
   mutation Mutation(
     $employee: String!
     $registrationNumber: String!
@@ -316,7 +222,7 @@ export const ADD_ORDERS_SHIPMENT = gql`
     $orders: JSON!
     $pickingList: JSON!
   ) {
-    createOrderShipment(
+    createShipment(
       employee: $employee
       registrationNumber: $registrationNumber
       deliveryDate: $deliveryDate
@@ -328,8 +234,9 @@ export const ADD_ORDERS_SHIPMENT = gql`
       registrationNumber
       deliveryDate
       orders
-      state
       pickingList
+      waybill
+      state
     }
   }
 `;
@@ -633,26 +540,6 @@ export const UPDATE_ORDER = gql`
   }
 `;
 
-export const UPDATE_AVAILABLE_STOCK = gql`
-  mutation Mutation($updateAvailableStockId: String!, $availableStock: Float!) {
-    updateAvailableStock(
-      id: $updateAvailableStockId
-      availableStock: $availableStock
-    )
-  }
-`;
-
-export const UPDATE_OPERATION = gql`
-  mutation Mutation($operationId: ID!, $data: JSON!, $stage: Float!) {
-    updateOperation(operationId: $operationId, data: $data, stage: $stage) {
-      id
-      deliveriesId
-      stage
-      data
-    }
-  }
-`;
-
 export const UPDATE_DELIVERY_STATE = gql`
   mutation Mutation($updateStateId: String!, $state: String!) {
     updateState(id: $updateStateId, state: $state) {
@@ -679,50 +566,9 @@ export const UPDATE_DELIVERY_VALUES = gql`
   }
 `;
 
-export const UPDATE_STOCK = gql`
-  mutation Mutation(
-    $updateStockId: String!
-    $preOrdered: Float
-    $productId: ID
-    $totalQuantity: Float
-    $availableStock: Float
-    $ordered: Float
-  ) {
-    updateStock(
-      id: $updateStockId
-      preOrdered: $preOrdered
-      productId: $productId
-      totalQuantity: $totalQuantity
-      availableStock: $availableStock
-      ordered: $ordered
-    ) {
-      id
-      productId
-      code
-      totalQuantity
-      availableStock
-      ordered
-      preOrdered
-    }
-  }
-`;
-
 export const UPDATE_ORDER_STATE = gql`
   mutation Mutation($updateOrderStateId: String!, $state: String!) {
     updateOrderState(id: $updateOrderStateId, state: $state) {
-      id
-      clientId
-      date
-      expectedDate
-      products
-      state
-    }
-  }
-`;
-
-export const UPDATE_ORDER_PRODUCTS = gql`
-  mutation Mutation($updateOrderProductsId: String!, $products: JSON!) {
-    updateOrderProducts(id: $updateOrderProductsId, products: $products) {
       id
       clientId
       date
@@ -757,19 +603,22 @@ export const FILE_DELETE = gql`
 `;
 
 export const SHIPMENT_DELETE = gql`
-  mutation Mutation($deleteOrderShipmentId: String!) {
-    deleteOrderShipment(id: $deleteOrderShipmentId)
+  mutation Mutation($deleteShipmentId: String!) {
+    deleteShipment(id: $deleteShipmentId)
   }
 `;
 
 export const UPDATE_SHIPMENT_STATE = gql`
-  mutation Mutation($updateOrderShipmentStateId: String!, $state: String!) {
-    updateOrderShipmentState(id: $updateOrderShipmentStateId, state: $state) {
+  mutation Mutation($updateShipmentStateId: String!, $state: String!) {
+    updateShipmentState(id: $updateShipmentStateId, state: $state) {
       id
       employee
       registrationNumber
       deliveryDate
       orders
+      pickingList
+      waybill
+      state
     }
   }
 `;
@@ -833,12 +682,9 @@ export const UPDATE_ORDER_TRANSPORTTYPE = gql`
   }
 `;
 
-export const UPDATE_ORDERSHIPPMENT_WAYBILL = gql`
-  mutation Mutation($updateOrderShipmentWaybillId: String!, $waybill: JSON!) {
-    updateOrderShipmentWaybill(
-      id: $updateOrderShipmentWaybillId
-      waybill: $waybill
-    ) {
+export const UPDATE_SHIPPMENT_WAYBILL = gql`
+  mutation Mutation($updateShipmentWaybillId: String!, $waybill: JSON!) {
+    updateShipmentWaybill(id: $updateShipmentWaybillId, waybill: $waybill) {
       id
       employee
       registrationNumber
@@ -847,6 +693,16 @@ export const UPDATE_ORDERSHIPPMENT_WAYBILL = gql`
       pickingList
       waybill
       state
+    }
+  }
+`;
+
+export const FORMATTED_SHIPPING_DATA = gql`
+  mutation Mutation($getFormattedDataId: String!) {
+    getFormattedData(id: $getFormattedDataId) {
+      shipment
+      orders
+      products
     }
   }
 `;

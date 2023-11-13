@@ -7,7 +7,7 @@ const PageNotFound = () => {
   const clickHandler = () => {
     navigate("/");
   };
-  console.log(error);
+
   return (
     <>
       {error.statusText === "Not Found" && (

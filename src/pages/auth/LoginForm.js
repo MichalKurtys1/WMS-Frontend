@@ -1,13 +1,12 @@
 import { Form } from "react-final-form";
 import Input from "../../components/Input";
 import style from "./LoginForm.module.css";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../context/auth";
-import { useEffect } from "react";
-import { useState } from "react";
-import ErrorHandler from "../../components/ErrorHandler";
+import { useEffect, useState } from "react";
+import { BiErrorAlt } from "react-icons/bi";
 import { emailValidator, passwordValidator } from "../../utils/inputValidators";
 import { LOGIN } from "../../utils/apollo/apolloMutations";
 import Loading from "../../components/Loading";
@@ -15,9 +14,10 @@ import Loading from "../../components/Loading";
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [error, setError] = useState();
+  const [error, setError] = useState(false);
   const [login, { loading }] = useMutation(LOGIN, {
     onError: (error) => setError(error),
+    onCompleted: () => setError(false),
   });
 
   useEffect(() => {
@@ -51,7 +51,14 @@ const LoginForm = () => {
       onSubmit={onSubmit}
       render={({ handleSubmit, invalid }) => (
         <form className={style.form} onSubmit={handleSubmit}>
-          <ErrorHandler error={error} width={"100%"} />
+          {error && error.message !== "INPUT_ERROR" && (
+            <div className={style.errorBox}>
+              <BiErrorAlt className={style.icon} />
+              <span>
+                Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.
+              </span>
+            </div>
+          )}
           <Loading state={loading} />
           {!loading && (
             <>

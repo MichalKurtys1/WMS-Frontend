@@ -1,7 +1,6 @@
 .container main {
   margin: 20px auto;
   width: 80%;
-  padding-bottom: 20px;
   background-color: #fff;
   border-radius: 10px;
   padding: 0 10px;
@@ -15,10 +14,15 @@ main .optionPanel {
   font-family: "Roboto", sans-serif;
 }
 
+main .optionPanel .header {
+  display: flex;
+  align-items: center;
+}
+
 main .optionPanel h1 {
   color: #2d3640;
   font-size: 38px;
-  margin: 10px 0;
+  margin: 10px 10px 10px 0;
 }
 
 main .optionPanel .addOption {

@@ -9,6 +9,7 @@ const Select = ({ name, fieldName, validator, initVal, options, title }) => {
           <select
             id={fieldName}
             className={style.select}
+            placeholder={name}
             style={{
               border: meta.touched && meta.error ? "2px solid #f03a30" : "",
             }}
@@ -17,12 +18,16 @@ const Select = ({ name, fieldName, validator, initVal, options, title }) => {
             {options.map((option) => {
               if (option.name === initVal) {
                 return (
-                  <option selected value={option.value}>
+                  <option selected value={option.value} key={option.name}>
                     {option.name}
                   </option>
                 );
               } else {
-                return <option value={option.value}>{option.name}</option>;
+                return (
+                  <option value={option.value} key={option.name}>
+                    {option.name}
+                  </option>
+                );
               }
             })}
           </select>

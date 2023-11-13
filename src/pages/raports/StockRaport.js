@@ -3,15 +3,10 @@ import style from "../raports/StockRaport.module.css";
 import { ResponsivePie } from "@nivo/pie";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
-import {
-  GET_DELIVERIES,
-  GET_ORDERS,
-  GET_STOCKS,
-} from "../../utils/apollo/apolloQueries";
 import ErrorHandler from "../../components/ErrorHandler";
-import chroma from "chroma-js";
 import { ResponsiveBar } from "@nivo/bar";
 import Loading from "../../components/Loading";
+import { GET_STOCK_RAPORTS } from "../../utils/apollo/apolloMultipleQueries";
 
 const StockRaport = ({ timeScope }) => {
   const [error, setError] = useState();
@@ -25,220 +20,27 @@ const StockRaport = ({ timeScope }) => {
     finishedOrders: 0,
     finishedDeliveries: 0,
   });
-  const { data: stocks, loading } = useQuery(GET_STOCKS, {
+  const { data: stockRaports, loading } = useQuery(GET_STOCK_RAPORTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: orders } = useQuery(GET_ORDERS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: deliveries } = useQuery(GET_DELIVERIES, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-
-  const stockDataHandler = () => {
-    const results = stocks.stocks.map((item, i) => {
-      let scale = chroma.scale(["#E5EAFF", "#B2C1FF", "#8097FF", "#3054F2"]);
-      const randomColor = scale(i * 0.15).hex();
-      const productName =
-        item.product.name +
-        " " +
-        item.product.type +
-        " " +
-        item.product.capacity +
-        " ";
-      const objects = [
-        {
-          id: productName,
-          value: item.totalQuantity,
-          idColor: randomColor,
-        },
-        {
-          id: productName + "- Dostępne",
-          value: item.availableStock,
-          idColor: randomColor,
-        },
-        {
-          id: productName + "- Zamówione",
-          value: item.ordered,
-          idColor: randomColor,
-        },
-      ];
-      return objects;
-    });
-
-    setResults(results.flat(1));
-  };
-
-  const dataCountingHandler = () => {
-    let tempData = {
-      startedOrders: 0,
-      startedDeliveries: 0,
-      duringOrders: 0,
-      duringDeliveries: 0,
-      finishedOrders: 0,
-      finishedDeliveries: 0,
-    };
-    orders.orders.forEach((element) => {
-      if (element.state === "Zamówiono" || element.state === "Pre Order") {
-        tempData.startedOrders += 1;
-      } else if (element.state === "Zakończono") {
-        tempData.finishedOrders += 1;
-      } else {
-        tempData.duringOrders += 1;
-      }
-    });
-
-    deliveries.deliveries.forEach((element) => {
-      if (element.state === "Zamówiono") {
-        tempData.startedDeliveries += 1;
-      } else if (element.state === "Zakończono") {
-        tempData.finishedDeliveries += 1;
-      } else {
-        tempData.duringDeliveries += 1;
-      }
-    });
-
-    setCountedData(tempData);
-  };
-
-  const productsBilansHandler = () => {
-    let tempData = stocks.stocks.map((item) => {
-      const productName =
-        item.product.name +
-        " " +
-        item.product.type +
-        " " +
-        item.product.capacity;
-      return {
-        product: productName,
-        Dostarczone: 0,
-        Wysłane: 0,
-        Bilans: 0,
-      };
-    });
-
-    let currentDate;
-    let sevenDaysAgo;
-    if (timeScope === "Tydzień") {
-      currentDate = new Date();
-      sevenDaysAgo = new Date(currentDate);
-      sevenDaysAgo.setDate(currentDate.getDate() - 7);
-    } else if (timeScope === "Miesiąc") {
-      currentDate = new Date().getMonth() + 1;
-    } else {
-      currentDate = new Date().getFullYear();
-    }
-
-    orders.orders.forEach((element) => {
-      const products = JSON.parse(JSON.parse(element.products));
-      let orderDate;
-      if (element.state === "Zakończono") {
-        if (timeScope === "Tydzień") {
-          orderDate = new Date(+element.date);
-          console.log(orderDate);
-          if (orderDate >= sevenDaysAgo && orderDate <= currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Wysłane += +item.quantity;
-              }
-            });
-          }
-        } else if (timeScope === "Miesiąc") {
-          orderDate = new Date(+element.date).getMonth() + 1;
-          if (orderDate === currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Wysłane += +item.quantity;
-              }
-            });
-          }
-        } else {
-          orderDate = new Date(+element.date).getFullYear();
-          if (orderDate === currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Wysłane += +item.quantity;
-              }
-            });
-          }
-        }
-      }
-    });
-
-    deliveries.deliveries.forEach((element) => {
-      const products = JSON.parse(JSON.parse(element.products));
-      let deliveryDate;
-      if (element.state === "Zakończono") {
-        if (timeScope === "Tydzień") {
-          deliveryDate = new Date(+element.date);
-          if (deliveryDate >= sevenDaysAgo && deliveryDate <= currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Dostarczone += +item.quantity;
-              }
-            });
-          }
-        } else if (timeScope === "Miesiąc") {
-          deliveryDate = new Date(+element.date).getMonth() + 1;
-          if (deliveryDate === currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Dostarczone += +item.quantity;
-              }
-            });
-          }
-        } else {
-          deliveryDate = new Date(+element.date).getFullYear();
-          if (deliveryDate === currentDate) {
-            products.forEach((item) => {
-              const foundStock = tempData.find(
-                (stock) => stock.product === item.product
-              );
-              if (foundStock) {
-                foundStock.Dostarczone += +item.quantity;
-              }
-            });
-          }
-        }
-      }
-    });
-
-    setStockData(
-      tempData.map((item) => {
-        return {
-          ...item,
-          Bilans: item.Dostarczone - item.Wysłane,
-        };
-      })
-    );
-  };
 
   useEffect(() => {
-    if (stocks && orders && deliveries) {
-      stockDataHandler();
-      dataCountingHandler();
-      productsBilansHandler();
+    if (stockRaports) {
+      setCountedData(JSON.parse(stockRaports.stockRaport.operationsData));
+      setResults(JSON.parse(stockRaports.stockRaport.generalData));
+      if (timeScope === "Tydzień") {
+        const weekData = JSON.parse(stockRaports.stockRaport.weekData);
+        setStockData(weekData);
+      } else if (timeScope === "Miesiąc") {
+        const monthData = JSON.parse(stockRaports.stockRaport.monthData);
+        setStockData(monthData);
+      } else if (timeScope === "Rok") {
+        const yearData = JSON.parse(stockRaports.stockRaport.yearData);
+        setStockData(yearData);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stocks, timeScope]);
+  }, [stockRaports, timeScope]);
 
   return (
     <div className={style.container}>

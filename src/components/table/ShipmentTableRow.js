@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BsTrashFill,
   BsFillBoxSeamFill,
@@ -7,7 +7,6 @@ import {
 import style from "./ShipmentTableRow.module.css";
 import { useQuery } from "@apollo/client";
 import { GET_ORDERS } from "../../utils/apollo/apolloQueries";
-import { useState } from "react";
 import { FaClipboardList, FaListOl, FaTruck } from "react-icons/fa";
 import ErrorHandler from "../ErrorHandler";
 
@@ -23,6 +22,7 @@ function DeliveryDetailsRow(props) {
     record,
     openPicklist,
     openWaybill,
+    selectedRowHandler,
   } = props;
   const [error, setError] = useState();
   const { data } = useQuery(GET_ORDERS, {
@@ -130,7 +130,10 @@ function DeliveryDetailsRow(props) {
                     </button>
                   )}
                   <button
-                    onClick={() => deleteHandler(id)}
+                    onClick={() => {
+                      selectedRowHandler(id);
+                      deleteHandler();
+                    }}
                     disabled={
                       record["state"] === "Kompletowanie" ||
                       record["state"] === "Pakowanie" ||

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_PRODUCTS } from "../../utils/apollo/apolloQueries";
 import { DELETE_PRODUCT } from "../../utils/apollo/apolloMutations";
@@ -13,10 +13,12 @@ import { getAuth } from "../../context/index";
 import Header from "../../components/Header";
 import SuccessMsg from "../../components/SuccessMsg";
 import Loading from "../../components/Loading";
+import RefreshBtn from "../../components/RefreshBtn";
+import { useLocation } from "react-router-dom";
 
 const ProductsPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { position } = getAuth();
   const [selectedRow, setSelectedRow] = useState(null);
   const [popupIsOpen, setPopupIsOpen] = useState(false);
@@ -74,7 +76,10 @@ const ProductsPage = () => {
       {data && data.products && (
         <main>
           <div className={style.optionPanel}>
-            <h1>Lista produktów</h1>
+            <div className={style.header}>
+              <h1>Lista produktów</h1>
+              <RefreshBtn refetch={refetch} />
+            </div>
             {position !== "Magazynier" && (
               <div
                 className={style.addOption}

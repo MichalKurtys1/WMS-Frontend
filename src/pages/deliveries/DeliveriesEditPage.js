@@ -1,17 +1,11 @@
 import { Form } from "react-final-form";
 import { useMutation, useQuery } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   GET_DELIVERY,
   UPDATE_DELIVERY,
-  UPDATE_STOCK,
 } from "../../utils/apollo/apolloMutations";
-import {
-  GET_PRODUCTS,
-  GET_STOCKS,
-  GET_SUPPLIERS,
-} from "../../utils/apollo/apolloQueries";
 import { selectValidator } from "../../utils/inputValidators";
 import { dateToInput } from "../../utils/dateFormatters";
 
@@ -23,6 +17,7 @@ import ErrorHandler from "../../components/ErrorHandler";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { BiErrorAlt } from "react-icons/bi";
+import { GET_PRODUCTS_SUPPLIERS } from "../../utils/apollo/apolloMultipleQueries";
 
 const DeliveriesEditPage = () => {
   const location = useLocation();
@@ -31,6 +26,11 @@ const DeliveriesEditPage = () => {
   const [deliveryData, setDeliveryData] = useState();
   const [options, setOptions] = useState([]);
   const [error, setError] = useState(null);
+  const [productList, setProductList] = useState(
+    location.state !== null
+      ? []
+      : [{ id: 0, product: null, unit: null, quantity: null }]
+  );
   const [getDelivery, { loading }] = useMutation(GET_DELIVERY, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
@@ -42,27 +42,10 @@ const DeliveriesEditPage = () => {
       onCompleted: () => setError(false),
     }
   );
-  const { data: products, loading: loadingProducts } = useQuery(GET_PRODUCTS, {
+  const { data, loading: loadingSuppliers } = useQuery(GET_PRODUCTS_SUPPLIERS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: stocks, refetch } = useQuery(GET_STOCKS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data, loading: loadingSuppliers } = useQuery(GET_SUPPLIERS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [updateStock] = useMutation(UPDATE_STOCK, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const [productList, setProductList] = useState(
-    location.state !== null
-      ? []
-      : [{ id: 0, product: null, unit: null, quantity: null }]
-  );
 
   useEffect(() => {
     if (data && !loadingSuppliers) {
@@ -127,6 +110,7 @@ const DeliveriesEditPage = () => {
   };
 
   const getSupplierHandler = () => {
+    if (!deliveryData) return;
     const supplier = data.suppliers.find(
       (item) => item.id === deliveryData.supplierId
     );
@@ -149,7 +133,7 @@ const DeliveriesEditPage = () => {
 
     let totalPrice = 0;
     productList.forEach((item) => {
-      const product = products.products.find(
+      const product = data.products.find(
         (products) =>
           item.product.includes(products.name) &&
           item.product.includes(products.type) &&
@@ -159,6 +143,7 @@ const DeliveriesEditPage = () => {
         +item.quantity * +product.pricePerUnit +
         +item.quantity * +product.pricePerUnit * 0.23;
     });
+
     let updateDeliveryData;
     updateDelivery({
       variables: {
@@ -171,67 +156,6 @@ const DeliveriesEditPage = () => {
       },
     }).then((data) => {
       if (!data.data) return;
-      JSON.parse(JSON.parse(deliveryData.products)).forEach(async (item) => {
-        const stock = stocks.stocks.find(
-          (stock) =>
-            item.product.includes(stock.product.name) &&
-            item.product.includes(stock.product.type) &&
-            item.product.includes(stock.product.capacity)
-        );
-
-        let newValue = +stock.ordered - +item.quantity;
-
-        await updateStock({
-          variables: {
-            updateStockId: stock.id,
-            ordered: newValue,
-          },
-        });
-      });
-
-      refetch().then((newStock) => {
-        productList.forEach(async (item) => {
-          const stock = newStock.data.stocks.find(
-            (stock) =>
-              item.product.includes(stock.product.name) &&
-              item.product.includes(stock.product.type) &&
-              item.product.includes(stock.product.capacity)
-          );
-
-          let newValue = parseInt(stock.ordered) + parseInt(item.quantity);
-
-          await updateStock({
-            variables: {
-              updateStockId: stock.id,
-              ordered: newValue,
-            },
-          });
-        });
-      });
-      //     (stock) =>
-      //       item.product.includes(stock.product.name) &&
-      //       item.product.includes(stock.product.type) &&
-      //       item.product.includes(stock.product.capacity)
-      //   );
-
-      //   let newValue;
-      //   if (item.maxValue) {
-      //     newValue =
-      //       parseInt(stock.ordered) -
-      //       parseInt(item.maxValue) +
-      //       parseInt(item.quantity);
-      //   } else {
-      //     newValue = parseInt(stock.ordered) + parseInt(item.quantity);
-      //   }
-
-      //   updateStock({
-      //     variables: {
-      //       updateStockId: stock.id,
-      //       ordered: newValue < 0 ? 0 : newValue,
-      //     },
-      //   });
-      // });
-
       navigate("/deliveries", {
         state: {
           userData: updateDeliveryData,
@@ -254,10 +178,7 @@ const DeliveriesEditPage = () => {
       <Header path={"/deliveries"} />
       <ErrorHandler error={error} />
       <Loading
-        state={
-          (loadingSuppliers || loadingProducts || loading || updateLoading) &&
-          !error
-        }
+        state={(loadingSuppliers || loading || updateLoading) && !error}
       />
       {data && deliveryData && (
         <main>
@@ -300,6 +221,7 @@ const DeliveriesEditPage = () => {
                       style={{
                         backgroundColor: invalid ? "#B6BABF" : null,
                       }}
+                      data-testid="SubmitBtn"
                     >
                       Edytuj
                     </button>
@@ -317,8 +239,8 @@ const DeliveriesEditPage = () => {
                   )}
                   <ProductList
                     productList={productList}
-                    products={products}
-                    loadingProducts={loadingProducts}
+                    products={data}
+                    loadingProducts={loadingSuppliers}
                     submitError={submitError}
                     deleteHandler={deleteHandler}
                     changeProductHandler={changeProductHandler}

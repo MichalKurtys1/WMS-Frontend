@@ -95,6 +95,7 @@ const SortingPage = () => {
                     type="number"
                     placeholder="Ilość dostarczonych"
                     max={item.quantity}
+                    required
                     onChange={(event) =>
                       modifyDeliveredValue(item.id, event.target.value)
                     }

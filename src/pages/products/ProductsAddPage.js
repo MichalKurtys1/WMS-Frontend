@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { GET_SUPPLIERS } from "../../utils/apollo/apolloQueries";
 import { ADD_PRODUCT } from "../../utils/apollo/apolloMutations";
 import { selectValidator, textValidator } from "../../utils/inputValidators";
@@ -91,6 +91,7 @@ const ProductsAddPage = () => {
                       fieldName="supplier"
                       validator={selectValidator}
                       options={options}
+                      name={"Wybierz Dostawcę"}
                     />
                   </div>
                   <Input
@@ -108,7 +109,7 @@ const ProductsAddPage = () => {
                     width="47%"
                   />
                   <Input
-                    name="Pojemoność"
+                    name="Pojemność"
                     type="text"
                     fieldName="capacity"
                     validator={textValidator}
@@ -119,6 +120,7 @@ const ProductsAddPage = () => {
                       fieldName="unit"
                       validator={selectValidator}
                       options={unitItemsList}
+                      name={"Wybierz Jednostkę"}
                     />
                   </div>
                   <Input
@@ -133,6 +135,7 @@ const ProductsAddPage = () => {
                     type="submit"
                     className={style.centered}
                     style={{ backgroundColor: invalid ? "#B6BABF" : null }}
+                    data-testid="SubmitBtn"
                   >
                     Dodaj
                   </button>

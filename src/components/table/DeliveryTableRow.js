@@ -8,6 +8,7 @@ import {
   FaPen,
   FaTruckLoading,
 } from "react-icons/fa";
+import { v4 as uuid } from "uuid";
 
 function DeliveryDetailsRow(props) {
   const {
@@ -20,18 +21,19 @@ function DeliveryDetailsRow(props) {
     editHandler,
     deleteHandler,
     record,
+    selectedRowHandler,
   } = props;
 
   return (
     <>
       {isClickedRow && allowExpand && type === "Delivery" && (
         <tr className={style.detailsRow} key={id + "_1"}>
-          <td colspan="6" style={{ padding: 0 }}>
+          <td colSpan="6" style={{ padding: 0 }}>
             <div className={style.wrapper}>
               <div className={style.details}>
                 {products &&
                   JSON.parse(JSON.parse(products)).map((item) => (
-                    <div className={style.productBox}>
+                    <div className={style.productBox} key={uuid()}>
                       <h4>{item.product}</h4>
                       <div className={style.numbersBox}>
                         <p>
@@ -45,7 +47,7 @@ function DeliveryDetailsRow(props) {
                 <p>Dostarczono</p>
                 {products &&
                   JSON.parse(JSON.parse(products)).map((item) => (
-                    <div className={style.deliveryBox}>
+                    <div className={style.deliveryBox} key={uuid()}>
                       <h4>{item.delivered}</h4>
                     </div>
                   ))}
@@ -55,7 +57,7 @@ function DeliveryDetailsRow(props) {
 
                 {products &&
                   JSON.parse(JSON.parse(products)).map((item) => (
-                    <div className={style.deliveryBox}>
+                    <div className={style.deliveryBox} key={uuid()}>
                       <h4>{item.damaged}</h4>
                     </div>
                   ))}
@@ -226,7 +228,10 @@ function DeliveryDetailsRow(props) {
                     </div>
                   </button>
                   <button
-                    onClick={() => deleteHandler(id)}
+                    onClick={() => {
+                      selectedRowHandler(id);
+                      deleteHandler();
+                    }}
                     disabled={
                       record["state"] === "Odebrano" ||
                       record["state"] === "Posortowano" ||

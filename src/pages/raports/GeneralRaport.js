@@ -1,223 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import style from "./GeneralRaport.module.css";
 import { useQuery } from "@apollo/client";
-import {
-  GET_CLIENTS,
-  GET_DELIVERIES,
-  GET_ORDERS,
-  GET_PRODUCTS,
-  GET_STOCKS,
-} from "../../utils/apollo/apolloQueries";
 import ErrorHandler from "../../components/ErrorHandler";
-import { useEffect } from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { IoIosWarning } from "react-icons/io";
 import { BsX } from "react-icons/bs";
 import Loading from "../../components/Loading";
+import { GET_GENERAL_RAPORTS } from "../../utils/apollo/apolloMultipleQueries";
 
 const GeneralRaport = ({ timeScope }) => {
   const [generalResults, setGeneralResults] = useState([]);
   const [isOpen, setIsOpen] = useState(null);
+  const [error, setError] = useState();
   const [sumData, setSumData] = useState({
     income: 0,
     expenses: 0,
     bilans: 0,
   });
-  const [error, setError] = useState();
-  const { data: orders, loading } = useQuery(GET_ORDERS, {
+  const { data: generalRaports, loading } = useQuery(GET_GENERAL_RAPORTS, {
     onError: (error) => setError(error),
     onCompleted: () => setError(false),
   });
-  const { data: deliveries } = useQuery(GET_DELIVERIES, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: products } = useQuery(GET_PRODUCTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: clients } = useQuery(GET_CLIENTS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-  const { data: stocks } = useQuery(GET_STOCKS, {
-    onError: (error) => setError(error),
-    onCompleted: () => setError(false),
-  });
-
-  const weekOrdersCountHandler = () => {
-    const currentDate = new Date();
-    const daysOfWeek = [
-      "Niedziela",
-      "Poniedziałek",
-      "Wtorek",
-      "Środa",
-      "Czwartek",
-      "Piątek",
-      "Sobota",
-    ];
-    const dayNumbers = [];
-    let totalIncome = 0;
-    let totalExpenses = 0;
-
-    for (let i = 0; i < 7; i++) {
-      const previousDate = new Date(currentDate);
-      previousDate.setDate(currentDate.getDate() - i);
-      const dayNumber = previousDate.getDay();
-      dayNumbers.push({
-        dayName: daysOfWeek[dayNumber],
-        date: previousDate.toISOString().split("T")[0],
-      });
-    }
-    const initialData = dayNumbers.reverse().map((day) => ({
-      x: day.dayName,
-      Przychody: 0,
-      Wydatki: 0,
-      z: day.date,
-    }));
-
-    orders.orders.forEach((order) => {
-      const orderDate = new Date(+order.date).toISOString().split("T")[0];
-      const matchingDataPoint = initialData.find(
-        (dataPoint) => dataPoint.z === orderDate
-      );
-
-      if (matchingDataPoint) {
-        totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
-      }
-    });
-
-    deliveries.deliveries.forEach((deliveries) => {
-      const orderDate = new Date(+deliveries.date).toISOString().split("T")[0];
-      const matchingDataPoint = initialData.find(
-        (dataPoint) => dataPoint.z === orderDate
-      );
-
-      if (matchingDataPoint) {
-        totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
-      }
-    });
-
-    setGeneralResults(initialData);
-    setSumData({
-      ...sumData,
-      income: totalIncome.toFixed(0),
-      expenses: totalExpenses.toFixed(0),
-      bilans: (totalIncome - totalExpenses).toFixed(0),
-    });
-  };
-
-  const monthOrdersCountHandler = () => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1;
-    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-    const dataArray = [];
-    let totalIncome = 0;
-    let totalExpenses = 0;
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const formattedDate = `${currentYear}-${String(currentMonth).padStart(
-        2,
-        "0"
-      )}-${String(day).padStart(2, "0")}`;
-      dataArray.push({
-        x: formattedDate,
-        Przychody: 0,
-        Wydatki: 0,
-      });
-    }
-
-    orders.orders.forEach((order) => {
-      const orderDate = new Date(+order.date).toISOString().split("T")[0];
-      const matchingDataPoint = dataArray.find(
-        (dataPoint) => dataPoint.x === orderDate
-      );
-
-      if (matchingDataPoint) {
-        totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
-      }
-    });
-
-    deliveries.deliveries.forEach((deliveries) => {
-      const deliveriesDate = new Date(+deliveries.date)
-        .toISOString()
-        .split("T")[0];
-      const matchingDataPoint = dataArray.find(
-        (dataPoint) => dataPoint.x === deliveriesDate
-      );
-
-      if (matchingDataPoint) {
-        totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
-      }
-    });
-
-    setGeneralResults(dataArray);
-    setSumData({
-      ...sumData,
-      income: totalIncome.toFixed(0),
-      expenses: totalExpenses.toFixed(0),
-      bilans: (totalIncome - totalExpenses).toFixed(0),
-    });
-  };
-
-  const yearOrdersCountHandler = () => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const months = [];
-    let totalIncome = 0;
-    let totalExpenses = 0;
-
-    for (let month = 0; month < 12; month++) {
-      months.push({
-        x: `${currentYear}-${month + 1 < 10 ? "0" : ""}${month + 1}`,
-        Przychody: 0,
-        Wydatki: 0,
-      });
-    }
-
-    orders.orders.forEach((order) => {
-      const orderDate = new Date(+order.date).toISOString().slice(0, 7);
-      const matchingDataPoint = months.find(
-        (dataPoint) => dataPoint.x === orderDate
-      );
-
-      if (matchingDataPoint) {
-        totalIncome += order.totalPrice;
-        matchingDataPoint.Przychody += +order.totalPrice.toFixed(0);
-      }
-    });
-
-    deliveries.deliveries.forEach((deliveries) => {
-      const deliveriesDate = new Date(+deliveries.date)
-        .toISOString()
-        .slice(0, 7);
-      const matchingDataPoint = months.find(
-        (dataPoint) => dataPoint.x === deliveriesDate
-      );
-
-      if (matchingDataPoint) {
-        totalExpenses += deliveries.totalPrice;
-        matchingDataPoint.Wydatki += +deliveries.totalPrice.toFixed(0);
-      }
-    });
-
-    setGeneralResults(months);
-    setSumData({
-      ...sumData,
-      income: totalIncome.toFixed(0),
-      expenses: totalExpenses.toFixed(0),
-      bilans: (totalIncome - totalExpenses).toFixed(0),
-    });
-  };
 
   useEffect(() => {
-    if (stocks) {
-      const isExisting = stocks.stocks.filter(
+    if (generalRaports) {
+      const isExisting = generalRaports.stocks.filter(
         (item) => item.totalQuantity < 50 || item.availableStock < 50
       );
       if (isExisting.length !== 0) {
@@ -236,20 +43,37 @@ const GeneralRaport = ({ timeScope }) => {
         setIsOpen(false);
       }
     }
-  }, [stocks]);
+  }, [generalRaports]);
 
   useEffect(() => {
-    if (orders && deliveries && products && clients && stocks) {
+    if (generalRaports) {
       if (timeScope === "Tydzień") {
-        weekOrdersCountHandler();
+        const weekData = JSON.parse(generalRaports.generalRaports.weekData);
+        setGeneralResults(weekData.data);
+        setSumData({
+          bilans: weekData.bilans,
+          income: weekData.income,
+          expenses: weekData.expenses,
+        });
       } else if (timeScope === "Miesiąc") {
-        monthOrdersCountHandler();
+        const monthData = JSON.parse(generalRaports.generalRaports.monthData);
+        setGeneralResults(monthData.data);
+        setSumData({
+          bilans: monthData.bilans,
+          income: monthData.income,
+          expenses: monthData.expenses,
+        });
       } else if (timeScope === "Rok") {
-        yearOrdersCountHandler();
+        const yearData = JSON.parse(generalRaports.generalRaports.yearData);
+        setGeneralResults(yearData.data);
+        setSumData({
+          bilans: yearData.bilans,
+          income: yearData.income,
+          expenses: yearData.expenses,
+        });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders, deliveries, timeScope, products, clients, stocks]);
+  }, [generalRaports, timeScope]);
 
   return (
     <div className={style.container}>

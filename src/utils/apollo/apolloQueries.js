@@ -125,79 +125,6 @@ export const GET_ORDERS = gql`
   }
 `;
 
-export const GET_OPERATIONS = gql`
-  query Query {
-    operations {
-      id
-      deliveriesId
-      ordersId
-      transfersId
-      stage
-      data
-      delivery {
-        id
-        supplierId
-        date
-        warehouse
-        comments
-        products
-        state
-      }
-      order {
-        id
-        clientId
-        date
-        warehouse
-        comments
-        products
-        state
-      }
-      transfer {
-        id
-        employee
-        date
-        data
-        state
-      }
-    }
-  }
-`;
-
-export const GET_LOCATIONS = gql`
-  query Query {
-    locations {
-      id
-      productId
-      product {
-        id
-        supplierId
-        name
-        type
-        capacity
-        unit
-        pricePerUnit
-        availableStock
-      }
-      numberOfProducts
-      posX
-      posY
-      state
-    }
-  }
-`;
-
-export const GET_TRANSFERS = gql`
-  query Query {
-    transfers {
-      id
-      employee
-      date
-      data
-      state
-    }
-  }
-`;
-
 export const GET_STOCKS = gql`
   query Query {
     stocks {
@@ -217,6 +144,7 @@ export const GET_STOCKS = gql`
         unit
         pricePerUnit
         supplier {
+          id
           name
         }
       }
@@ -224,22 +152,9 @@ export const GET_STOCKS = gql`
   }
 `;
 
-export const GET_SHIPPINGS = gql`
+export const GET_SHIPMENTS = gql`
   query Query {
-    shippings {
-      id
-      orderId
-      totalWeight
-      palletSize
-      palletNumber
-      products
-    }
-  }
-`;
-
-export const GET_ORDER_SHIPMENTS = gql`
-  query Query {
-    orderShipments {
+    shipments {
       id
       employee
       registrationNumber

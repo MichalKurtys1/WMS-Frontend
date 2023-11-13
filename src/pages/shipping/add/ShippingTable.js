@@ -125,7 +125,7 @@ const ShippingTable = (props) => {
         </table>
       )}
       {data && data.length === 0 && (
-        <p className={style.emptyData}>Nie znaleziono żadnych danych</p>
+        <p className={style.emptyData}>Nie znaleziono żadnego zamówienia</p>
       )}
     </>
   );

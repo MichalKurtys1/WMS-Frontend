@@ -11,15 +11,11 @@ const ErrorHandler = ({ error, width }) => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState();
 
-  // temporary
-  // console.log("Error: " + error);
-
   useEffect(() => {
-    if (error && error.message) {
+    if (error?.message) {
       setErrorMsg(error.message || "UNDEFINED_ERROR");
     }
-
-    if (error && error.message && error.message === "NOT_AUTHENTICATED") {
+    if (error?.message && error?.message.includes("NOT_AUTHENTICATED")) {
       dispatch(authActions.logOut());
       navigate("/login");
     }
@@ -32,25 +28,29 @@ const ErrorHandler = ({ error, width }) => {
   return (
     <>
       {errorMsg && (
-        <div className={style.errorBox}>
+        <div className={style.errorBox} data-testid="ErrorComponent">
           <BiErrorAlt className={style.icon} />
           <BsX className={style.iconCancel} onClick={cancelHandler} />
           {errorMsg === "NOT_ENOUGH_PRODUCTS" && (
             <p>Nie wystarczająca ilość produktów. Uzupełnij magazyn.</p>
           )}
-          {errorMsg === "SERVER_ERROR" && (
+          {(errorMsg === "SERVER_ERROR" ||
+            errorMsg === "Failed to fetch" ||
+            errorMsg === "INPUT_ERROR") && (
             <p>Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.</p>
           )}
           {errorMsg === "EMAIL_TAKEN" && (
             <p>Podany adres email jest już zajęty. Porsze podać inny email.</p>
           )}
-          {errorMsg === "INPUT_ERROR" && (
-            <p>Wystąpił nieoczekiwany problem. Spróbuj ponownie za chwilę.</p>
+          {errorMsg.includes("NOT_AUTHENTICATED") && (
+            <p>Odmowa dostępu. Zaloguj się ponownie.</p>
           )}
           {errorMsg !== "INPUT_ERROR" &&
             errorMsg !== "EMAIL_TAKEN" &&
             errorMsg !== "SERVER_ERROR" &&
-            errorMsg !== "NOT_ENOUGH_PRODUCTS" && <p>{errorMsg}</p>}
+            errorMsg !== "NOT_ENOUGH_PRODUCTS" &&
+            errorMsg !== "Failed to fetch" &&
+            !errorMsg.includes("NOT_AUTHENTICATED") && <p>{errorMsg}</p>}
         </div>
       )}
     </>
